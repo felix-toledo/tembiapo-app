@@ -1,0 +1,20 @@
+# Dependencias y Logs
+node_modules/
+npm-debug.log
+pnpm-debug.log
+yarn-error.log
+
+# Archivos de Build y Entorno
+.env
+.env*.local
+.DS_Store
+dist/
+.next/
+build/
+
+# IDEs
+.vscode/
+.idea/
+
+# NestJS
+/dist
