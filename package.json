@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "initiate-prisma-reset": "cd packages/db && npx prisma generate && npx prisma db push --force-reset && npx tsx prisma/seeds/initial-seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

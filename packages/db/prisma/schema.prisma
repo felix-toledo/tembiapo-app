@@ -29,6 +29,7 @@ enum VerificationStatus {
 
 model User {
   id        String @id @default(uuid())
+  username  String @unique
   mail      String @unique
   password  String
   createdAt DateTime @default(now()) @map("created_at")
