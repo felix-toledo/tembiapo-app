@@ -1,0 +1,26 @@
+services:
+  # 1. Definición del Servicio de Base de Datos
+  tembiapo-db-dev:
+    image: postgres:18 # Usamos la v18 (ligera) para paridad
+    container_name: tembiapo_db_dev
+
+    # 2. Variables de Entorno para la BDD
+    # Esto crea el usuario y la BDD la primera vez que se levanta
+    environment:
+      POSTGRES_USER: ${DB_USER:-tembiapo_dev} # Valor por defecto si no está en .env
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-supersecretdev}
+      POSTGRES_DB: ${DB_NAME:-tembiapo_dev_db}
+
+    # 3. Mapeo de Puertos
+    # Expone el puerto 5432 del contenedor al puerto 5432 de tu máquina
+    ports:
+      - "5432:5432"
+
+    # 4. Volumen de Persistencia
+    # Guarda los datos de la BDD en una carpeta local para que no se borren
+    volumes:
+      - ./docker-data/postgres:/var/lib/postgresql
+
+volumes:
+  postgres:
+    driver: local
