@@ -137,7 +137,11 @@ importers:
         specifier: ^4.20.6
         version: 4.20.6
 
-  packages/types: {}
+  packages/types:
+    dependencies:
+      '@tembiapo/db':
+        specifier: workspace:*
+        version: link:../db
 
 packages:
 
