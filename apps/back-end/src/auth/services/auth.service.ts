@@ -1,5 +1,5 @@
 //==================IMPORTS GENERALES==================
-import { Injectable, Optional } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { ApiResponse } from '@tembiapo/types';
 
@@ -32,21 +32,13 @@ export class AuthService {
     async register(register : RegisterRequestDTO) : Promise<ApiResponse<RegisterResponseData | null>>{
 
         if (register === null) {
-        return createApiResponse(
-        null,
-        false,
-        { message: "No se encontro un DTO en la request", code: "404" }
-        );
+            throw new BadRequestException("No se encontro un DTO en la request")
         }
         
         ///1. verificamos primero que el email no exista
         const emailExists = await this.userRepository.isEmailExists(register.email)
         if(emailExists){
-           return createApiResponse(
-            null,
-            false,
-            {message: "El email ya se encuentra en uso", code: "409"}
-           )
+           throw new ConflictException("El email ya se encuentra en uso")
         }
 
 
@@ -54,31 +46,19 @@ export class AuthService {
         const usernameExists = await this.userRepository.isUsernameExists(register.username)
 
         if(usernameExists){
-           return createApiResponse(
-            null,
-            false,
-            {message: "El nombre de usuario ya se encuentra en uso", code: "CONFLICT"}
-           )
+           throw new ConflictException("El nombre de usuario no esta disponible")
         }
 
         ///3. verificamos que el dni no exista
         const dniExists = await this.personRepository.isDniExists(register.dni)
 
         if(dniExists){
-           return createApiResponse(
-            null,
-            false,
-            {message: "El dni ya se encuentra registrado", code: "409"}
-           )
+           throw new ConflictException("El DNI no se encuentra disponible")
         }
 
         ///4. Verificamos primero que las passwords coincidan
         if(register.password != register.confirmPassword){
-            return createApiResponse(
-                null,
-                false,
-                {message: "Las contraseñas no coinciden", code: "409"}
-            )
+            throw new ConflictException("Las contraseñas no coinciden")
         }
 
         ///5. Si coinciden, hasheamos la password
@@ -130,11 +110,7 @@ export class AuthService {
 
         ///Valida que la request no este vacia
         if(!loginRequest){
-            return createApiResponse( /// aplicamos el patron factory para la respuesta de la API
-                null,
-                false,
-                {message: "No se encontro un DTO en el body", code:"404"}
-            )
+            throw new BadRequestException("No se encontro un DTO en el body")
         }
 
         
@@ -142,23 +118,19 @@ export class AuthService {
          const user : User | null = await this.userRepository.findByEmail(loginRequest.email); ///Buscamos el usuario por el email que llego en la request (manejamos el caso de que sea null)
 
 
-         const invalidCredentialsResponse = createApiResponse( ///creamos una response global para el caso del email y password asi no damos pistas a la hora de inicar sesion
-            null,
-            false,
-            { message: "El email o la contraseña es incorrecto", code: "401"  
-
-            });  
+         
         if(!user){
-            return invalidCredentialsResponse ///Llamamos al metodo de invalidar las credenciales
+            throw new UnauthorizedException("El email o la contraseña es incorrecto") 
         }
         const isMatch = await bcrypt.compare(loginRequest.password,user.password) ///Guardamos dentro de una variable si las passwords coinciden a la hora de hashearlas
         if( !isMatch){
-              return invalidCredentialsResponse //Si no coinciden devolvemos el response de invalidar credenciales
+               throw new UnauthorizedException("El email o la contraseña es incorrecto") 
         }
 
         const payload = {email: user.mail, sub: user.id} ///Si pasa todas las validaciones, quiere decir que el inicio de sesion fue exitoso y creamos el payload del token utilizando el email y como subject el id del usuario
-        const access_token = this.jwtService.sign(payload) ///Despues creamos el access token para mandar luego en la response y llamamos al jwtService para firmar el token y enviar el payload al token
         
+        const access_token = this.jwtService.sign(payload) ///Creamos el access token mediante el payload creado
+
         const data = { ///creamos la data que va a devolver el response si el inicio de sesion es exitoso
             message: "Inicio de sesion exitoso!",
             accessToken: access_token 

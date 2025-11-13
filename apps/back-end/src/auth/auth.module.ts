@@ -10,8 +10,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async(configService : ConfigService) => ({ ///Llamamos a la funcion useFactory (viene del jwtModuleOptions), esto espera: useFactory?: (...args: any[]) => Promise<JwtModuleOptions> | JwtModuleOptions;
-        secret: configService.get<string>('SIGNED_JWT'), /// le registramos en el JwtModule nuestro secret traido del .env donde esta nuestra variable de entorno
-        signOptions: {expiresIn: '1h'}, // Le damos una expiracion a los access token de una hora
+        secret: configService.get<string>('SIGNED_JWT') /// le registramos en el JwtModule nuestro secret traido del .env donde esta nuestra variable de entorno
       }),
     })
   ],
