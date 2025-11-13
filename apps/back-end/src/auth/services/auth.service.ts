@@ -136,6 +136,8 @@ export class AuthService {
                 {message: "No se encontro un DTO en el body", code:"404"}
             )
         }
+
+        
         
          const user : User | null = await this.userRepository.findByEmail(loginRequest.email); ///Buscamos el usuario por el email que llego en la request (manejamos el caso de que sea null)
 
