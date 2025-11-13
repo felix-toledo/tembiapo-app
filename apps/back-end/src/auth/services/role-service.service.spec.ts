@@ -9,6 +9,7 @@ describe('RoleServiceService', () => {
       providers: [RoleServiceService],
     }).compile();
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     service = module.get<RoleServiceService>(RoleServiceService);
   });
 

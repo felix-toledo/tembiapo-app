@@ -1,115 +1,110 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service";
-import { User } from "@tembiapo/db";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { User } from '@tembiapo/db';
 
 @Injectable()
 export class UserRepository {
+  constructor(private readonly prisma: PrismaService) {}
 
-    constructor(private readonly prisma: PrismaService) {}
+  /// Buscar usuario por email
+  async findByEmail(mail: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { mail },
+    });
+  }
 
-    /// Buscar usuario por email
-    async findByEmail(mail: string): Promise<User | null> {
-        return await this.prisma.user.findUnique({
-            where: { mail },
-        });
-    }
+  /// Buscar usuario por username
+  async findByUsername(username: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { username },
+    });
+  }
 
-    /// Buscar usuario por username
-    async findByUsername(username: string): Promise<User | null> {
-        return await this.prisma.user.findUnique({
-            where: { username },
-        });
-    }
+  /// Buscar usuario por ID
+  async findById(id: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
 
-    /// Buscar usuario por ID
-    async findById(id: string): Promise<User | null> {
-        return await this.prisma.user.findUnique({
-            where: { id },
-        });
-    }
+  /// Método para crear un usuario en la BD
+  async createUser(userData: {
+    username: string;
+    mail: string;
+    password: string;
+    roleId: string;
+    personId: string;
+  }): Promise<User> {
+    return await this.prisma.user.create({
+      data: userData, // los timestamp los maneja la DB
+    });
+  }
 
-    /// Método para crear un usuario en la BD
-    async createUser(userData: {
-        username: string;
-        mail: string;
-        password: string;
-        roleId: string;
-        personId: string;
-    }): Promise<User> {
-        return await this.prisma.user.create({
-            data: userData // los timestamp los maneja la DB
-        });
-    }
+  /// Métodos para validar en servidor y BD
+  async isEmailExists(mail: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { mail },
+      select: { id: true },
+    });
+    return !!user;
+  }
 
-    /// Métodos para validar en servidor y BD
-    async isEmailExists(mail: string): Promise<boolean> {
-        const user = await this.prisma.user.findUnique({
-            where: { mail },
-            select: { id: true }
-        });
-        return !!user;
-    }
+  async isUsernameExists(username: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: { id: true },
+    });
+    return !!user;
+  }
 
-    
+  /// Buscar usuario con persona incluida
+  async findUserWithPerson(id: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        person: true,
+        role: true,
+      },
+    });
+  }
 
-    async isUsernameExists(username: string): Promise<boolean> {
-        const user = await this.prisma.user.findUnique({
-            where: { username },
-            select: { id: true },
-        });
-        return !!user;
-    }
+  /// Baja lógica (soft delete)
+  async softDelete(id: string): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+  }
 
+  /// Reactivar usuario
+  async activate(id: string): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+      },
+    });
+  }
 
+  /// Buscar usuarios activos (no eliminados)
+  async findActiveUsers(): Promise<User[]> {
+    return await this.prisma.user.findMany({
+      where: {
+        deletedAt: null,
+      },
+    });
+  }
 
-    /// Buscar usuario con persona incluida
-    async findUserWithPerson(id: string): Promise<User | null> {
-        return await this.prisma.user.findUnique({
-            where: { id },
-            include: {
-                person: true,
-                role: true
-            }
-        });
-    }
-
-    /// Baja lógica (soft delete)
-    async softDelete(id: string): Promise<User> {
-        return await this.prisma.user.update({
-            where: { id },
-            data: { 
-                deletedAt: new Date()
-            }
-        });
-    }
-
-    /// Reactivar usuario
-    async activate(id: string): Promise<User> {
-        return await this.prisma.user.update({
-            where: { id },
-            data: { 
-                deletedAt: null
-            }
-        });
-    }
-
-    /// Buscar usuarios activos (no eliminados)
-    async findActiveUsers(): Promise<User[]> {
-        return await this.prisma.user.findMany({
-            where: {
-                deletedAt: null
-            }
-        });
-    }
-
-    /// Cambiar contraseña
-    async changePassword(id: string, newPassword: string): Promise<User> {
-        return await this.prisma.user.update({
-            where: { id },
-            data: {
-                password: newPassword
-                // updated_at se actualiza automáticamente por tu DB
-            }
-        });
-    }
+  /// Cambiar contraseña
+  async changePassword(id: string, newPassword: string): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: newPassword,
+        // updated_at se actualiza automáticamente por tu DB
+      },
+    });
+  }
 }

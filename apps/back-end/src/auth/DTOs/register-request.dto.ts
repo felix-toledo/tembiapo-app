@@ -1,6 +1,12 @@
 // dto/register.dto.ts
-import { IsEmail, IsString, MinLength, IsNotEmpty, Matches, IsOptional } from 'class-validator'; 
-export class RegisterRequestDTO{
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsNotEmpty,
+  Matches,
+} from 'class-validator';
+export class RegisterRequestDTO {
   // Datos de Persona
   @IsString()
   @IsNotEmpty()
@@ -34,5 +40,4 @@ export class RegisterRequestDTO{
   @IsString()
   @MinLength(6)
   confirmPassword: string;
-
 }

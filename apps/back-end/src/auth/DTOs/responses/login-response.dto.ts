@@ -1,8 +1,8 @@
-import { ApiResponse } from "@tembiapo/types";
+import { ApiResponse } from '@tembiapo/types';
 
-export class LoginResponseDTO{
-    message : string
-    accessToken : string
+export class LoginResponseDTO {
+  message: string;
+  accessToken: string;
 }
 
-export type loginResponse = ApiResponse<LoginResponseDTO>
+export type loginResponse = ApiResponse<LoginResponseDTO>;
