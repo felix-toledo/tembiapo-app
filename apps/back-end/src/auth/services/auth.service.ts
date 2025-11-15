@@ -1,17 +1,12 @@
 //==================IMPORTS GENERALES==================
-import {
-  Injectable,
-  UnauthorizedException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import {Injectable,UnauthorizedException,ConflictException,BadRequestException,} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { ApiResponse } from '@tembiapo/types';
 
 //===================REPOSITORIOS========================
 import { PersonRepository } from '../repository/person.repository';
 import { UserRepository } from '../repository/user.repository';
-
+import { RefreshTokenRepository } from '../repository/refresh-token.repository';
 //================SERVICIOS=================
 import { RoleService } from './role.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -24,7 +19,7 @@ import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { RegisterResponseData } from '../DTOs/responses/register-response.dto';
 
 //==========ENTIDADES=============
-import { User } from '@tembiapo/db';
+import { RefreshToken, User } from '@tembiapo/db';
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,6 +28,7 @@ export class AuthService {
     private userRepository: UserRepository,
     private roleService: RoleService,
     private jwtService: JwtService,
+    private refreshTokenRepository : RefreshTokenRepository
   ) {}
 
   async register(
@@ -76,27 +72,12 @@ export class AuthService {
     const proffesionalRole = await this.roleService.findByName('PROFESSIONAL');
 
     ///7. creamos una transaccion para crear el usuario y la persona asociada
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async () => {
       ///creamos la persona primero
-      const person = await tx.person.create({
-        data: {
-          name: register.name,
-          lastName: register.lastName,
-          dni: register.dni,
-          contactPhone: register.contactPhone,
-        },
-      });
+      const person = await this.personRepository.createPerson(register.name, register.lastName, register.dni,register.contactPhone)
 
       ///creamos el usuario con la personID
-      const user = await tx.user.create({
-        data: {
-          username: register.username,
-          mail: register.email,
-          password: hashedPassword, /// password hasehada
-          roleId: proffesionalRole.id,
-          personId: person.id,
-        },
-      });
+      const user = await this.userRepository.createUser(register.username,register.email,hashedPassword,proffesionalRole.id,person.id)
       ///retornamos el person y user
       return { person, user };
     });
@@ -109,10 +90,7 @@ export class AuthService {
   }
 
   ///Funcion de inicio de sesion
-  async login(
-    loginRequest: LoginRequestDTO,
-  ): Promise<ApiResponse<LoginResponseDTO | null>> {
-    ///Utilice el patron factory function para los responses de la API
+  async login(loginRequest: LoginRequestDTO): Promise<ApiResponse<LoginResponseDTO>> {///Utilice el patron factory function para los responses de la API
 
     ///Valida que la request no este vacia
     if (!loginRequest) {
@@ -131,16 +109,32 @@ export class AuthService {
       throw new UnauthorizedException('El email o la contraseña es incorrecto');
     }
 
-    const payload = { email: user.mail, sub: user.id }; ///Si pasa todas las validaciones, quiere decir que el inicio de sesion fue exitoso y creamos el payload del token utilizando el email y como subject el id del usuario
+   const payload = { email: user.mail, sub: user.id }; //creamos el payload (los valores) que va a guardar nuestro token
+   const access_token = this.jwtService.sign(payload, { ///firmamos el token
+    expiresIn: '15m' ///expiracion de 15 minutos
+  });
 
-    const access_token = this.jwtService.sign(payload); ///Creamos el access token mediante el payload creado
+  ///Buscamos si el usuario que intenta iniciar sesion ya tiene un token que todavia no vencio y no esta revocado
+  let refreshTokenObject: RefreshToken | null = await this.refreshTokenRepository.findActiveTokenByUserId(user.id);
 
-    const data = {
-      ///creamos la data que va a devolver el response si el inicio de sesion es exitoso
-      message: 'Inicio de sesion exitoso!',
-      accessToken: access_token,
-    };
+  if (!refreshTokenObject) { /// si retorna false, quiere decir que el usuario que intenta iniciar sesion no tiene un refresh token
+    const refresh_token = this.jwtService.sign(payload, { /// creamos el token y lo firmamos
+      expiresIn: '7d' /// la expiracion del refresh token va a ser de 7 dias
+    });
+    
+    const expires = new Date(); /// seteamos la fecha de expiracion
+    expires.setDate(expires.getDate() + 7); ///le agregamos 7 dias para que coincida con el expire del token
 
-    return createApiResponse(data, true); ///Con el patron factory creamos el response de la API
+    ///Guardamos el token en la DB y asignamos el resultado
+    refreshTokenObject = await this.refreshTokenRepository.createRefreshToken(refresh_token, expires, user.id);
   }
+  
+  const data: LoginResponseDTO = { ///creamos el data que vamos a devolver al front
+    message: 'Inicio de sesion exitoso!',
+    accessToken: access_token,
+    refreshToken: refreshTokenObject.token ///devolvemos el refresh token para que en el controller podamos setear la cookie
+  };
+
+  return createApiResponse(data, true);
+}
 }
