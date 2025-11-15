@@ -72,12 +72,12 @@ export class AuthService {
     const proffesionalRole = await this.roleService.findByName('PROFESSIONAL');
 
     ///7. creamos una transaccion para crear el usuario y la persona asociada
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async () => {
       ///creamos la persona primero
       const person = await this.personRepository.createPerson(register.name, register.lastName, register.dni,register.contactPhone)
 
       ///creamos el usuario con la personID
-      const user = await this.userRepository.createUser(register.username,register.email,register.password,proffesionalRole.id,person.id)
+      const user = await this.userRepository.createUser(register.username,register.email,hashedPassword,proffesionalRole.id,person.id)
       ///retornamos el person y user
       return { person, user };
     });
