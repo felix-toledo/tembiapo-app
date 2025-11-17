@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { RefreshToken } from "@tembiapo/db";
+import { RefreshToken, User } from "@tembiapo/db";
+import { ref } from "process";
 
 @Injectable()
 export class RefreshTokenRepository{
@@ -43,4 +44,37 @@ export class RefreshTokenRepository{
       },
     });
   }
+
+  //metodo para buscar un refresh token en la base de datos
+  async findRefreshToken(refreshToken : string) : Promise<RefreshToken | null>{
+         return this.prisma.refreshToken.findFirst({
+            where: {token: refreshToken}
+         })
+  }
+
+  ///metodo para revocar un refresh token especifico
+  async revokeRefreshToken(refreshToken : string) : Promise<boolean>{
+       const result = await this.prisma.refreshToken.updateMany({ ///Usamos updateMany para asegurarnos de que si hay mas de un token igual (por error) que se revoquen todos
+        where: {token : refreshToken, revoked: false}, /// donde el token sea igual al token que recibe por parametro y el revoked sea false
+        data: {revoked : true} /// aca le mandamos la data donde revoked va a ser true
+       })
+
+       return result.count > 0; /// devolvemos true si al menos un token fue revocado, false si no encontro ninguno activo
+  }
+
+ // Elimina todos los refresh tokens que estén revocados o expirados
+async deleteRevokedOrExpiredRefreshTokens(): Promise<number> {
+  const now = new Date();
+  const result = await this.prisma.refreshToken.deleteMany({
+    where: {
+      OR: [
+        { revoked: true },
+        { expiresAt: { lt: now } }
+      ]
+    }
+  });
+  return result.count; // cantidad de tokens eliminados
 }
+
+
+  }
