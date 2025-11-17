@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Person } from '@tembiapo/db';
+import { last } from 'rxjs';
 
 @Injectable()
 export class PersonRepository {
@@ -28,14 +29,14 @@ export class PersonRepository {
   }
 
   //// Método para cargar una persona a la DB
-  async createPerson(personData: {
-    name: string;
-    lastName: string;
-    dni: string;
-    contactPhone: string;
-  }): Promise<Person> {
+  async createPerson(name: string,lastName: string,dni: string,contactPhone: string): Promise<Person> {
     return await this.prisma.person.create({
-      data: personData,
+      data: {
+        name: name,
+        lastName: lastName,
+        dni: dni,
+        contactPhone: contactPhone
+      }
     });
   }
 
@@ -76,8 +77,8 @@ export class PersonRepository {
     id: string,
     data: {
       name?: string;
-      lastName?: string; // ✅ camelCase
-      contactPhone?: string; // ✅ camelCase
+      lastName?: string; 
+      contactPhone?: string; 
     },
   ): Promise<Person> {
     return await this.prisma.person.update({
