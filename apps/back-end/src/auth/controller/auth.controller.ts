@@ -1,10 +1,11 @@
 
-import { Body, Controller, Post, HttpStatus, HttpCode, Res } from '@nestjs/common';
-import type { Response } from 'express';
+import { Body, Controller, Post, HttpStatus, HttpCode, Res, Req } from '@nestjs/common';
+import type { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { RegisterRequestDTO } from '../DTOs/register-request.dto';
 import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { createApiResponse } from '../../shared/utils/api-response.factory';
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -31,5 +32,34 @@ export class AuthController {
       message: message, ///mostramos el mensaje
       accessToken: accessToken, ///devolvemos el access token para que el front lo maneje
     },true); /// marcamos el success como true
+  }
+
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() req: Request, @Res() res : Response){
+
+    ///obtenemos el refresh token de la cookie
+    const refreshToken = req.cookies['refresh-token']
+
+    //verificamos si el refresh token existe, si no existe devolvemos un error o un mensaje
+    if(!refreshToken){
+      return createApiResponse(null, 
+        false, 
+        {message: 'No se encontro el refresh token en la cookie', 
+        code: 'NO_REFRESH_TOKEN'})
+    }
+
+    ///llamamos al metodo de logout para invalidar el refresh token en DB
+    const apiResponse = await this.authService.logout({refreshToken})
+    
+    ///limpiamos la cookie
+    res.clearCookie('refresh-token', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict'
+    });
+
+    return res.json(apiResponse);
   }
 }

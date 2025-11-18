@@ -1,5 +1,5 @@
 //==================IMPORTS GENERALES==================
-import {Injectable,UnauthorizedException,ConflictException,BadRequestException,} from '@nestjs/common';
+import {Injectable,UnauthorizedException,ConflictException,BadRequestException, NotFoundException,} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { ApiResponse } from '@tembiapo/types';
 
@@ -17,9 +17,10 @@ import { RegisterRequestDTO } from '../DTOs/register-request.dto';
 import { LoginResponseDTO } from '../DTOs/responses/login-response.dto';
 import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { RegisterResponseData } from '../DTOs/responses/register-response.dto';
-
+import { LogoutResponseDTO } from '../DTOs/responses/logout-response.dto';
 //==========ENTIDADES=============
 import { RefreshToken, User } from '@tembiapo/db';
+import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -59,7 +60,7 @@ export class AuthService {
     if (dniExists) {
       throw new ConflictException('El DNI no se encuentra disponible');
     }
-
+  
     ///4. Verificamos primero que las passwords coincidan
     if (register.password != register.confirmPassword) {
       throw new ConflictException('Las contraseñas no coinciden');
@@ -88,6 +89,9 @@ export class AuthService {
         */
     return createApiResponse({ message: 'Usuario registrado correctamente!' });
   }
+
+
+
 
   ///Funcion de inicio de sesion
   async login(loginRequest: LoginRequestDTO): Promise<ApiResponse<LoginResponseDTO>> {///Utilice el patron factory function para los responses de la API
@@ -136,5 +140,39 @@ export class AuthService {
   };
 
   return createApiResponse(data, true);
+}
+
+
+
+
+///funcion para el cierre de sesion e invalidacion de refresh token
+async logout(logoutRequest : LogoutRequestDTO) : Promise<ApiResponse<LogoutResponseDTO>>{
+  
+  ///verificamos que la peticion no llegue con un body vacio
+  if(!logoutRequest){
+    throw new NotFoundException("La peticion no puede enviarse con un body vacio")
+  }
+
+  ///buscamos el refresh token en la base de datos
+  let refreshToken : RefreshToken | null = await this.refreshTokenRepository.findRefreshToken(logoutRequest.refreshToken)
+
+
+  ///verificamos si el token recibido existe en la base de datos
+  if(!refreshToken){
+    
+    throw new NotFoundException("No existe el refresh token a revocar")
+  }
+
+  ///si existe, llamamos a la funcion de nuestro refreshTokenRepository para revocar el token
+  const result = await this.refreshTokenRepository.revokeRefreshToken(refreshToken.token)
+
+  if(!result){
+    throw new NotFoundException("No se encontro un token activo")
+  }
+
+  const data : LogoutResponseDTO = {
+    message: "El cierre de sesion fue exitoso!"
+  }
+  return createApiResponse(data,true)
 }
 }
