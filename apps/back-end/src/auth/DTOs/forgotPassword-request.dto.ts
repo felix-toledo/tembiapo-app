@@ -11,7 +11,7 @@ export class ForgotPasswordRequestDTO {
 export class ResetPasswordRequestDTO {
   @IsString()
   @IsNotEmpty()
-  token: string;
+  resetToken: string;
 
   @IsString()
   @IsNotEmpty()

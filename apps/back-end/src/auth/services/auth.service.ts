@@ -29,7 +29,10 @@ import {
   ForgotPasswordRequestDTO,
   ResetPasswordRequestDTO,
 } from '../DTOs/forgotPassword-request.dto';
-import { ForgotPasswordResponseDTO } from '../DTOs/responses/forgotPassword-response.dto';
+import {
+  ForgotPasswordResponseDTO,
+  ResetPasswordResponseDTO,
+} from '../DTOs/responses/forgotPassword-response.dto';
 //==========ENTIDADES=============
 import { RefreshToken, User } from '@tembiapo/db';
 import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
@@ -147,7 +150,16 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('El email o la contraseña es incorrecto');
     }
-    const isMatch = await bcrypt.compare(loginRequest.password, user.password); ///Guardamos dentro de una variable si las passwords coinciden a la hora de hashearlas
+
+    const password = user.password;
+    if (!password) {
+      throw new UnauthorizedException('El email o la contraseña es incorrecto');
+    }
+
+    const isMatch = await bcrypt.compare(
+      loginRequest.password,
+      user.password ? user.password : '',
+    );
     if (!isMatch) {
       throw new UnauthorizedException('El email o la contraseña es incorrecto');
     }
@@ -236,16 +248,26 @@ export class AuthService {
     const user = await this.userRepository.findByEmail(mail);
     if (user) {
       // generate a password reset token
+      const person = await this.personRepository.findById(user.personId);
       const payload = { email: user.mail, sub: user.id };
       const resetToken = this.jwtService.sign(payload, {
         expiresIn: '1h', // token valid for 1 hour
       });
+      const hashTokenResetPassword = await bcrypt.hash(resetToken, 10);
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1);
+
+      await this.userRepository.setResetPasswordToken(
+        user?.id,
+        hashTokenResetPassword,
+        expiresAt,
+      );
       // send password reset email
       try {
         await this.mailService.sendPasswordResetMail(
           mail,
           resetToken,
-          user.username,
+          person ? person.name : '',
         );
       } catch (error) {
         console.error('Error enviando email de restablecimiento:', error);
@@ -259,5 +281,54 @@ export class AuthService {
     return message;
   }
 
-  async resetPassword(ressetPasswordDto: ResetPasswordRequestDTO) {}
+  async resetPassword(
+    ressetPasswordDto: ResetPasswordRequestDTO,
+  ): Promise<ResetPasswordResponseDTO> {
+    const { resetToken, newPassword, confirmPassword } = ressetPasswordDto;
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException('Las contraseñas no coinciden');
+    }
+
+    const payload: { email: string; sub: string } =
+      this.jwtService.verify(resetToken);
+
+    const user = await this.userRepository.findById(payload.sub);
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Verificar que el token hash sea válido
+    if (!user.hashResetPassword) {
+      throw new BadRequestException('Token de restablecimiento inválido');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const isValid = await bcrypt.compare(resetToken, user.hashResetPassword);
+
+    if (!isValid) {
+      throw new BadRequestException('Token de restablecimiento inválido');
+    }
+
+    // Verificar que el token no haya expirado
+    if (
+      user.hashResetPasswordExpiresAt &&
+      user.hashResetPasswordExpiresAt < new Date()
+    ) {
+      throw new BadRequestException('El token de restablecimiento ha expirado');
+    }
+
+    // Hashear la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar la contraseña y limpiar el token de reset
+    await this.userRepository.changePassword(user.id, hashedPassword);
+    await this.userRepository.clearResetPasswordToken(user.id);
+
+    const message: ResetPasswordResponseDTO = {
+      message: 'Tu contraseña ha sido restablecida exitosamente',
+    };
+
+    return message;
+  }
 }

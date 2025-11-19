@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
+const appUrl = process.env.APP_URL || 'http://localhost:3000';
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
@@ -14,7 +15,7 @@ export class MailService {
     token: string,
     name: string,
   ): Promise<void> {
-    const url = `https://tembiapo.com/auth/verify?token=${token}`;
+    const url = `${appUrl}/auth/verify?token=${token}`;
 
     await this.mailerService.sendMail({
       to: email,
@@ -34,7 +35,7 @@ export class MailService {
     token: string,
     name: string,
   ): Promise<void> {
-    const url = `https://tembiapo.com/auth/reset-password?token=${token}`;
+    const url = `${appUrl}/auth/reset-password?token=${token}`;
 
     await this.mailerService.sendMail({
       to: email,
