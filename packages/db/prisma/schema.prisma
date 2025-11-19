@@ -6,222 +6,245 @@
 
 // 1. Configuración del proveedor de BDD
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL") // Prisma buscará esta variable en tu .env
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Prisma buscará esta variable en tu .env
 }
 
 // 2. Configuración del generador de cliente
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 // 3. Mapeo de tu ENUM de SQL
 enum VerificationStatus {
-  ok
-  pending
-  rejected
-  okByAdmin
+  ok
+  pending
+  rejected
+  okByAdmin
 
-  @@map("verification_status") // Mapea al tipo "VERIFICATION_STATUS" de PostgreSQL
+  @@map("verification_status") // Mapea al tipo "VERIFICATION_STATUS" de PostgreSQL
 }
 
 // 4. Modelos de la Base de Datos
 
 model User {
-  id        String @id @default(uuid())
-  username  String @unique
-  mail      String @unique
-  password  String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  id        String @id @default(uuid())
+  username  String? @unique
+  mail      String @unique
+  password  String? // Puede ser null si el usuario se registra con OAuth
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  isOauthUser Boolean  @default(false) @map("is_oauth_user")
 
-  // --- Relaciones ---
-  // Nota cómo usamos "roleId" (camelCase) en Prisma, 
-  // que se mapea a "role_id" (snake_case) en la BDD.
-  roleId String @map("role_id")
-  role   Role   @relation(fields: [roleId], references: [id])
+  // --- Relaciones ---
+  // Nota cómo usamos "roleId" (camelCase) en Prisma, 
+  // que se mapea a "role_id" (snake_case) en la BDD.
+  roleId String @map("role_id")
+  role   Role   @relation(fields: [roleId], references: [id])
 
-  // Esta es una relación 1 a 1
-  personId String   @unique @map("person_id")
-  person   Person   @relation(fields: [personId], references: [id])
+  // Esta es una relación 1 a 1
+  personId String   @unique @map("person_id")
+  person   Person   @relation(fields: [personId], references: [id])
 
-  // Esta es una relación 1 a 1 opcional (un User PUEDE ser un Professional)
-  professional Professional?
+  // Esta es una relación 1 a 1 opcional (un User PUEDE ser un Professional)
+  professional Professional?
 
-  @@map("user") // Mapea este modelo "User" a la tabla "user"
+  // Relación opuesta (1-a-N) para Refresh Tokens
+  refreshTokens RefreshToken[] 
+
+  @@map("user") // Mapea este modelo "User" a la tabla "user"
 }
 
 model Person {
-  id            String  @id @default(uuid())
-  name          String
-  lastName      String  @map("last_name")
-  dni           String  @unique @db.VarChar(11)
-  isVerified    Boolean @default(false) @map("is_verified")
-  contactPhone  String  @map("contact_phone")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime? @updatedAt @map("updated_at")
+  id            String  @id @default(uuid())
+  name          String
+  lastName      String  @map("last_name")
+  dni           String?  @unique @db.VarChar(11)
+  isVerified    Boolean @default(false) @map("is_verified")
+  contactPhone  String?  @map("contact_phone")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime? @updatedAt @map("updated_at")
 
-  user         User? // Relación 1-a-1 de vuelta a User
-  verification Verification? // Relación 1-a-1 de vuelta a Verification
+  user         User? // Relación 1-a-1 de vuelta a User
+  verification Verification? // Relación 1-a-1 de vuelta a Verification
 
-  @@map("person")
+  @@map("person")
 }
 
 model Role {
-  id        String   @id @default(uuid())
-  name      String   @unique // Los nombres de Rol deben ser únicos
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  name      String   @unique // Los nombres de Rol deben ser únicos
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  // --- Relaciones ---
-  users User[] // Un rol puede tener muchos usuarios
+  // --- Relaciones ---
+  users User[] // Un rol puede tener muchos usuarios
 
-  @@map("role")
+  @@map("role")
 }
 
 model Professional {
-  id              String   @id @default(uuid())
-  description     String?
-  whatsappContact String?  @map("whatsapp_contact")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime? @updatedAt @map("updated_at")
-  deletedAt       DateTime? @map("deleted_at")
+  id              String   @id @default(uuid())
+  description     String?
+  whatsappContact String?  @map("whatsapp_contact")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime? @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
 
-  // --- Relaciones ---
-  userId String @unique @map("user_id") // Relación 1-a-1
-  user   User   @relation(fields: [userId], references: [id])
+  // --- Relaciones ---
+  userId String @unique @map("user_id") // Relación 1-a-1
+  user   User   @relation(fields: [userId], references: [id])
 
-  portfolioItems PortfolioItem[] // 1-a-N: Un profesional, muchos items
-  
-  // Relación N-a-N (Profesional <-> Rubro)
-  fields         FieldProfessional[]
-  
-  // Relación N-a-N (Profesional <-> Area)
-  serviceAreas   AreaProfessional[]
+  portfolioItems PortfolioItem[] // 1-a-N: Un profesional, muchos items
+  
+  // Relación N-a-N (Profesional <-> Rubro)
+  fields         FieldProfessional[]
+  
+  // Relación N-a-N (Profesional <-> Area)
+  serviceAreas   AreaProfessional[]
 
-  @@map("professional")
+  @@map("professional")
 }
 
 model Verification {
-  id                 String   @id @default(uuid())
-  frontDniPictureUrl String   @map("front_dni_picture_url")
-  verifiedPictureUrl String   @map("verified_picture_url")
-  status             VerificationStatus
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime? @updatedAt @map("updated_at")
+  id                 String   @id @default(uuid())
+  frontDniPictureUrl String   @map("front_dni_picture_url")
+  verifiedPictureUrl String   @map("verified_picture_url")
+  status             VerificationStatus
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime? @updatedAt @map("updated_at")
 
-  // --- Relaciones ---
-  personId String   @unique @map("person_id") // 1-a-1
-  person   Person   @relation(fields: [personId], references: [id])
+  // --- Relaciones ---
+  personId String   @unique @map("person_id") // 1-a-1
+  person   Person   @relation(fields: [personId], references: [id])
 
-  // --- Índices ---
-  // Este es el índice que faltaba. 
-  // El Admin buscará constantemente por "status" para ver los pendientes.
-  @@index([status])
-  @@map("verification")
+  // --- Índices ---
+  // Este es el índice que faltaba. 
+  // El Admin buscará constantemente por "status" para ver los pendientes.
+  @@index([status])
+  @@map("verification")
 }
 
 model Field {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  // --- Relaciones ---
-  professionals FieldProfessional[]
+  // --- Relaciones ---
+  professionals FieldProfessional[]
 
-  @@map("field") 
+  @@map("field") 
 }
 
 model ServiceArea {
-  id        String   @id @default(uuid())
-  city      String
-  province  String
-  country   String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  city      String
+  province  String
+  country   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  // --- Relaciones ---
-  professionals AreaProfessional[]
+  // --- Relaciones ---
+  professionals AreaProfessional[]
 
-  // Un índice compuesto para búsquedas rápidas por ciudad/provincia
-  @@unique([city, province, country])
-  @@map("service_area")
+  // Un índice compuesto para búsquedas rápidas por ciudad/provincia
+  @@unique([city, province, country])
+  @@map("service_area")
 }
 
 model PortfolioItem {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime? @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
 
-  // --- Relaciones ---
-  professionalId String       @map("professional_id")
-  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade) // Si se borra el profesional, se borran sus items
+  // --- Relaciones ---
+  professionalId String       @map("professional_id")
+  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade) // Si se borra el profesional, se borran sus items
 
-  images PortfolioImage[] // 1-a-N: Un item, muchas imágenes
+  images PortfolioImage[] // 1-a-N: Un item, muchas imágenes
 
-  // --- Índices ---
-  @@index([professionalId]) // Índice en la FK
-  @@map("portfolio_item")
+  // --- Índices ---
+  @@index([professionalId]) // Índice en la FK
+  @@map("portfolio_item")
 }
 
 model PortfolioImage {
-  id            String   @id @default(uuid())
-  imageUrl      String   @map("image_url")
-  description   String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime? @updatedAt @map("updated_at")
-  deletedAt     DateTime? @map("deleted_at")
-  
-  // --- Relaciones ---
-  portfolioItemId String        @map("portfolio_item_id")
-  portfolioItem   PortfolioItem @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade) // Si se borra el item, se borran sus imágenes
+  id            String   @id @default(uuid())
+  imageUrl      String   @map("image_url")
+  description   String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime? @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+  
+  // --- Relaciones ---
+  portfolioItemId String        @map("portfolio_item_id")
+  portfolioItem   PortfolioItem @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade) // Si se borra el item, se borran sus imágenes
 
-  // --- Índices ---
-  @@index([portfolioItemId]) // Índice en la FK
-  @@map("portfolio_image")
+  // --- Índices ---
+  @@index([portfolioItemId]) // Índice en la FK
+  @@map("portfolio_image")
 }
 
 // --- TABLAS DE UNIÓN (N-a-N) ---
 
 model FieldProfessional {
-  id           String   @id @default(uuid())
-  isMain       Boolean  @default(false) @map("is_main")
-  createdAt    DateTime @default(now()) @map("created_at")
-  
-  // --- Relaciones ---
-  professionalId String       @map("professional_id")
-  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  id           String   @id @default(uuid())
+  isMain       Boolean  @default(false) @map("is_main")
+  createdAt    DateTime @default(now()) @map("created_at")
+  
+  // --- Relaciones ---
+  professionalId String       @map("professional_id")
+  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
 
-  fieldId String @map("field_id")
-  field   Field  @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  fieldId String @map("field_id")
+  field   Field  @relation(fields: [fieldId], references: [id], onDelete: Cascade)
 
-  // --- Índices ---
-  @@unique([professionalId, fieldId]) // Evita que un profesional tenga 2 veces el mismo rubro
-  @@index([professionalId])
-  @@index([fieldId])
-  @@map("field_professional")
+  // --- Índices ---
+  @@unique([professionalId, fieldId]) // Evita que un profesional tenga 2 veces el mismo rubro
+  @@index([professionalId])
+  @@index([fieldId])
+  @@map("field_professional")
 }
 
 model AreaProfessional {
-  id           String   @id @default(uuid())
-  isMain       Boolean  @default(false) @map("is_main")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id           String   @id @default(uuid())
+  isMain       Boolean  @default(false) @map("is_main")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // --- Relaciones ---
+  professionalId String       @map("professional_id")
+  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  areaId String      @map("area_id")
+  area   ServiceArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+
+  // --- Índces ---
+  @@unique([professionalId, areaId]) // Evita que un profesional tenga 2 veces la misma área
+  @@index([professionalId])
+  @@index([areaId])
+  @@map("area_professional")
+}
+
+// --- NUEVA TABLA PARA REFRESH TOKENS ---
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique // El valor del token en sí. Debe ser único.
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at") // La fecha de vencimiento
 
   // --- Relaciones ---
-  professionalId String       @map("professional_id")
-  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  userId String @map("user_id") // El ID del usuario asociado
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  areaId String      @map("area_id")
-  area   ServiceArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
-
-  // --- Índces ---
-  @@unique([professionalId, areaId]) // Evita que un profesional tenga 2 veces la misma área
-  @@index([professionalId])
-  @@index([areaId])
-  @@map("area_professional")
+  // --- Índices ---
+  // Para buscar rápidamente todos los tokens de un usuario (ej. para revocarlos)
+  @@index([userId])
+  @@map("refresh_token")
 }
