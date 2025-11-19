@@ -29,12 +29,13 @@ enum VerificationStatus {
 
 model User {
   id        String @id @default(uuid())
-  username  String @unique
+  username  String? @unique
   mail      String @unique
-  password  String
+  password  String? // Puede ser null si el usuario se registra con OAuth
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
+  isOauthUser Boolean  @default(false) @map("is_oauth_user")
 
   // --- Relaciones ---
   // Nota cómo usamos "roleId" (camelCase) en Prisma, 
@@ -59,9 +60,9 @@ model Person {
   id            String  @id @default(uuid())
   name          String
   lastName      String  @map("last_name")
-  dni           String  @unique @db.VarChar(11)
+  dni           String?  @unique @db.VarChar(11)
   isVerified    Boolean @default(false) @map("is_verified")
-  contactPhone  String  @map("contact_phone")
+  contactPhone  String?  @map("contact_phone")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime? @updatedAt @map("updated_at")
 

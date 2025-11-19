@@ -25,7 +25,10 @@ import { LoginResponseDTO } from '../DTOs/responses/login-response.dto';
 import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { RegisterResponseData } from '../DTOs/responses/register-response.dto';
 import { LogoutResponseDTO } from '../DTOs/responses/logout-response.dto';
-import { ForgotPasswordRequestDTO } from '../DTOs/forgotPassword-request.dto';
+import {
+  ForgotPasswordRequestDTO,
+  ResetPasswordRequestDTO,
+} from '../DTOs/forgotPassword-request.dto';
 import { ForgotPasswordResponseDTO } from '../DTOs/responses/forgotPassword-response.dto';
 //==========ENTIDADES=============
 import { RefreshToken, User } from '@tembiapo/db';
@@ -255,4 +258,6 @@ export class AuthService {
     };
     return message;
   }
+
+  async resetPassword(ressetPasswordDto: ResetPasswordRequestDTO) {}
 }

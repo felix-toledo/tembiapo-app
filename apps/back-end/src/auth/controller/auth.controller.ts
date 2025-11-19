@@ -15,7 +15,10 @@ import { RegisterRequestDTO } from '../DTOs/register-request.dto';
 import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { createApiResponse } from '../../shared/utils/api-response.factory';
 import { LoginResponseDTO } from '../DTOs/responses/login-response.dto';
-import { ForgotPasswordRequestDTO } from '../DTOs/forgotPassword-request.dto';
+import {
+  ForgotPasswordRequestDTO,
+  ResetPasswordRequestDTO,
+} from '../DTOs/forgotPassword-request.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -91,6 +94,16 @@ export class AuthController {
     const apiResponse =
       await this.authService.forgotPassword(forgotPasswordDTO);
 
+    return res.json(apiResponse);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(
+    @Body() resetPasswordDTO: ResetPasswordRequestDTO,
+    @Res() res: Response,
+  ) {
+    const apiResponse = await this.authService.resetPassword(resetPasswordDTO);
     return res.json(apiResponse);
   }
 }

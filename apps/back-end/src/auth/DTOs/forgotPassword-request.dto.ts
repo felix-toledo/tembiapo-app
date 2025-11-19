@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsString, IsNotEmpty, MinLength } from 'class-validator';
 
 export class ForgotPasswordRequestDTO {
   ///validaciones para el email
@@ -6,4 +6,19 @@ export class ForgotPasswordRequestDTO {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+}
+
+export class ResetPasswordRequestDTO {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+
+  @IsString()
+  @IsNotEmpty()
+  newPassword: string;
+
+  @IsString()
+  @MinLength(6)
+  @IsNotEmpty()
+  confirmPassword: string;
 }
