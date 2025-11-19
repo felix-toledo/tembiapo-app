@@ -1,80 +1,78 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service";
-import { RefreshToken, User } from "@tembiapo/db";
-import { ref } from "process";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { RefreshToken } from '@tembiapo/db';
+// import { ref } from 'process';
 
 @Injectable()
-export class RefreshTokenRepository{
-    constructor(private prisma : PrismaService){}
+export class RefreshTokenRepository {
+  constructor(private prisma: PrismaService) {}
 
+  ///metodo para crear el refresh token y guardarlo en base de datos
+  async createRefreshToken(
+    token: string,
+    expiresAt: Date,
+    userId: string,
+  ): Promise<RefreshToken> {
+    return await this.prisma.refreshToken.create({
+      data: {
+        token: token,
+        expiresAt: expiresAt,
+        userId: userId,
+        revoked: false,
+      },
+    });
+  }
 
-    ///metodo para crear el refresh token y guardarlo en base de datos
-    async createRefreshToken(token : string, expiresAt : Date, userId: string) : Promise<RefreshToken>{
-        return await this.prisma.refreshToken.create({
-            data: {
-                token : token,
-                expiresAt: expiresAt,
-                userId: userId,
-                revoked: false
-            }
-        })
-    }
+  ///metodo para verificar que el usuario tenga un token activo y todavia no haya expirado
+  async isUserHaveAnActiveTokenAndNoExpired(id: string): Promise<boolean> {
+    const token = await this.prisma.refreshToken.findFirst({
+      where: {
+        userId: id,
+        revoked: false,
+      },
+    });
+    return !!token;
+  }
 
-    ///metodo para verificar que el usuario tenga un token activo y todavia no haya expirado
-    async isUserHaveAnActiveTokenAndNoExpired(id : string) : Promise<boolean>{
-         const token = await this.prisma.refreshToken.findFirst({
-            where: {
-                userId: id,
-                revoked : false
-            }
-         })
-         return !!token
-    }
-
-    ///metodo para retornar el token del usuario
-    async findActiveTokenByUserId(userId: string): Promise<RefreshToken | null> {
-    
-    return  this.prisma.refreshToken.findFirst({
+  ///metodo para retornar el token del usuario
+  async findActiveTokenByUserId(userId: string): Promise<RefreshToken | null> {
+    return this.prisma.refreshToken.findFirst({
       where: {
         userId: userId,
-        revoked: false, 
+        revoked: false,
         expiresAt: {
-            gt: new Date() // gt significa greater than
+          gt: new Date(), // gt significa greater than
         },
       },
     });
   }
 
   //metodo para buscar un refresh token en la base de datos
-  async findRefreshToken(refreshToken : string) : Promise<RefreshToken | null>{
-         return this.prisma.refreshToken.findFirst({
-            where: {token: refreshToken}
-         })
+  async findRefreshToken(refreshToken: string): Promise<RefreshToken | null> {
+    return this.prisma.refreshToken.findFirst({
+      where: { token: refreshToken },
+    });
   }
 
   ///metodo para revocar un refresh token especifico
-  async revokeRefreshToken(refreshToken : string) : Promise<boolean>{
-       const result = await this.prisma.refreshToken.updateMany({ ///Usamos updateMany para asegurarnos de que si hay mas de un token igual (por error) que se revoquen todos
-        where: {token : refreshToken, revoked: false}, /// donde el token sea igual al token que recibe por parametro y el revoked sea false
-        data: {revoked : true} /// aca le mandamos la data donde revoked va a ser true
-       })
+  async revokeRefreshToken(refreshToken: string): Promise<boolean> {
+    const result = await this.prisma.refreshToken.updateMany({
+      ///Usamos updateMany para asegurarnos de que si hay mas de un token igual (por error) que se revoquen todos
+      where: { token: refreshToken, revoked: false }, /// donde el token sea igual al token que recibe por parametro y el revoked sea false
+      data: { revoked: true }, /// aca le mandamos la data donde revoked va a ser true
+    });
 
-       return result.count > 0; /// devolvemos true si al menos un token fue revocado, false si no encontro ninguno activo
+    return result.count > 0; /// devolvemos true si al menos un token fue revocado, false si no encontro ninguno activo
   }
 
- // Elimina todos los refresh tokens que estén revocados o expirados
-async deleteRevokedOrExpiredRefreshTokens(): Promise<number> {
-  const now = new Date();
-  const result = await this.prisma.refreshToken.deleteMany({
-    where: {
-      OR: [
-        { revoked: true },
-        { expiresAt: { lt: now } }
-      ]
-    }
-  });
-  return result.count; // cantidad de tokens eliminados
+  // Elimina todos los refresh tokens que estén revocados o expirados
+  async deleteRevokedOrExpiredRefreshTokens(): Promise<number> {
+    const now = new Date();
+    const result = await this.prisma.refreshToken.deleteMany({
+      where: {
+        OR: [{ revoked: true }, { expiresAt: { lt: now } }],
+      },
+    });
+    return result.count; // cantidad de tokens eliminados
+  }
 }
-
-
-  }
