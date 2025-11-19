@@ -28,4 +28,23 @@ export class MailService {
       `,
     });
   }
+
+  async sendPasswordResetMail(
+    email: string,
+    token: string,
+    name: string,
+  ): Promise<void> {
+    const url = `https://tembiapo.com/auth/reset-password?token=${token}`;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Tembiapó - Restablece tu contraseña',
+      html: `
+        <h1>Hola ${name},</h1>
+        <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
+        <a href="${url}">Restablecer mi contraseña</a>
+        <p>Si no solicitaste esto, ignora este mensaje.</p>
+      `,
+    });
+  }
 }

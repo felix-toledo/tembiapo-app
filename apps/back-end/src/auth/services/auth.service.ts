@@ -25,6 +25,8 @@ import { LoginResponseDTO } from '../DTOs/responses/login-response.dto';
 import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { RegisterResponseData } from '../DTOs/responses/register-response.dto';
 import { LogoutResponseDTO } from '../DTOs/responses/logout-response.dto';
+import { ForgotPasswordRequestDTO } from '../DTOs/forgotPassword-request.dto';
+import { ForgotPasswordResponseDTO } from '../DTOs/responses/forgotPassword-response.dto';
 //==========ENTIDADES=============
 import { RefreshToken, User } from '@tembiapo/db';
 import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
@@ -220,5 +222,37 @@ export class AuthService {
       message: 'El cierre de sesion fue exitoso!',
     };
     return createApiResponse(data, true);
+  }
+
+  async forgotPassword(
+    forgotPasswordRequest: ForgotPasswordRequestDTO,
+  ): Promise<ForgotPasswordResponseDTO> {
+    const mail = forgotPasswordRequest.email;
+
+    // check if mail exists with a user
+    const user = await this.userRepository.findByEmail(mail);
+    if (user) {
+      // generate a password reset token
+      const payload = { email: user.mail, sub: user.id };
+      const resetToken = this.jwtService.sign(payload, {
+        expiresIn: '1h', // token valid for 1 hour
+      });
+      // send password reset email
+      try {
+        await this.mailService.sendPasswordResetMail(
+          mail,
+          resetToken,
+          user.username,
+        );
+      } catch (error) {
+        console.error('Error enviando email de restablecimiento:', error);
+      }
+    }
+
+    const message: ForgotPasswordResponseDTO = {
+      message:
+        'Si tu correo existe en nuestra base de datos, recibirás un email con las instrucciones para restablecer tu contraseña.',
+    };
+    return message;
   }
 }
