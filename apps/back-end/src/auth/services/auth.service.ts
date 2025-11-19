@@ -19,7 +19,7 @@ import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { RegisterResponseData } from '../DTOs/responses/register-response.dto';
 import { LogoutResponseDTO } from '../DTOs/responses/logout-response.dto';
 //==========ENTIDADES=============
-import { RefreshToken, User } from '@tembiapo/db';
+import {RefreshToken, User} from '@tembiapo/db'
 import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
 @Injectable()
 export class AuthService {
@@ -78,9 +78,7 @@ export class AuthService {
       const person = await this.personRepository.createPerson(register.name, register.lastName, register.dni,register.contactPhone)
 
       ///creamos el usuario con la personID
-      const user = await this.userRepository.createUser(register.username,register.email,hashedPassword,proffesionalRole.id,person.id)
-      ///retornamos el person y user
-      return { person, user };
+      const user = await this.userRepository.createUser(register.username,register.email,hashedPassword,proffesionalRole.id,person.id,false)
     });
 
     /*aca como dijimos que va a devoler una Promise<RegisterResponse> seteamos que el success es true 
@@ -108,7 +106,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('El email o la contraseña es incorrecto');
     }
-    const isMatch = await bcrypt.compare(loginRequest.password, user.password); ///Guardamos dentro de una variable si las passwords coinciden a la hora de hashearlas
+    const isMatch = await bcrypt.compare(loginRequest.password, user.password ?? ""); ///Guardamos dentro de una variable si las passwords coinciden a la hora de hashearlas
     if (!isMatch) {
       throw new UnauthorizedException('El email o la contraseña es incorrecto');
     }

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { RefreshToken, User } from "@tembiapo/db";
-import { ref } from "process";
+
 
 @Injectable()
 export class RefreshTokenRepository{
@@ -74,6 +74,22 @@ async deleteRevokedOrExpiredRefreshTokens(): Promise<number> {
     }
   });
   return result.count; // cantidad de tokens eliminados
+}
+
+
+async replaceRefreshToken(newToken : string, expiresAt: Date, userId : string) : Promise<RefreshToken>{
+  //1. revoca todos los tokens activos del usuario
+  await this.prisma.refreshToken.updateMany({
+    where: {
+      userId: userId,
+      revoked: false,
+      expiresAt: { gt: new Date() }
+    },
+    data: {revoked: true}
+  });
+
+  //2. creamos el nuevo refresh token
+  return  this.createRefreshToken(newToken, expiresAt, userId)
 }
 
 

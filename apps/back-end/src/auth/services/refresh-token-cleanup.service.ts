@@ -8,7 +8,7 @@ export class RefreshTokenCleanupService{
     constructor(private refreshTokenRepository : RefreshTokenRepository){}
 
     ///importamos cron para tareas automatizadas cada cierto tiempo, es equivalente a un @scheduled de spring
-    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+    @Cron(CronExpression.EVERY_HOUR)
     async handleCron(){
       const deleted =  await this.refreshTokenRepository.deleteRevokedOrExpiredRefreshTokens() ///llamamos al metodo que elimina los tokens revocados o expirados
         this.logger.log(`tokens revocados/expirados eliminados: ${deleted}`) /// mostramos cuantos tokens fueron eliminados
