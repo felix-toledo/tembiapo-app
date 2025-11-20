@@ -17,7 +17,7 @@ import { RefreshTokenCleanupService } from './services/refresh-token-cleanup.ser
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService, RefreshTokenCleanupService]
 })
 export class AuthModule {
   configure(consumer : MiddlewareConsumer){ /// configuramos el consumidor de nuestro middleware

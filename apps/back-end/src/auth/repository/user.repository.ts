@@ -28,14 +28,15 @@ export class UserRepository {
   }
 
   /// Método para crear un usuario en la BD
-  async createUser(username: string,mail: string,password: string,roleId: string,personId: string,): Promise<User> {
+  async createUser(username: string,mail: string,password: string,roleId: string,personId: string, isOauthUser : boolean): Promise<User> {
     return await this.prisma.user.create({
       data: {
         username : username,
         mail : mail,
         password : password,
         roleId: roleId,
-        personId: personId
+        personId: personId,
+        isOauthUser: isOauthUser
       }, // los timestamp los maneja la DB
     });
   }
