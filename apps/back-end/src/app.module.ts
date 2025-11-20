@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { SharedModule } from './shared/shared.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { GoogleAuthModule } from './google-auth/google-auth.module';
 @Module({
   imports: [
     PrismaModule,
@@ -17,6 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       isGlobal: true, //Lo hacemos global para que lo podamos usar en cualquier parte del codigo
       envFilePath: '.env', /// le mandamos la ruta del .env a cargar
     }),
+    GoogleAuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -34,7 +34,7 @@ import {
   ResetPasswordResponseDTO,
 } from '../DTOs/responses/forgotPassword-response.dto';
 //==========ENTIDADES=============
-import { RefreshToken, User } from '@tembiapo/db';
+import {RefreshToken, User} from '@tembiapo/db'
 import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
 @Injectable()
 export class AuthService {
@@ -105,6 +105,7 @@ export class AuthService {
         hashedPassword,
         proffesionalRole.id,
         person.id,
+        false,
       );
 
       try {
@@ -114,12 +115,9 @@ export class AuthService {
           register.name,
         );
       } catch (error) {
-        // OJO: Principio de Código Sostenible
-        // Si el mail falla, ¿borramos el usuario? ¿Lo dejamos creado?
         // Para el MVP, logueamos el error pero NO fallamos el registro,
         // el usuario podrá pedir "Reenviar correo de confirmación" después.
         console.error('Error enviando email de verificación:', error);
-        // Opcional: throw new InternalServerErrorException('Error al enviar correo');
       }
       ///retornamos el person y user
       return { person, user };
