@@ -36,6 +36,8 @@ model User {
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
   isOauthUser Boolean  @default(false) @map("is_oauth_user")
+  hashResetPassword String? @map("hash_reset_password")
+  hashResetPasswordExpiresAt DateTime? @map("hash_reset_password_expires_at")
 
   // --- Relaciones ---
   // Nota cómo usamos "roleId" (camelCase) en Prisma, 

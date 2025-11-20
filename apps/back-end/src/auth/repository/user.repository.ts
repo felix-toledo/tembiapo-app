@@ -31,9 +31,9 @@ export class UserRepository {
   async createUser(username: string,mail: string,password: string,roleId: string,personId: string, isOauthUser : boolean): Promise<User> {
     return await this.prisma.user.create({
       data: {
-        username : username,
-        mail : mail,
-        password : password,
+        username: username,
+        mail: mail,
+        password: password,
         roleId: roleId,
         personId: personId,
         isOauthUser: isOauthUser
@@ -105,6 +105,32 @@ export class UserRepository {
       data: {
         password: newPassword,
         // updated_at se actualiza automáticamente por tu DB
+      },
+    });
+  }
+
+  // Establecer token de restablecimiento de contraseña
+  async setResetPasswordToken(
+    id: string,
+    hashToken: string,
+    expiresAt: Date,
+  ): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        hashResetPassword: hashToken,
+        hashResetPasswordExpiresAt: expiresAt,
+      },
+    });
+  }
+
+  /// Limpiar el token de restablecimiento de contraseña
+  async clearResetPasswordToken(id: string): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        hashResetPassword: null,
+        hashResetPasswordExpiresAt: null,
       },
     });
   }
