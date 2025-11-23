@@ -54,7 +54,7 @@ export class GoogleAuthService {
             ),
         );
 
-        // 2. Obtenemos el id_token y access_token de la respuesta
+        // 2. Obtenemos el id_token de la respuesta
         const { id_token } = tokenResponse.data;
 
         // 3. Decodificamos el id_token
