@@ -7,7 +7,7 @@ import { MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { CookieParserMiddleware } from './middlewares/cookie-parser.middleware';
 import { RefreshTokenCleanupService } from './services/refresh-token-cleanup.service';
 import { MailModule } from '../mailer/mailer.module';
-
+import { JwtStrategy } from '../shared/strategies/jwt.strategy';
 @Module({
   imports: [
     MailModule,
@@ -24,7 +24,7 @@ import { MailModule } from '../mailer/mailer.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, RefreshTokenCleanupService]
+  providers: [AuthService, RefreshTokenCleanupService, JwtStrategy]
 })
 export class AuthModule {
   configure(consumer: MiddlewareConsumer) {
