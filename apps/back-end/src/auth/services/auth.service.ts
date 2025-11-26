@@ -95,13 +95,13 @@ export class AuthService {
         register.name,
         register.lastName,
         register.dni,
-        register.contactPhone,
       );
 
       ///creamos el usuario con la personID
       const user = await this.userRepository.createUser(
         register.username,
         register.email,
+        "",
         hashedPassword,
         proffesionalRole.id,
         person.id,

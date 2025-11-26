@@ -1,7 +1,7 @@
 /// Response para el data : <T> del ApiResponse
 import { ApiResponse } from '@tembiapo/types';
 
-export interface RegisterResponseData {
+export class RegisterResponseData {
   message: string; /// el mensaje que va a devolver el response (el success lo ponemos de forma explicita en el codigo)
 }
 

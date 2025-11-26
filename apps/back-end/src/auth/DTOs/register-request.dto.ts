@@ -17,12 +17,10 @@ export class RegisterRequestDTO {
   lastName: string;
 
   @IsString()
-  @Matches(/^\d{8}$/, { message: 'DNI debe tener 8' })
+  @Matches(/^\d{8}$/, { message: 'El DNI debe tener 8 digitos' })
   dni: string;
 
-  @IsString()
-  @IsNotEmpty()
-  contactPhone: string;
+
 
   // Datos de Usuario
   @IsString()
