@@ -29,13 +29,12 @@ export class PersonRepository {
   }
 
   //// Método para cargar una persona a la DB
-  async createPerson(name: string,lastName: string,dni: string,contactPhone: string): Promise<Person> {
+  async createPerson(name: string,lastName: string,dni: string): Promise<Person> {
     return await this.prisma.person.create({
       data: {
         name: name,
         lastName: lastName,
         dni: dni,
-        contactPhone: contactPhone
       }
     });
   }
