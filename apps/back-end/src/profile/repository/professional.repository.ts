@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { Professional } from "@tembiapo/db";
-import { updateProfileRequestDTO } from "../DTOs/update-profile.request.dto";
-import { createProfessionalRequestDTO } from "../DTOs/create-professional.request.dto";
+import { updateProfileRequestDTO } from "../DTOs/request/update-profile.request.dto";
+import { createProfessionalRequestDTO } from "../DTOs/request/create-professional.request.dto";
 
 
 @Injectable()
