@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
-  const port = 3000;
+  const port = process.env.PORT || 3001;
   await app.listen(port);
   console.log(`Servidor corriendo en el puerto: ${port}`);
 }

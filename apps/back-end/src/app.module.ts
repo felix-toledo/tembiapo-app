@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GoogleAuthModule } from './google-auth/google-auth.module';
 import { ProfileModule } from './profile/profile.module';
+import { FieldModule } from './fields/field.module';
+import { ServiceAreaModule } from './service-area/service-area.module';
 @Module({
   imports: [
     PrismaModule,
@@ -21,6 +23,8 @@ import { ProfileModule } from './profile/profile.module';
     }),
     GoogleAuthModule,
     ProfileModule,
+    FieldModule,
+    ServiceAreaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

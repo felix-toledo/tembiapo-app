@@ -141,15 +141,16 @@ model Field {
 }
 
 model ServiceArea {
-  id        String   @id @default(uuid())
-  city      String
-  province  String
-  country   String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  id        String    @id @default(uuid())
+  city      String
+  province  String
+  country   String 
+  postalCode String @unique @default("")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  // --- Relaciones ---
-  professionals AreaProfessional[]
+  // --- Relaciones ---
+  professionals AreaProfessional[]
 
   // Un índice compuesto para búsquedas rápidas por ciudad/provincia
   @@unique([city, province, country])
