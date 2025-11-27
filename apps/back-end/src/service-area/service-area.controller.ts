@@ -11,8 +11,8 @@ import {
 import { ServiceAreaService } from './service-area.service';
 import { CreateServiceAreaDto } from './dto/create-service-area.dto';
 import { UpdateServiceAreaDto } from './dto/update-service-area.dto';
-import { JwtAuthGuard } from '../auth/guards/auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/auth/roles.guard';
+import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
+import { RolesGuard } from '../shared/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('service-areas')

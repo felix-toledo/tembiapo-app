@@ -32,7 +32,6 @@ export class PersonRepository {
     name: string,
     lastName: string,
     dni: string,
-    contactPhone: string,
   ): Promise<Person> {
     return await this.prisma.person.create({
       data: {

@@ -11,8 +11,8 @@ import {
 import { FieldService } from './field.service';
 import { CreateFieldDto } from './dto/create-field.dto';
 import { UpdateFieldDto } from './dto/update-field.dto';
-import { JwtAuthGuard } from '../auth/guards/auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/auth/roles.guard';
+import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
+import { RolesGuard } from '../shared/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('fields')
