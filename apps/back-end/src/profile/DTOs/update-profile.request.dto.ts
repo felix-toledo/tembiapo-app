@@ -1,13 +1,13 @@
-import { IsString, IsNotEmpty } from "class-validator";
+import { IsString, IsNotEmpty, Matches } from "class-validator";
 
 export class updateProfileRequestDTO{
    
 
     @IsString()
-    @IsNotEmpty()
     biography : string
 
     @IsString()
     @IsNotEmpty()
+    @Matches(/^\d+$/, { message: 'El número de WhatsApp debe contener solo numeros.' })
     whatsappContact : string
 }
