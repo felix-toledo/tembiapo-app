@@ -1,0 +1,14 @@
+import { IsString, IsNotEmpty, Matches } from "class-validator";
+
+
+export class createProfessionalRequestDTO{
+@IsString()
+biography : string;
+
+
+@IsString()
+@IsNotEmpty()
+@Matches(/^\d+$/, { message: 'El número de WhatsApp debe contener solo numeros.' })
+whatsappContact : string;
+
+}

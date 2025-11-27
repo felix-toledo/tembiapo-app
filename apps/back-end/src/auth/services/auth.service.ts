@@ -25,6 +25,7 @@ import { LoginResponseDTO } from '../DTOs/responses/login-response.dto';
 import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { RegisterResponseData } from '../DTOs/responses/register-response.dto';
 import { LogoutResponseDTO } from '../DTOs/responses/logout-response.dto';
+import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
 import {
   ForgotPasswordRequestDTO,
   ResetPasswordRequestDTO,
@@ -35,7 +36,7 @@ import {
 } from '../DTOs/responses/forgotPassword-response.dto';
 //==========ENTIDADES=============
 import {RefreshToken, User} from '@tembiapo/db'
-import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -162,7 +163,10 @@ export class AuthService {
       throw new UnauthorizedException('El email o la contraseña es incorrecto');
     }
 
-    const payload = { email: user.mail, sub: user.id }; //creamos el payload (los valores) que va a guardar nuestro token
+    ///Obtenemos el rol del usuario que esta iniciando sesion para futuras protecciones
+    const role = await this.roleService.findById(user.roleId)
+
+    const payload = { email: user.mail, sub: user.id, role: role.name }; //creamos el payload (los valores) que va a guardar nuestro token
     const access_token = this.jwtService.sign(payload, {
       ///firmamos el token
       expiresIn: '15m', ///expiracion de 15 minutos

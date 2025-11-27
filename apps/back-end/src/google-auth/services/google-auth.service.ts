@@ -72,8 +72,10 @@ export class GoogleAuthService {
         const userexists = await this.userRepository.findByEmail(googleDTO.email)
         if(userexists){ // si es true verificamos si OAuth es true
             if(userexists.isOauthUser){ /// si es true creamos los tokens y retornamos
+                 ///Obtenemos el rol del usuario que esta iniciando sesion para futuras protecciones
+                    const role = await this.roleService.findById(userexists.roleId)
 
-                const payload = {sub: googleDTO.email, email: googleDTO.email} ///creamos el payload
+                const payload = {sub: userexists.id, email: googleDTO.email, role: role.name} ///creamos el payload
 
                 const accessToken = this.jwtService.sign(payload, {expiresIn: '15m'}) ///generamos el access token
 
@@ -104,7 +106,7 @@ export class GoogleAuthService {
                 return {user} ///retornamos el user creado para poder crear sus tokens
             })
 
-            const payload = {sub: user.id, email: googleDTO.email} ///creamos el payload
+            const payload = {sub: user.id, email: googleDTO.email, role: role.name} ///creamos el payload
 
             const accessToken = this.jwtService.sign(payload,{expiresIn: '15m'}) //generamos el access token
 
