@@ -8,8 +8,12 @@ import { CookieParserMiddleware } from './middlewares/cookie-parser.middleware';
 import { RefreshTokenCleanupService } from './services/refresh-token-cleanup.service';
 import { MailModule } from '../mailer/mailer.module';
 
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
+
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     MailModule,
     ConfigModule,
     JwtModule.registerAsync({
@@ -24,7 +28,8 @@ import { MailModule } from '../mailer/mailer.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, RefreshTokenCleanupService]
+  providers: [AuthService, RefreshTokenCleanupService, JwtStrategy],
+  exports: [AuthService, JwtModule, PassportModule, JwtStrategy],
 })
 export class AuthModule {
   configure(consumer: MiddlewareConsumer) {
