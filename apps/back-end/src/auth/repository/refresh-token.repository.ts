@@ -66,35 +66,31 @@ export class RefreshTokenRepository {
   }
 
  // Elimina todos los refresh tokens que estén revocados o expirados
-async deleteRevokedOrExpiredRefreshTokens(): Promise<number> {
-  const now = new Date();
-  const result = await this.prisma.refreshToken.deleteMany({
-    where: {
-      OR: [
-        { revoked: true },
-        { expiresAt: { lt: now } }
-      ]
-    }
-  });
-  return result.count; // cantidad de tokens eliminados
-}
+  async deleteRevokedOrExpiredRefreshTokens(): Promise<number> {
+    const now = new Date();
+    const result = await this.prisma.refreshToken.deleteMany({
+      where: {
+        OR: [
+          { revoked: true },
+          { expiresAt: { lt: now } }
+        ]
+      }
+    });
+    return result.count; // cantidad de tokens eliminados
+  }
 
+  async replaceRefreshToken(newToken : string, expiresAt: Date, userId : string) : Promise<RefreshToken>{
+    //1. revoca todos los tokens activos del usuario
+    await this.prisma.refreshToken.updateMany({
+      where: {
+        userId: userId,
+        revoked: false,
+        expiresAt: { gt: new Date() }
+      },
+      data: {revoked: true}
+    });
 
-async replaceRefreshToken(newToken : string, expiresAt: Date, userId : string) : Promise<RefreshToken>{
-  //1. revoca todos los tokens activos del usuario
-  await this.prisma.refreshToken.updateMany({
-    where: {
-      userId: userId,
-      revoked: false,
-      expiresAt: { gt: new Date() }
-    },
-    data: {revoked: true}
-  });
-
-  //2. creamos el nuevo refresh token
-  return  this.createRefreshToken(newToken, expiresAt, userId)
-}
-
-
+    //2. creamos el nuevo refresh token
+    return  this.createRefreshToken(newToken, expiresAt, userId)
   }
 }
