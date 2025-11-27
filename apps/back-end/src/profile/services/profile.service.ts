@@ -1,15 +1,15 @@
 import {  ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-
+import { join } from 'path';
+import * as fs from 'fs'
 ///================REPOSITORIOS=================
 import { professionalRepository } from '../repository/professional.repository';
 import { UserRepository } from '../../auth/repository/user.repository';
-import { PersonRepository } from '../../auth/repository/person.repository';
 ///============================DTOs===========================
-import { updateProfileRequestDTO } from '../DTOs/update-profile.request.dto';
+import { updateProfileRequestDTO } from '../DTOs/request/update-profile.request.dto';
 import { updateProfileResponseDTO } from '../DTOs/responses/update-profile.response.dto';
-import { createProfessionalRequestDTO } from '../DTOs/create-professional.request.dto';
+import { createProfessionalRequestDTO } from '../DTOs/request/create-professional.request.dto';
 import { createProfessionalResponseDTO } from '../DTOs/responses/create-professional.response.dto';
-
+import { updatePictureResponseDTO } from '../DTOs/responses/update-picture.response.dto';
 ///==================SERVICIOS========================
 import { RoleService } from '../../auth/services/role.service';
 
@@ -17,12 +17,12 @@ import { RoleService } from '../../auth/services/role.service';
 import { Professional, User } from '@tembiapo/db';
 import { createApiResponse } from '../../shared/utils/api-response.factory';
 import { ApiResponse } from '@tembiapo/types';
+
 @Injectable()
 export class ProfileService {
 
     constructor(private professionalRepository : professionalRepository, 
         private userRepository : UserRepository, 
-        private personRepository : PersonRepository,
         private roleService : RoleService){}
 
 
@@ -88,4 +88,42 @@ export class ProfileService {
 
         return createApiResponse(data,true)
     }
+
+
+    async updatePicture(id : string, avatarPath : string ) : Promise<ApiResponse<updatePictureResponseDTO>>{
+
+    let userToBeUpdated : User | null = await this.userRepository.findById(id)
+
+    if(!userToBeUpdated){
+        throw new NotFoundException("Usuario no encontrado mediante su ID")
+    }
+    
+    // Guardamos la referencia a la url vieja en una variable auxiliar antes de actualizar
+    const oldAvatarUrl = userToBeUpdated.avatarUrl;
+
+    /// 1. Primero actualizamos la BD. Si esto falla, salta la excepción y NO borramos la foto vieja (seguridad).
+    const result = await this.userRepository.updatePicture(id, avatarPath);
+
+    /// 2. Si la BD se actualizó bien, procedemos a borrar la basura vieja
+    if(result && oldAvatarUrl && !oldAvatarUrl.startsWith('http')){
+
+        const relativePath = oldAvatarUrl.startsWith('/') ? oldAvatarUrl.slice(1) : oldAvatarUrl
+        const absolutePath = join(process.cwd(), relativePath)
+
+        try{
+            if(fs.existsSync(absolutePath)){
+                fs.unlinkSync(absolutePath); 
+            }
+        }catch(error){
+            console.error('No se pudo borrar la imagen anterior: ', error)
+        }
+    }
+
+    const data : updatePictureResponseDTO = {
+        message: "Foto de perfil actualizada correctamente",
+        url : avatarPath
+    }
+
+    return createApiResponse(data,true)
+}
 }
