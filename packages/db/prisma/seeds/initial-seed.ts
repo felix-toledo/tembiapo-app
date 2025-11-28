@@ -103,7 +103,6 @@ async function main() {
       name: "Admin",
       lastName: "Tembiapo",
       dni: "00000000",
-      contactPhone: "3794000000",
       isVerified: true,
     },
   });
@@ -134,7 +133,6 @@ async function main() {
       name: "Juan",
       lastName: "Perez",
       dni: "11111111",
-      contactPhone: "3794111111",
       isVerified: true,
     },
   });

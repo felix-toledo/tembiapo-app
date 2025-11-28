@@ -85,10 +85,6 @@ export class AuthController {
     return res.json(apiResponse);
   }
 
-
-
-  
-
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(
