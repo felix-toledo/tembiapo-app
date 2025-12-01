@@ -7,6 +7,9 @@ import { SharedModule } from './shared/shared.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GoogleAuthModule } from './google-auth/google-auth.module';
+import { ProfileModule } from './profile/profile.module';
+import { FieldModule } from './fields/field.module';
+import { ServiceAreaModule } from './service-area/service-area.module';
 @Module({
   imports: [
     PrismaModule,
@@ -19,6 +22,9 @@ import { GoogleAuthModule } from './google-auth/google-auth.module';
       envFilePath: '.env', /// le mandamos la ruta del .env a cargar
     }),
     GoogleAuthModule,
+    ProfileModule,
+    FieldModule,
+    ServiceAreaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

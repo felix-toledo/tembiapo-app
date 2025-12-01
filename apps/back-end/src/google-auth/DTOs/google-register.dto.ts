@@ -3,4 +3,5 @@ export class GoogleRegisterDTO{
     name : string
     lastName : string
     email : string
+    pictureUrl : string
 }

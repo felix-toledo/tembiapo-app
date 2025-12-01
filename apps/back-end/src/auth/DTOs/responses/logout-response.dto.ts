@@ -1,6 +1,6 @@
 import { ApiResponse } from "@tembiapo/types";
 
-export interface LogoutResponseDTO{
+export class LogoutResponseDTO{
     message : string
 }
 

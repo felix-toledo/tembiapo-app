@@ -28,15 +28,24 @@ export class UserRepository {
   }
 
   /// Método para crear un usuario en la BD
-  async createUser(username: string,mail: string,password: string,roleId: string,personId: string, isOauthUser : boolean): Promise<User> {
+  async createUser(
+    username: string,
+    mail: string,
+    pictureUrl: string,
+    password: string,
+    roleId: string,
+    personId: string,
+    isOauthUser: boolean,
+  ): Promise<User> {
     return await this.prisma.user.create({
       data: {
         username: username,
         mail: mail,
+        avatarUrl: pictureUrl,
         password: password,
         roleId: roleId,
         personId: personId,
-        isOauthUser: isOauthUser
+        isOauthUser: isOauthUser,
       }, // los timestamp los maneja la DB
     });
   }
@@ -59,7 +68,7 @@ export class UserRepository {
   }
 
   /// Buscar usuario con persona incluida
-  async findUserWithPerson(id: string): Promise<User | null> {
+  async findUserWithPerson(id: string) {
     return await this.prisma.user.findUnique({
       where: { id },
       include: {

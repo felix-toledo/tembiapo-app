@@ -18,4 +18,16 @@ export class RoleService {
     /// si se encuentra, retornamos el rol
     return role;
   }
+
+
+  async findById(id : string){
+    const role = await this.prisma.role.findFirst({
+      where: {id}
+    });
+
+    if(!role){
+      throw new NotFoundException(`El rol con ID ${id} no existe`)
+    }
+    return role
+  }
 }
