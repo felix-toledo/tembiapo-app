@@ -1,7 +1,3 @@
-import { ApiResponse } from "@tembiapo/types";
-
-export class createProfessionalResponseDTO{
-   
-    message: string
-
+export class createProfessionalResponseDTO {
+  message: string;
 }
