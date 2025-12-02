@@ -38,7 +38,7 @@ export class GoogleAuthService {
     ///esperamos el codigo que va a llegar por la URL que nos proporciona google
     const clientId = this.configService.get<string>('CLIENT-ID'); ///obtenemos el client-id del .env
     const clientSecret = this.configService.get<string>('SECRET-CLIENT'); ///Obtenemos el secret-client del .env
-    const redirectUri = 'http://localhost:3000/v1/google/callback'; ///seteamos la uri de redireccionamiento (tiene que ser la misma que esta en GCP)
+    const redirectUri = 'http://localhost:3001/v1/google/callback'; ///seteamos la uri de redireccionamiento (tiene que ser la misma que esta en GCP)
 
     // 1. Intercambiamos el código por un token
     const tokenResponse = await firstValueFrom(

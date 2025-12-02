@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { User } from '@tembiapo/db';
 
+
 @Injectable()
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -142,5 +143,16 @@ export class UserRepository {
         hashResetPasswordExpiresAt: null,
       },
     });
+  }
+
+
+  async updatePicture(id : string, avatarPath : string) : Promise<boolean>{
+      const result = await this.prisma.user.update({
+        where: {id},
+        data : {
+          avatarUrl: avatarPath
+        }
+      });
+      return !!result
   }
 }
