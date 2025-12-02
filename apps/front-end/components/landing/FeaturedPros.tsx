@@ -15,12 +15,6 @@ const FEATURED_PROS: ProfessionalMock[] = [
 export function FeaturedPros() {
   return (
     <section className="py-8 container mx-auto px-4">
-      {/* AQUÍ ESTÁ LA MAGIA:
-         border-2: Grosor del borde
-         border-black: Color del borde
-         rounded-t-[3rem]: Curva grande solo arriba
-         pb-12: Padding abajo para que el contenido no toque el final
-      */}
       <div className="border-2 border-gray-400 rounded-t-[3rem] pt-12 pb-16 px-6 bg-white">
         
         <div className="text-center">
@@ -28,7 +22,7 @@ export function FeaturedPros() {
             Profesionales mejor valuados
           </h2>
           
-          <div className="flex flex-wrap justify-center gap-10">
+          <div className="flex flex-wrap justify-evenly gap-10">
             {FEATURED_PROS.map((pro) => (
               <div key={pro.id} className="flex flex-col items-center space-y-3 w-48">
                 
