@@ -39,6 +39,20 @@ export class professionalRepository {
         whatsappContact: createProfessionalProfile.whatsappContact,
         createdAt: new Date(),
         userId: userId,
+        // Create field relationships
+        fields: {
+          create: createProfessionalProfile.fields.map((field) => ({
+            fieldId: field.id,
+            isMain: field.isMain,
+          })),
+        },
+        // Create service area relationships
+        serviceAreas: {
+          create: createProfessionalProfile.serviceAreas.map((area) => ({
+            areaId: area.id,
+            isMain: area.isMain,
+          })),
+        },
       },
     });
   }
@@ -50,19 +64,62 @@ export class professionalRepository {
     });
   }
 
-  ///metodo para actualizar la biografia y el numero de contacto
+  ///metodo para actualizar la biografia, numero de contacto, fields y service areas
   async updateProfile(
     id: string,
     updateProfileRequest: updateProfileRequestDTO,
   ): Promise<boolean> {
-    const result = await this.prisma.professional.updateMany({
-      where: { id },
-      data: {
-        description: updateProfileRequest.biography,
-        whatsappContact: updateProfileRequest.whatsappContact,
-      },
+    // Use a transaction to ensure all updates succeed or fail together
+    await this.prisma.$transaction(async (tx) => {
+      // Update basic professional info
+      await tx.professional.update({
+        where: { id },
+        data: {
+          description: updateProfileRequest.biography,
+          whatsappContact: updateProfileRequest.whatsappContact,
+        },
+      });
+
+      // Delete existing field relationships
+      await tx.fieldProfessional.deleteMany({
+        where: { professionalId: id },
+      });
+
+      // Create new field relationships
+      if (
+        updateProfileRequest.fields &&
+        updateProfileRequest.fields.length > 0
+      ) {
+        await tx.fieldProfessional.createMany({
+          data: updateProfileRequest.fields.map((field) => ({
+            professionalId: id,
+            fieldId: field.id,
+            isMain: field.isMain,
+          })),
+        });
+      }
+
+      // Delete existing service area relationships
+      await tx.areaProfessional.deleteMany({
+        where: { professionalId: id },
+      });
+
+      // Create new service area relationships
+      if (
+        updateProfileRequest.serviceAreas &&
+        updateProfileRequest.serviceAreas.length > 0
+      ) {
+        await tx.areaProfessional.createMany({
+          data: updateProfileRequest.serviceAreas.map((area) => ({
+            professionalId: id,
+            areaId: area.id,
+            isMain: area.isMain,
+          })),
+        });
+      }
     });
-    return result.count > 0;
+
+    return true;
   }
 
   async getAllProfessionalDataByUsername(
