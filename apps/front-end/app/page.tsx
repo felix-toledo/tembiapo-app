@@ -7,7 +7,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white flex flex-col">
       <Navbar />
-      
       {/* Contenedor principal para dar márgenes consistentes */}
       <div className="grow">
         <HeroSection />
@@ -17,3 +16,6 @@ export default function Home() {
     </main>
   );
 }
+
+
+
