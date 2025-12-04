@@ -1,15 +1,14 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
-  Matches,
   IsNumber,
   ValidateNested,
   IsArray,
   MinLength,
-} from "class-validator";
+} from 'class-validator';
 
-export class portfolioImage {
+export class PortfolioImageDTO {
   @IsString()
   @IsNotEmpty()
   imageUrl: string;
@@ -23,7 +22,7 @@ export class portfolioImage {
   order: number; // 0 is for main Image
 }
 
-export class createPortfolioItemRequestDTO {
+export class CreatePortfolioItemRequestDTO {
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -32,17 +31,10 @@ export class createPortfolioItemRequestDTO {
   @IsNotEmpty()
   description: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @Matches(/^\d+$/, {
-    message: "El número de WhatsApp debe contener solo numeros.",
-  })
-  whatsappContact: string;
-
   @IsArray()
-  @Type(() => portfolioImage)
+  @Type(() => PortfolioImageDTO)
   @ValidateNested()
   // At least one image is required
   @MinLength(1)
-  images: portfolioImage[];
+  images: PortfolioImageDTO[];
 }

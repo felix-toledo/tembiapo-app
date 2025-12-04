@@ -1,11 +1,12 @@
 import { IsString, IsNotEmpty, Matches, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export interface Field {
+export class Field {
   id: string;
   isMain: boolean;
 }
 
-export interface ServiceArea {
+export class ServiceArea {
   id: string;
   isMain: boolean;
 }
@@ -23,9 +24,11 @@ export class createProfessionalRequestDTO {
 
   @IsArray()
   @IsNotEmpty()
+  @Type(() => Field)
   fields: Field[];
 
   @IsArray()
   @IsNotEmpty()
+  @Type(() => ServiceArea)
   serviceAreas: ServiceArea[];
 }
