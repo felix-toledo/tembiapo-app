@@ -7,11 +7,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "class-validator": "^0.14.2",
+    "class-transformer": "^0.5.1",
+    "@tembiapo/db": "workspace:*"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.20.0",
-  "dependencies": {
-    "@tembiapo/db": "workspace:*"
-  }
+  "packageManager": "pnpm@10.20.0"
 }

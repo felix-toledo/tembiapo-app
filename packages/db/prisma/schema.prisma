@@ -177,14 +177,15 @@ model PortfolioItem {
 }
 
 model PortfolioImage {
-  id            String   @id @default(uuid())
-  imageUrl      String   @map("image_url")
-  description   String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime? @updatedAt @map("updated_at")
-  deletedAt     DateTime? @map("deleted_at")
-  
-  // --- Relaciones ---
+  id            String      @id @default(uuid())
+  imageUrl      String      @map("image_url")
+  description   String
+  order         Int // 0 is for main Image
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime?   @updatedAt @map("updated_at")
+  deletedAt     DateTime?   @map("deleted_at")
+
+  // --- Relaciones ---
   portfolioItemId String        @map("portfolio_item_id")
   portfolioItem   PortfolioItem @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade) // Si se borra el item, se borran sus imágenes
 

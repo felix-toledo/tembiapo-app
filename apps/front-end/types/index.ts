@@ -15,14 +15,14 @@ export interface ServiceArea {
 export interface Professional {
   professionalId: string; // UUID
   name: string;
-  lastName: string; 
-  username: string; 
+  lastName: string;
+  username: string;
   avatarURL: string | null;
   description: string;
   whatsappContact: string;
   isVerified: boolean;
   rating?: number;
-  
+
   // Relaciones
   area: ServiceArea[];
   fields: Field[];
