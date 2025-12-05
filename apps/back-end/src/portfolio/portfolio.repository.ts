@@ -34,6 +34,7 @@ export class PortfolioRepository {
         title: dto.title,
         description: dto.description,
         professionalId: professionalId,
+        fieldId: dto.fieldId,
         // Create related images
         images: {
           create: dto.images.map((image) => ({
@@ -318,6 +319,27 @@ export class PortfolioRepository {
       },
     });
     return item !== null;
+  }
+
+  /**
+   * Checks if a professional has a specific field
+   * @param professionalId - Professional ID
+   * @param fieldId - Field ID
+   * @returns True if the professional has the field, false otherwise
+   */
+  async professionalHasField(
+    professionalId: string,
+    fieldId: string,
+  ): Promise<boolean> {
+    const fieldProfessional = await this.prisma.fieldProfessional.findUnique({
+      where: {
+        professionalId_fieldId: {
+          professionalId,
+          fieldId,
+        },
+      },
+    });
+    return fieldProfessional !== null;
   }
 
   /**

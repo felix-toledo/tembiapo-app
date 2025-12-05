@@ -5,7 +5,7 @@ import {
   IsNumber,
   ValidateNested,
   IsArray,
-  MinLength,
+  ArrayMinSize,
 } from 'class-validator';
 
 export class PortfolioImageDTO {
@@ -31,10 +31,14 @@ export class CreatePortfolioItemRequestDTO {
   @IsNotEmpty()
   description: string;
 
+  @IsString()
+  @IsNotEmpty()
+  fieldId: string;
+
   @IsArray()
   @Type(() => PortfolioImageDTO)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   // At least one image is required
-  @MinLength(1)
+  @ArrayMinSize(1)
   images: PortfolioImageDTO[];
 }

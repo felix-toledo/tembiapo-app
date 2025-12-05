@@ -241,8 +241,10 @@ async function main() {
     create: {
       id: "portfolio-item-1-seed",
       title: "Mueble de cocina personalizado",
-      description: "Diseño y construcción de mueble de cocina en madera de cedro con acabado natural.",
+      description:
+        "Diseño y construcción de mueble de cocina en madera de cedro con acabado natural.",
       professionalId: professionalProfile.id,
+      fieldId: fieldCarpintero.id,
     },
   });
 
@@ -277,8 +279,10 @@ async function main() {
     create: {
       id: "portfolio-item-2-seed",
       title: "Instalación eléctrica residencial",
-      description: "Instalación completa de sistema eléctrico en vivienda de 120m2, incluyendo tablero principal y sistema de iluminación LED.",
+      description:
+        "Instalación completa de sistema eléctrico en vivienda de 120m2, incluyendo tablero principal y sistema de iluminación LED.",
       professionalId: professionalProfile.id,
+      fieldId: fieldElectricista.id,
     },
   });
 
@@ -319,7 +323,9 @@ async function main() {
     },
   });
 
-  console.log(`Portfolio items creados: ${portfolioItem1.title}, ${portfolioItem2.title}`);
+  console.log(
+    `Portfolio items creados: ${portfolioItem1.title}, ${portfolioItem2.title}`
+  );
 
   console.log("Seeding completado exitosamente.");
 }

@@ -1,13 +1,28 @@
-import { IsString, IsNotEmpty, Matches, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  Matches,
+  IsArray,
+  ValidateNested,
+  IsBoolean,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class Field {
+  @IsString()
+  @IsNotEmpty()
   id: string;
+
+  @IsBoolean()
   isMain: boolean;
 }
 
 export class ServiceArea {
+  @IsString()
+  @IsNotEmpty()
   id: string;
+
+  @IsBoolean()
   isMain: boolean;
 }
 
@@ -24,11 +39,13 @@ export class createProfessionalRequestDTO {
 
   @IsArray()
   @IsNotEmpty()
+  @ValidateNested({ each: true })
   @Type(() => Field)
   fields: Field[];
 
   @IsArray()
   @IsNotEmpty()
+  @ValidateNested({ each: true })
   @Type(() => ServiceArea)
   serviceAreas: ServiceArea[];
 }

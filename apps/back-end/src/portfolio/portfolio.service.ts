@@ -30,6 +30,17 @@ export class PortfolioService {
     dto: CreatePortfolioItemRequestDTO,
   ): Promise<PortfolioItemResponseDTO> {
     const professional = await this.getProfessionalByUserId(userId);
+
+    const hasField = await this.portfolioRepository.professionalHasField(
+      professional.id,
+      dto.fieldId,
+    );
+    if (!hasField) {
+      throw new ForbiddenException(
+        'You do not have this field associated with your profile',
+      );
+    }
+
     const item = await this.portfolioRepository.createPortfolioItem(
       professional.id,
       dto,
