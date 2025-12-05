@@ -23,9 +23,10 @@ import { RolesGuard } from '../../shared/guards/role.guard';
 import { Roles } from '../../shared/decorators/role.decorator';
 import { ProfileService } from '../services/profile.service';
 import { createProfessionalRequestDTO } from '../DTOs/create-professional.request.dto';
+import { API_PREFIX } from '../../app.controller';
 
 @ApiTags('Profile')
-@Controller('api/profile')
+@Controller(`${API_PREFIX}/profile`)
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
 

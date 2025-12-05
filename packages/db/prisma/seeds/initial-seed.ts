@@ -234,6 +234,99 @@ async function main() {
     `Usuario Profesional creado/asegurado: ${professionalUser.mail} con perfil y relaciones.`
   );
 
+  // --- 11. Creación de Portfolio Items ---
+  const portfolioItem1 = await prisma.portfolioItem.upsert({
+    where: { id: "portfolio-item-1-seed" },
+    update: {},
+    create: {
+      id: "portfolio-item-1-seed",
+      title: "Mueble de cocina personalizado",
+      description:
+        "Diseño y construcción de mueble de cocina en madera de cedro con acabado natural.",
+      professionalId: professionalProfile.id,
+      fieldId: fieldCarpintero.id,
+    },
+  });
+
+  // Imágenes para el primer portfolio item
+  await prisma.portfolioImage.upsert({
+    where: { id: "portfolio-image-1-1-seed" },
+    update: {},
+    create: {
+      id: "portfolio-image-1-1-seed",
+      imageUrl: "https://picsum.photos/800/600?random=1",
+      description: "Vista frontal del mueble de cocina",
+      order: 0,
+      portfolioItemId: portfolioItem1.id,
+    },
+  });
+
+  await prisma.portfolioImage.upsert({
+    where: { id: "portfolio-image-1-2-seed" },
+    update: {},
+    create: {
+      id: "portfolio-image-1-2-seed",
+      imageUrl: "https://picsum.photos/800/600?random=2",
+      description: "Detalle de cajones y herrajes",
+      order: 1,
+      portfolioItemId: portfolioItem1.id,
+    },
+  });
+
+  const portfolioItem2 = await prisma.portfolioItem.upsert({
+    where: { id: "portfolio-item-2-seed" },
+    update: {},
+    create: {
+      id: "portfolio-item-2-seed",
+      title: "Instalación eléctrica residencial",
+      description:
+        "Instalación completa de sistema eléctrico en vivienda de 120m2, incluyendo tablero principal y sistema de iluminación LED.",
+      professionalId: professionalProfile.id,
+      fieldId: fieldElectricista.id,
+    },
+  });
+
+  // Imágenes para el segundo portfolio item
+  await prisma.portfolioImage.upsert({
+    where: { id: "portfolio-image-2-1-seed" },
+    update: {},
+    create: {
+      id: "portfolio-image-2-1-seed",
+      imageUrl: "https://picsum.photos/800/600?random=3",
+      description: "Tablero eléctrico instalado",
+      order: 0,
+      portfolioItemId: portfolioItem2.id,
+    },
+  });
+
+  await prisma.portfolioImage.upsert({
+    where: { id: "portfolio-image-2-2-seed" },
+    update: {},
+    create: {
+      id: "portfolio-image-2-2-seed",
+      imageUrl: "https://picsum.photos/800/600?random=4",
+      description: "Sistema de iluminación LED en sala",
+      order: 1,
+      portfolioItemId: portfolioItem2.id,
+    },
+  });
+
+  await prisma.portfolioImage.upsert({
+    where: { id: "portfolio-image-2-3-seed" },
+    update: {},
+    create: {
+      id: "portfolio-image-2-3-seed",
+      imageUrl: "https://picsum.photos/800/600?random=5",
+      description: "Cableado estructurado",
+      order: 2,
+      portfolioItemId: portfolioItem2.id,
+    },
+  });
+
+  console.log(
+    `Portfolio items creados: ${portfolioItem1.title}, ${portfolioItem2.title}`
+  );
+
   console.log("Seeding completado exitosamente.");
 }
 

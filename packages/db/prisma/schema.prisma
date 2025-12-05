@@ -136,6 +136,7 @@ model Field {
 
   // --- Relaciones ---
   professionals FieldProfessional[]
+  portfolioItems PortfolioItem[]
 
   @@map("field") 
 }
@@ -169,7 +170,10 @@ model PortfolioItem {
   professionalId String       @map("professional_id")
   professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade) // Si se borra el profesional, se borran sus items
 
-  images PortfolioImage[] // 1-a-N: Un item, muchas imágenes
+  fieldId String @map("field_id")
+  field   Field  @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  images PortfolioImage[] // 1-a-N: Un item, muchas imágenes
 
   // --- Índices ---
   @@index([professionalId]) // Índice en la FK
@@ -177,14 +181,15 @@ model PortfolioItem {
 }
 
 model PortfolioImage {
-  id            String   @id @default(uuid())
-  imageUrl      String   @map("image_url")
-  description   String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime? @updatedAt @map("updated_at")
-  deletedAt     DateTime? @map("deleted_at")
-  
-  // --- Relaciones ---
+  id            String      @id @default(uuid())
+  imageUrl      String      @map("image_url")
+  description   String
+  order         Int // 0 is for main Image
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime?   @updatedAt @map("updated_at")
+  deletedAt     DateTime?   @map("deleted_at")
+
+  // --- Relaciones ---
   portfolioItemId String        @map("portfolio_item_id")
   portfolioItem   PortfolioItem @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade) // Si se borra el item, se borran sus imágenes
 

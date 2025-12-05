@@ -9,9 +9,10 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
+import { API_PREFIX } from '../app.controller';
 
 @ApiTags('Users')
-@Controller('api/users')
+@Controller(`${API_PREFIX}/users`)
 export class UsersController {
   constructor(private userService: UsersService) {}
 

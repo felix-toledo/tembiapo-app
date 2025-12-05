@@ -14,8 +14,8 @@ import { UpdateServiceAreaDto } from './dto/update-service-area.dto';
 import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-
-@Controller('service-areas')
+import { API_PREFIX } from '../app.controller';
+@Controller(`${API_PREFIX}/service-areas`)
 export class ServiceAreaController {
   constructor(private readonly serviceAreaService: ServiceAreaService) {}
 

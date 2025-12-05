@@ -9,7 +9,8 @@
     "dev:back": "cd apps/back-end && nest start --watch",
     "install:back": "cd apps/back-end && pnpm install",
     "dev:front": "cd apps/front-end && pnpm run dev",
-    "install:front": "cd apps/front-end && pnpm install"
+    "install:front": "cd apps/front-end && pnpm install",
+    "install:types": "cd packages/types && pnpm install"
   },
   "keywords": [],
   "author": "",
