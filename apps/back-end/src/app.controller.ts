@@ -1,7 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 
-@Controller()
+export const API_PREFIX = 'api/v1';
+
+@Controller(API_PREFIX)
 export class AppController {
   constructor(private readonly appService: AppService) {}
 

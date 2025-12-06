@@ -15,7 +15,9 @@ import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
-@Controller('fields')
+import { API_PREFIX } from '../app.controller';
+
+@Controller(`${API_PREFIX}/fields`)
 export class FieldController {
   constructor(private readonly fieldService: FieldService) {}
 

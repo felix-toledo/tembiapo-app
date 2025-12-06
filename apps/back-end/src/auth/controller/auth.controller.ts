@@ -19,7 +19,9 @@ import {
   ForgotPasswordRequestDTO,
   ResetPasswordRequestDTO,
 } from '../DTOs/forgotPassword-request.dto';
-@Controller('auth')
+
+import { API_PREFIX } from '../../app.controller';
+@Controller(`${API_PREFIX}/auth`)
 export class AuthController {
   constructor(private authService: AuthService) {}
 

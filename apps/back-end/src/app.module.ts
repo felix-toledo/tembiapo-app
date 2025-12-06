@@ -10,6 +10,9 @@ import { GoogleAuthModule } from './google-auth/google-auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { FieldModule } from './fields/field.module';
 import { ServiceAreaModule } from './service-area/service-area.module';
+import { UsersModule } from './users/users.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
+
 @Module({
   imports: [
     PrismaModule,
@@ -25,6 +28,8 @@ import { ServiceAreaModule } from './service-area/service-area.module';
     ProfileModule,
     FieldModule,
     ServiceAreaModule,
+    UsersModule,
+    PortfolioModule,
   ],
   controllers: [AppController],
   providers: [AppService],

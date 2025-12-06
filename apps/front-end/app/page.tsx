@@ -1,16 +1,21 @@
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import { Navbar } from '../components/landing/Navbar';
+import { HeroSection } from '../components/landing/HeroSection';
+import { CategoryGrid } from '../components/landing/CategoryGrid';
+import { FeaturedPros } from '../components/landing/FeaturedPros';
 
-export default function Page() {
-	const cookieStore: any = cookies();
-	const refresh = cookieStore?.get?.("refresh-token");
-
-	if (refresh) {
-		// user seems authenticated (has refresh token) -> go to dashboard
-		redirect("/dashboard");
-	}
-
-	// not authenticated -> go to login
-	redirect("/login");
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-white flex flex-col">
+      <Navbar />
+      {/* Contenedor principal para dar márgenes consistentes */}
+      <div className="grow">
+        <HeroSection />
+        <CategoryGrid />
+        <FeaturedPros />
+      </div>
+    </main>
+  );
 }
+
+
 

@@ -35,7 +35,7 @@ import {
   ResetPasswordResponseDTO,
 } from '../DTOs/responses/forgotPassword-response.dto';
 //==========ENTIDADES=============
-import {RefreshToken, User} from '@tembiapo/db'
+import { RefreshToken, User } from '@tembiapo/db';
 
 @Injectable()
 export class AuthService {
@@ -102,7 +102,7 @@ export class AuthService {
       const user = await this.userRepository.createUser(
         register.username,
         register.email,
-        "",
+        '',
         hashedPassword,
         proffesionalRole.id,
         person.id,
@@ -164,7 +164,7 @@ export class AuthService {
     }
 
     ///Obtenemos el rol del usuario que esta iniciando sesion para futuras protecciones
-    const role = await this.roleService.findById(user.roleId)
+    const role = await this.roleService.findById(user.roleId);
 
     const payload = { email: user.mail, sub: user.id, role: role.name }; //creamos el payload (los valores) que va a guardar nuestro token
     const access_token = this.jwtService.sign(payload, {
@@ -305,7 +305,6 @@ export class AuthService {
       throw new BadRequestException('Token de restablecimiento inválido');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const isValid = await bcrypt.compare(resetToken, user.hashResetPassword);
 
     if (!isValid) {

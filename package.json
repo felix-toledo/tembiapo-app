@@ -9,7 +9,12 @@
     "dev:back": "cd apps/back-end && nest start --watch",
     "install:back": "cd apps/back-end && pnpm install",
     "dev:front": "cd apps/front-end && pnpm run dev",
-    "install:front": "cd apps/front-end && pnpm install"
+    "install:front": "cd apps/front-end && pnpm install",
+    "install:types": "cd packages/types && pnpm install",
+    "install:all": "pnpm install",
+    "setup:project": "pnpm install && pnpm run db:setup",
+    "db:setup": "pnpm --filter @tembiapo/db run setup",
+    "dev": "pnpm run --recursive --parallel dev"
   },
   "keywords": [],
   "author": "",
