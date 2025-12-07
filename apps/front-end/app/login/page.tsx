@@ -24,7 +24,9 @@ export default function LoginPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setMessage("Inicio de sesión correcto.");
+        // Redirigir a /dashboard después de login exitoso
+        window.location.href = '/dashboard';
+        return;
       } else {
         setMessage(data?.message || "Error en login: " + res.status);
       }

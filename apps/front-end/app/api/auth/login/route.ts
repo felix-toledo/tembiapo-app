@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     // Forward cookies from the browser (if any)
     const cookie = req.headers.get("cookie") || "";
 
-    const backendRes = await fetch("http://localhost:3000/auth/login", {
+    const backendRes = await fetch("http://localhost:3001/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -20,9 +20,16 @@ export async function POST(req: Request) {
     const contentType = backendRes.headers.get("content-type") || "application/json";
     const text = await backendRes.text();
 
+    // Forward Set-Cookie header from backend to browser so httpOnly cookies are stored
+    const setCookie = backendRes.headers.get("set-cookie");
+    const responseHeaders: HeadersInit = { "content-type": contentType };
+    if (setCookie) {
+      responseHeaders["set-cookie"] = setCookie;
+    }
+
     return new Response(text, {
       status: backendRes.status,
-      headers: { "content-type": contentType },
+      headers: responseHeaders,
     });
   } catch (err) {
     return NextResponse.json({ message: "Error proxy al backend", error: String(err) }, { status: 500 });
