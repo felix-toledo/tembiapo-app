@@ -3,7 +3,7 @@ import { HeroSection } from "../src/components/landing/HeroSection";
 import { CategoryGrid } from "../src/components/landing/CategoryGrid";
 import { FeaturedPros } from "../src/components/landing/FeaturedPros";
 import { Footer } from "@/src/components/landing/Footer";
-
+import { Trust } from "@/src/components/landing/Trust";
 export default function Home() {
   return (
     <main className="min-h-screen bg-white flex flex-col">
@@ -13,6 +13,7 @@ export default function Home() {
         <HeroSection />
         <CategoryGrid />
         <FeaturedPros />
+        <Trust />
         <Footer />
       </div>
     </main>

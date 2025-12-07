@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Field } from "../../../types";
+import { Field } from "@tembiapo/db";
+import FieldComponentButton from "../ui/FieldComponentButton";
 
 async function getFields(): Promise<Field[]> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -40,11 +41,9 @@ export async function CategoryGrid() {
           <Link
             key={field.id}
             href={`/search?field=${field.id}`}
-            className="group flex items-center justify-center py-6 px-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 hover:-translate-y-1 transition-all duration-200"
+            className="block"
           >
-            <span className="text-lg font-medium text-gray-700 group-hover:text-black capitalize">
-              {field.name}
-            </span>
+            <FieldComponentButton {...field} />
           </Link>
         ))}
       </div>
