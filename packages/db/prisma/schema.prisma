@@ -129,13 +129,14 @@ model Verification {
 }
 
 model Field {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  id        String    @id @default(uuid())
+  name      String    @unique
+  lucide_icon String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  // --- Relaciones ---
-  professionals FieldProfessional[]
+  // --- Relaciones ---
+  professionals FieldProfessional[]
   portfolioItems PortfolioItem[]
 
   @@map("field") 
