@@ -1,7 +1,8 @@
-import { Navbar } from '../components/landing/Navbar';
-import { HeroSection } from '../components/landing/HeroSection';
-import { CategoryGrid } from '../components/landing/CategoryGrid';
-import { FeaturedPros } from '../components/landing/FeaturedPros';
+import { Navbar } from "../src/components/landing/Navbar";
+import { HeroSection } from "../src/components/landing/HeroSection";
+import { CategoryGrid } from "../src/components/landing/CategoryGrid";
+import { FeaturedPros } from "../src/components/landing/FeaturedPros";
+import { Footer } from "@/src/components/landing/Footer";
 
 export default function Home() {
   return (
@@ -12,10 +13,8 @@ export default function Home() {
         <HeroSection />
         <CategoryGrid />
         <FeaturedPros />
+        <Footer />
       </div>
     </main>
   );
 }
-
-
-
