@@ -7,6 +7,7 @@
     "initiate-prisma-reset": "cd packages/db && npx prisma generate && npx prisma db push --force-reset && npx tsx prisma/seeds/initial-seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:back": "cd apps/back-end && nest start --watch",
+    "build:back": "cd apps/back-end && nest build",
     "install:back": "cd apps/back-end && pnpm install",
     "dev:front": "cd apps/front-end && pnpm run dev",
     "install:front": "cd apps/front-end && pnpm install",
