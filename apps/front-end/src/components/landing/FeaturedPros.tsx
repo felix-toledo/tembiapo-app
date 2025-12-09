@@ -16,19 +16,24 @@ const FEATURED_PROS: ProfessionalMock[] = [
 
 export function FeaturedPros() {
   return (
-    <section className="py-8 container mx-auto px-4">
-      <div className="border-2 border-gray-400 rounded-t-[3rem] pt-12 pb-16 px-6 bg-white">
-        {/* Grid de Resultados */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12">
-              {FEATURED_PROS.map((pro) => (
-                <ProfessionalCard 
-                  key={pro.id}
-                  name={pro.name}
-                  profession={pro.profession}
-                  rating={pro.rating}
-                />
-              ))}
-            </div>
+    <section className="container mx-auto px-4">
+      <div className="border-2 border-gray-400 rounded-[3rem] pt-12 pb-16 px-6 bg-white">
+        <h2 className="text-3xl font-bold mb-8 text-center text-gray-900">
+          Profesionales Destacados
+        </h2>
+        <div className="max-w-7xl mx-auto">
+          {/* Grid de Resultados */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12">
+            {FEATURED_PROS.map((pro) => (
+              <ProfessionalCard
+                key={pro.id}
+                name={pro.name}
+                profession={pro.profession}
+                rating={pro.rating}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

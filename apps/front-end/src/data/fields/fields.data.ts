@@ -9,7 +9,7 @@ export async function getFields(): Promise<Field[]> {
   }
 
   try {
-    const res = await fetch(`${baseUrl}/fields`, {
+    const res = await fetch(`${baseUrl}/api/v1/fields`, {
       cache: "no-store",
     });
 
