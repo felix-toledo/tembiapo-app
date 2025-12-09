@@ -3,9 +3,14 @@ import Image from "next/image";
 import { getFields } from "@/src/data/fields/fields.data";
 import { FieldsSearcher } from "./FieldsSearcher";
 import OurButton from "../ui/OurButton";
+import { getRandomElement } from "@/src/lib/utils";
 
 export async function HeroSection() {
   const fields = await getFields();
+
+  // Seleccionar aleatoriamente una de las dos imágenes de fondo
+  const heroImages = ["/hero_image_1.png", "/hero_image_2.png"];
+  const selectedImage = getRandomElement(heroImages);
 
   return (
     <section className="relative w-full min-h-[85vh] md:min-h-[600px] flex flex-col items-center justify-center overflow-hidden">
@@ -13,7 +18,7 @@ export async function HeroSection() {
       {/* --- CAPA 0: LA BASE (Imagen) --- */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/hero_image_2.png"
+          src={selectedImage}
           alt="Profesional trabajando"
           fill
           className="object-cover object-center"
