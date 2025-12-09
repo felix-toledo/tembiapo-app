@@ -109,14 +109,14 @@ async function main() {
 
   // --- 5. Creación del Usuario Admin ---
   const adminUser = await prisma.user.upsert({
-    where: { mail: "felixtoledoctes@gmail.com" },
+    where: { mail: "felixtoledofac@gmail.com" },
     update: {
       password: hashPassword("admin1234"),
       roleId: adminRole.id,
     },
     create: {
       username: "admin_felix",
-      mail: "felixtoledoctes@gmail.com",
+      mail: "felixtoledofac@gmail.com",
       password: hashPassword("admin1234"),
       roleId: adminRole.id,
       personId: adminPerson.id,
@@ -139,14 +139,14 @@ async function main() {
 
   // --- 7. Creación del Usuario Profesional ---
   const professionalUser = await prisma.user.upsert({
-    where: { mail: "felixtoledofac@gmail.com" },
+    where: { mail: "juancho@gmail.com" },
     update: {
       password: hashPassword("profesional1234"),
       roleId: professionalRole.id,
     },
     create: {
       username: "juan_perez",
-      mail: "felixtoledofac@gmail.com",
+      mail: "juancho@gmail.com",
       password: hashPassword("profesional1234"),
       roleId: professionalRole.id,
       personId: professionalPerson.id,

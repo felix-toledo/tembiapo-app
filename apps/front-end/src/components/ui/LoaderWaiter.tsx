@@ -63,8 +63,8 @@ const StyledWrapper = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 32px;
-    padding: 2rem;
+    gap: 10px;
+    padding: 1rem;
   }
 
   .content-container {
@@ -73,6 +73,7 @@ const StyledWrapper = styled.div`
     align-items: center;
     gap: 16px;
     width: 300px;
+    margin-top: -10px;
   }
 
   .message {
