@@ -1,10 +1,17 @@
-import { Navbar } from "../src/components/landing/Navbar";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+
+import { Navbar } from "../src/components/ui/Navbar";
 import { HeroSection } from "../src/components/landing/HeroSection";
 import { CategoryGrid } from "../src/components/landing/CategoryGrid";
 import { FeaturedPros } from "../src/components/landing/FeaturedPros";
 import { Footer } from "@/src/components/landing/Footer";
 import { Trust } from "@/src/components/landing/Trust";
-export default function Home() {
+
+export default async function Home() {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get("refresh-token");
+
   return (
     <main className="min-h-screen bg-white flex flex-col">
       <Navbar />

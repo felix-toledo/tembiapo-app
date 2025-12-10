@@ -1,4 +1,4 @@
-import { Navbar } from "../../src/components/landing/Navbar";
+import { Navbar } from "../../src/components/ui/Navbar";
 import { FilterBar } from "../../src/components/search/FilterBar";
 import { ProfessionalCard } from "../../src/components/search/ProfessionalCard";
 import { Pagination } from "../../src/components/ui/Pagination";
