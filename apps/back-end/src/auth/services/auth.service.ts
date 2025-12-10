@@ -109,17 +109,18 @@ export class AuthService {
         false,
       );
 
-      try {
-        await this.mailService.sendWelcomeMail(
-          register.email,
-          'asd',
-          register.name,
-        );
-      } catch (error) {
-        // Para el MVP, logueamos el error pero NO fallamos el registro,
-        // el usuario podrá pedir "Reenviar correo de confirmación" después.
-        console.error('Error enviando email de verificación:', error);
-      }
+      // TODO: Implementar envío de email una vez configurado el servicio de email
+      // try {
+      //   await this.mailService.sendWelcomeMail(
+      //     register.email,
+      //     'asd',
+      //     register.name,
+      //   );
+      // } catch (error) {
+      //   // Para el MVP, logueamos el error pero NO fallamos el registro,
+      //   // el usuario podrá pedir "Reenviar correo de confirmación" después.
+      //   console.error('Error enviando email de verificación:', error);
+      // }
       ///retornamos el person y user
       return { person, user };
     });
