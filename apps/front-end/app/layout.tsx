@@ -19,7 +19,6 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "../src/context/AuthContext";
-import StyledComponentsRegistry from "../src/providers/StyledComponentsRegistry";
 
 export default function RootLayout({
   children,
