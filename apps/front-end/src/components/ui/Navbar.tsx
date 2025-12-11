@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import OurButton from "./OurButton";
+import UserDisplay from "./UserDisplay";
 import { useAuth } from "@/src/context/AuthContext";
 
 export function Navbar({ wantButtons = true }: { wantButtons?: boolean }) {
@@ -56,19 +57,30 @@ export function Navbar({ wantButtons = true }: { wantButtons?: boolean }) {
           )}
           {user && (
             <>
-              <p>Hola, {user.name}</p>
-              <OurButton
-                frontColor="var(--color-tierra-activa)"
-                textColor="var(--color-blanco-puro)"
-                shadowColor="#c2410b" /* Darker orange for shadow */
-                outlineColor="var(--color-tierra-activa)"
+              <UserDisplay user={user} />
+              <button
                 onClick={handleLogout}
+                className="p-2 rounded-full text-parana-profundo hover:bg-gray-100 hover:text-tierra-activa transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-parana-profundo focus:ring-offset-2"
+                title="Cerrar Sesión"
+                aria-label="Cerrar Sesión"
               >
-                Cerrar Sesión
-              </OurButton>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+                  />
+                </svg>
+              </button>
             </>
           )}
-          ;
         </div>
       </div>
     </nav>
