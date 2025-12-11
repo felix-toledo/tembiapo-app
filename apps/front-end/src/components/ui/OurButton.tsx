@@ -13,7 +13,6 @@ interface OurButtonProps {
   // 1. Agregamos las props necesarias para interactividad y estilos externos
   className?: string;
   onClick?: () => void;
-  onClick?: () => void;
 }
 
 const OurButton = ({

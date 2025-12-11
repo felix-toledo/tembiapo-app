@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   compiler: {
+    // ESTO ES VITAL: Le dice a Next que maneje los hashes de styled-components
     styledComponents: true,
   },
   images: {
@@ -11,12 +12,6 @@ const nextConfig: NextConfig = {
         hostname: "github.com",
       },
     ],
-  },
-  compiler: {
-    // ESTO ES VITAL: Le dice a Next que maneje los hashes de styled-components
-    styledComponents: true,
-  },
-  images: {
     qualities: [75, 80, 90], // (Lo que agregamos antes para las imágenes)
   },
 };
