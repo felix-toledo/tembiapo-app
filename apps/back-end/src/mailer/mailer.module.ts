@@ -1,32 +1,31 @@
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigService } from '@nestjs/config'; // Importante para no hardcodear secretos
+import { ConfigService } from '@nestjs/config';
 import { MailService } from './mailer.service';
 
 @Module({
   imports: [
-    // Usamos forRootAsync para poder inyectar el ConfigService.
-    // Si usáramos forRoot() normal, no podríamos leer el .env aquí dentro fácilmente.
     MailerModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         transport: {
-          host: 'smtp.resend.com', // Host de Resend
+          host: 'smtp.resend.com',
           secure: true,
           port: 465,
           auth: {
             user: 'resend',
-            pass: config.get<string>('RESEND_API_KEY'), // Lee del .env
+            pass: config.get<string>('RESEND_API_KEY'),
           },
         },
         defaults: {
-          // Configura el remitente por defecto para no repetirlo en cada mail
-          from: `"Soporte Tembiapó" <${config.get<string>('MAIL_FROM') ?? 'onboarding@resend.dev'}>`,
+          // OJO: Aquí aseguramos la CONFIANZA.
+          // Usa el subdominio verificado (ej: no-reply@notificaciones.tembiapo.com.ar)
+          from: `"Soporte Tembiapó" <${config.get<string>('MAIL_FROM') ?? 'no-reply@envios.tembiapo.app'}>`,
         },
       }),
-      inject: [ConfigService], // Inyectamos la dependencia
+      inject: [ConfigService],
     }),
   ],
   providers: [MailService],
-  exports: [MailService], // Esto permite que otros modulos usen MailService
+  exports: [MailService],
 })
 export class MailModule {}
