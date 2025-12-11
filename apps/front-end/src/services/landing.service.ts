@@ -1,21 +1,13 @@
-// apps/front-end/src/services/landing.service.ts
-
 import { Professional, PaginationData, ApiSuccessResponse } from '../../types';
 import { ServiceArea, Field } from '@tembiapo/db';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-// Definimos qué necesita la Home para funcionar
-interface LandingPageData {
-  professionals: Professional[];
-  pagination: PaginationData;
-  areas: ServiceArea[];
-  title: string;
-}
+// --- 1. FETCH "LENTO" (Profesionales) ---
+export async function fetchProfessionals(filters: { [key: string]: string | string[] | undefined }) {
+  
+  await new Promise((resolve) => setTimeout(resolve, 3000)); // Retraso artificial de 3 segundos
 
-// --- LOGICA PRIVADA DE FETCHING (No se exporta) ---
-
-async function fetchProfessionals(filters: { [key: string]: string | string[] | undefined }) {
   const params = new URLSearchParams();
   const page = typeof filters.page === 'string' ? filters.page : '1';
   
@@ -37,14 +29,18 @@ async function fetchProfessionals(filters: { [key: string]: string | string[] | 
   }
 }
 
-async function fetchServiceAreas(): Promise<ServiceArea[]> {
+// --- 2. FETCH RÁPIDO (Áreas de Servicio) ---
+// Exportamos para que page.tsx lo llame directo y cargue rápido.
+export async function fetchServiceAreas(): Promise<ServiceArea[]> {
   try {
     const res = await fetch(`${API_URL}/service-areas`, { cache: 'no-store' });
     return res.ok ? await res.json() : [];
   } catch { return []; }
 }
 
-async function fetchFields(): Promise<Field[]> {
+// --- 3. FETCH RÁPIDO (Rubros) ---
+// Exportamos para que page.tsx lo llame directo.
+export async function fetchFields(): Promise<Field[]> {
   try {
     const res = await fetch(`${API_URL}/fields`, { cache: 'no-store' });
     return res.ok ? await res.json() : [];
@@ -52,7 +48,7 @@ async function fetchFields(): Promise<Field[]> {
 }
 
 // --- LOGICA DE NEGOCIO (Calcular Título) ---
-function getSectionTitle(filters: { [key: string]: string | string[] | undefined }, fields: Field[]): string {
+export function getSectionTitle(filters: { [key: string]: string | string[] | undefined }, fields: Field[]): string {
   if (typeof filters.field === 'string' && fields.length > 0) {
     const selectedField = fields.find(f => f.id === filters.field);
     if (selectedField) return `Profesionales: ${selectedField.name}`;
@@ -66,20 +62,13 @@ function getSectionTitle(filters: { [key: string]: string | string[] | undefined
   return "Profesionales Mejor Valuados";
 }
 
-// --- FUNCIÓN PÚBLICA (La única que llama la Page) ---
-export async function getLandingData(searchParams: { [key: string]: string | string[] | undefined }): Promise<LandingPageData> {
-  // Ejecutamos todo en paralelo
-  const [professionalsData, areasData, fieldsData] = await Promise.all([
-    fetchProfessionals(searchParams),
+// --- HELPER OPCIONAL (Para datos iniciales rápidos) ---
+// Si quieres limpiar page.tsx, puedes usar esto para traer SOLO lo rápido.
+export async function getFastLandingData() {
+  const [areas, fields] = await Promise.all([
     fetchServiceAreas(),
     fetchFields()
   ]);
-
-  return {
-    professionals: professionalsData?.professionals || [],
-    pagination: professionalsData?.pagination || { page: 1, totalPages: 1, limit: 8, total: 0 },
-    areas: areasData,
-    // Calculamos el título aquí dentro para no ensuciar la vista
-    title: getSectionTitle(searchParams, fieldsData) 
-  };
+  
+  return { areas, fields };
 }

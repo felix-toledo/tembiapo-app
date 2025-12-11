@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { AutoScroll } from '@/src/lib/utils';
 
 export function SearchInput() {
     const router = useRouter();
@@ -17,6 +18,8 @@ export function SearchInput() {
         if (term.trim()) params.set('q', term);
         else params.delete('q');
         router.push(`/?${params.toString()}#results`, { scroll: false });
+
+        AutoScroll('results');
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

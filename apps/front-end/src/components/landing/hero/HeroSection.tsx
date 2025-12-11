@@ -1,9 +1,8 @@
-import { Search, CheckCircle, Shield, Star } from "lucide-react";
+import { CheckCircle, Shield, Star } from "lucide-react";
 import Image from "next/image";
 import { getFields } from "@/src/data/fields/fields.data";
-import { FieldsSearcher } from "./FieldsSearcher";
-import OurButton from "../ui/OurButton";
 import { getRandomElement } from "@/src/lib/utils";
+import { HeroSearchForm } from "./HeroSearchForm";
 
 export async function HeroSection() {
   const fields = await getFields();
@@ -41,17 +40,7 @@ export async function HeroSection() {
           Carpinteros, electricistas y más, validados por tu comunidad.
         </p>
 
-        <div className="w-full max-w-2xl bg-white rounded-2xl p-3 shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="flex-1">
-            <FieldsSearcher fields={fields} />
-          </div>
-          <div className="w-full sm:w-auto min-w-[140px]">
-            <OurButton className="w-full justify-center">
-              <Search size={20} className="mr-2" />
-              <span>Buscar</span>
-            </OurButton>
-          </div>
-        </div>
+        <HeroSearchForm fields={fields}/>
 
         <div className="flex flex-wrap justify-center gap-3 w-full">
           <Badge icon={<CheckCircle size={16} className="text-green-600" />} text="Identidad Validada" />

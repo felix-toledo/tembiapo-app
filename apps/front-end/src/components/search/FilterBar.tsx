@@ -32,7 +32,7 @@ export function FilterBar({ areas }: FilterBarProps) {
       <div className="flex flex-col gap-1 w-full sm:w-auto">
         <label className="text-xs font-bold text-gray-500 uppercase ml-1">Ubicación</label>
         <select 
-          className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg bg-white text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer uppercase text-sm"
+          className="input-primary"
           onChange={(e) => handleFilterChange('area', e.target.value)}
           defaultValue={searchParams.get('area') || ''}
         >
@@ -49,7 +49,7 @@ export function FilterBar({ areas }: FilterBarProps) {
       <div className="flex flex-col gap-1 w-full sm:w-auto">
         <label className="text-xs font-bold text-gray-500 uppercase ml-1">Estado</label>
         <select 
-          className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg bg-white text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer uppercase text-sm"
+          className="input-primary"
           onChange={(e) => handleFilterChange('isVerified', e.target.value)}
           defaultValue={searchParams.get('isVerified') || ''}
         >
@@ -62,7 +62,7 @@ export function FilterBar({ areas }: FilterBarProps) {
       <div className="flex flex-col gap-1 w-full sm:w-auto">
         <label className="text-xs font-bold text-gray-500 uppercase ml-1">Valoración</label>
         <select 
-          className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg bg-white text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer uppercase text-sm"
+          className="input-primary"
           onChange={(e) => handleFilterChange('rating', e.target.value)}
           defaultValue={searchParams.get('rating') || ''}
         >

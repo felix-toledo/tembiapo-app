@@ -31,7 +31,7 @@ const LoaderWaiter = ({ messages }: LoaderWaiterProps) => {
           <LoaderWaiterMini size={100} />
 
           <div className="content-container">
-            <p className="message" key={currentMessageIndex}>
+            <p className="message text-xl font-bold tracking-wide uppercase text-gray-800" key={currentMessageIndex}>
               {currentMessage}
             </p>
             {/* Reflejos bar like LoaderSearcher */}
@@ -76,10 +76,7 @@ const StyledWrapper = styled.div`
   }
 
   .message {
-    font-family: var(--font-primary, sans-serif);
     color: var(--color-parana-profundo);
-    font-size: 1.2rem;
-    font-weight: 500;
     text-align: center;
     min-height: 1.6em;
     animation: fadeSlide 3s infinite;
