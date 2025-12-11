@@ -35,7 +35,7 @@ export class MailService {
     token: string,
     name: string,
   ): Promise<void> {
-    const url = `${appUrl}/auth/reset-password?token=${token}`;
+    const url = `${appUrl}/reset-password?token=${token}`;
 
     await this.mailerService.sendMail({
       to: email,
