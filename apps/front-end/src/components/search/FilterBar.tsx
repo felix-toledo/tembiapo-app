@@ -55,6 +55,7 @@ export function FilterBar({ areas }: FilterBarProps) {
         >
           <option value="">Todos</option>
           <option value="true">Solo Verificados</option>
+          <option value="false">No verificados</option>
         </select>
       </div>
 
