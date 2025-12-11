@@ -1,12 +1,11 @@
+// src/components/ui/loaders/LoaderWaiterMini.tsx
 "use client";
-
-import React from "react";
 import styled from "styled-components";
 import Image from "next/image";
 
 interface LoaderWaiterMiniProps {
   size?: number;
-  className?: string;
+  className?: string; // Esto es vital para moverlo con Tailwind
 }
 
 const LoaderWaiterMini = ({
@@ -14,6 +13,7 @@ const LoaderWaiterMini = ({
   className = "",
 }: LoaderWaiterMiniProps) => {
   return (
+    // Pasamos la className al Wrapper
     <StyledWrapper $size={size} className={className}>
       <div className="image-wrapper">
         <Image

@@ -10,16 +10,21 @@ interface OurButtonProps {
   shadowColor?: string;
   textColor?: string;
   outlineColor?: string;
+  // 1. Agregamos las props necesarias para interactividad y estilos externos
+  className?: string;
+  onClick?: () => void;
   onClick?: () => void;
 }
 
 const OurButton = ({
   children,
   frontColor = "var(--color-parana-profundo)",
-  edgeColor, // default handled in styled comp if not passed
+  edgeColor,
   shadowColor = "var(--color-gris-oscuro)",
   textColor = "var(--color-blanco-puro)",
   outlineColor = "var(--color-tierra-activa)",
+  // 2. Recibimos las props
+  className,
   onClick,
 }: OurButtonProps) => {
   return (
@@ -29,8 +34,12 @@ const OurButton = ({
       $shadowColor={shadowColor}
       $textColor={textColor}
       $outlineColor={outlineColor}
+      // 3. Pasamos la className al contenedor principal (el Wrapper)
+      // Esto permite que si le pasas "w-full", el wrapper ocupe todo el ancho.
+      className={className}
     >
-      <button className="pushable" {...(onClick ? { onClick } : {})}>
+      {/* 4. Pasamos el onClick al botón nativo interno */}
+      <button className="pushable" onClick={onClick}>
         <span className="shadow" />
         <span className="edge" />
         <span className="front"> {children} </span>
@@ -46,6 +55,10 @@ const StyledWrapper = styled.div<{
   $textColor: string;
   $outlineColor: string;
 }>`
+  /* IMPORTANTE: Esto asegura que el wrapper no bloquee el ancho */
+  display: inline-block;
+  /* Si le pasas w-full desde fuera, Tailwind sobrescribirá este display a block o flex */
+
   .pushable {
     position: relative;
     background: transparent;
@@ -56,8 +69,10 @@ const StyledWrapper = styled.div<{
     outline-color: ${(props) => props.$outlineColor};
     transition: filter 250ms;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    width: 100%;
+    width: 100%; /* Esto hace que el botón llene al wrapper */
   }
+
+  /* ... El resto de tus estilos (.shadow, .edge, .front, hovers) se mantienen IGUAL ... */
 
   .shadow {
     position: absolute;

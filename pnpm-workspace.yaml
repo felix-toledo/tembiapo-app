@@ -3,9 +3,10 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@prisma/client'
-  - '@prisma/engines'
+  - "@nestjs/core"
+  - "@prisma/client"
+  - "@prisma/engines"
+  - "@scarf/scarf"
   - bcrypt
   - esbuild
   - prisma

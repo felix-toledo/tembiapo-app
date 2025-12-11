@@ -1,31 +1,6 @@
 import Link from "next/link";
-import { Field } from "@tembiapo/db";
 import FieldComponentButton from "../ui/FieldComponentButton";
-
-async function getFields(): Promise<Field[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
-  if (!baseUrl) {
-    console.error("LA VARIABLE NEXT_PUBLIC_API_URL NO ESTÁ DEFINIDA");
-    return [];
-  }
-
-  try {
-    const res = await fetch(`${baseUrl}/fields`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      console.error("Error al obtener los rubros");
-      return [];
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
+import { getFields } from "../../data/fields/fields.data";
 
 export async function CategoryGrid() {
   const fields = await getFields();
