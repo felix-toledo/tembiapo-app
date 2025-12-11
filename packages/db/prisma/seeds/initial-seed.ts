@@ -42,21 +42,26 @@ async function main() {
   );
 
   // --- 2. Creación de Rubros (Fields) ---
-  const fieldCarpintero = await prisma.field.upsert({
-    where: { name: "Carpintero" },
-    update: {},
-    create: { name: "Carpintero" },
-  });
+  const fields = [
+    "Carpintero",
+    "Electricista",
+    "Albañil",
+    "Plomero",
+    "Gasista",
+  ];
 
-  const fieldElectricista = await prisma.field.upsert({
-    where: { name: "Electricista" },
-    update: {},
-    create: { name: "Electricista" },
-  });
+  const fieldMap = new Map();
 
-  console.log(
-    `Rubros creados/asegurados: ${fieldCarpintero.name}, ${fieldElectricista.name}`
-  );
+  for (const fieldName of fields) {
+    const field = await prisma.field.upsert({
+      where: { name: fieldName },
+      update: {},
+      create: { name: fieldName },
+    });
+    fieldMap.set(fieldName, field);
+  }
+
+  console.log(`Rubros creados/asegurados: ${fields.join(", ")}`);
 
   // --- 3. Creación de Áreas de Servicio ---
   const serviceAreaCorrientes = await prisma.serviceArea.upsert({
@@ -95,7 +100,7 @@ async function main() {
 
   console.log(`Áreas de servicio creadas/aseguradas: Corrientes, Resistencia`);
 
-  // --- 4. Creación de la Persona para el Admin ---
+  // --- 4. Creación del Admin ---
   const adminPerson = await prisma.person.upsert({
     where: { dni: "00000000" },
     update: {},
@@ -107,7 +112,6 @@ async function main() {
     },
   });
 
-  // --- 5. Creación del Usuario Admin ---
   const adminUser = await prisma.user.upsert({
     where: { mail: "felixtoledofac@gmail.com" },
     update: {
@@ -125,207 +129,352 @@ async function main() {
 
   console.log(`Usuario Admin creado/asegurado: ${adminUser.mail}`);
 
-  // --- 6. Creación de la Persona para el Profesional ---
-  const professionalPerson = await prisma.person.upsert({
-    where: { dni: "11111111" },
-    update: {},
-    create: {
+  // --- 5. Creación de Profesionales ---
+
+  const professionalsData = [
+    {
+      // 1. Juan Perez (Verificado) - Carpintero & Electricista
       name: "Juan",
       lastName: "Perez",
       dni: "11111111",
       isVerified: true,
-    },
-  });
-
-  // --- 7. Creación del Usuario Profesional ---
-  const professionalUser = await prisma.user.upsert({
-    where: { mail: "juancho@gmail.com" },
-    update: {
-      password: hashPassword("profesional1234"),
-      roleId: professionalRole.id,
-    },
-    create: {
+      email: "juan.perez@example.com",
       username: "juan_perez",
-      mail: "juancho@gmail.com",
-      password: hashPassword("profesional1234"),
-      roleId: professionalRole.id,
-      personId: professionalPerson.id,
-    },
-  });
-
-  // --- 8. Creación del Perfil Profesional ---
-  const professionalProfile = await prisma.professional.upsert({
-    where: { userId: professionalUser.id },
-    update: {},
-    create: {
-      userId: professionalUser.id,
-      description: "Profesional con experiencia en carpintería y electricidad.",
-      whatsappContact: "3794111111",
-    },
-  });
-
-  // --- 9. Vinculación de Rubros al Profesional ---
-  // Carpintero (Principal)
-  await prisma.fieldProfessional.upsert({
-    where: {
-      professionalId_fieldId: {
-        professionalId: professionalProfile.id,
-        fieldId: fieldCarpintero.id,
-      },
-    },
-    update: { isMain: true },
-    create: {
-      professionalId: professionalProfile.id,
-      fieldId: fieldCarpintero.id,
-      isMain: true,
-    },
-  });
-
-  // Electricista
-  await prisma.fieldProfessional.upsert({
-    where: {
-      professionalId_fieldId: {
-        professionalId: professionalProfile.id,
-        fieldId: fieldElectricista.id,
-      },
-    },
-    update: { isMain: false },
-    create: {
-      professionalId: professionalProfile.id,
-      fieldId: fieldElectricista.id,
-      isMain: false,
-    },
-  });
-
-  // --- 10. Vinculación de Áreas de Servicio al Profesional ---
-  // Corrientes
-  await prisma.areaProfessional.upsert({
-    where: {
-      professionalId_areaId: {
-        professionalId: professionalProfile.id,
-        areaId: serviceAreaCorrientes.id,
-      },
-    },
-    update: { isMain: true },
-    create: {
-      professionalId: professionalProfile.id,
-      areaId: serviceAreaCorrientes.id,
-      isMain: true,
-    },
-  });
-
-  // Resistencia
-  await prisma.areaProfessional.upsert({
-    where: {
-      professionalId_areaId: {
-        professionalId: professionalProfile.id,
-        areaId: serviceAreaResistencia.id,
-      },
-    },
-    update: { isMain: false },
-    create: {
-      professionalId: professionalProfile.id,
-      areaId: serviceAreaResistencia.id,
-      isMain: false,
-    },
-  });
-
-  console.log(
-    `Usuario Profesional creado/asegurado: ${professionalUser.mail} con perfil y relaciones.`
-  );
-
-  // --- 11. Creación de Portfolio Items ---
-  const portfolioItem1 = await prisma.portfolioItem.upsert({
-    where: { id: "portfolio-item-1-seed" },
-    update: {},
-    create: {
-      id: "portfolio-item-1-seed",
-      title: "Mueble de cocina personalizado",
       description:
-        "Diseño y construcción de mueble de cocina en madera de cedro con acabado natural.",
-      professionalId: professionalProfile.id,
-      fieldId: fieldCarpintero.id,
+        "Especialista en muebles a medida y reparaciones eléctricas.",
+      fields: [
+        { name: "Carpintero", isMain: true },
+        { name: "Electricista", isMain: false },
+      ],
+      areas: [{ area: serviceAreaCorrientes, isMain: true }],
+      portfolio: [
+        {
+          title: "Mueble de cocina",
+          description: "Cocina integral en melamina blanca.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/juan1/800/600",
+              desc: "Vista general",
+            },
+            {
+              url: "https://picsum.photos/seed/juan2/800/600",
+              desc: "Detalle de alacena",
+            },
+          ],
+        },
+        {
+          title: "Instalación de luminarias",
+          description: "Colocación de luces LED en departamento.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/juan3/800/600",
+              desc: "Sala de estar",
+            },
+            {
+              url: "https://picsum.photos/seed/juan4/800/600",
+              desc: "Cocina iluminada",
+            },
+          ],
+        },
+      ],
     },
-  });
-
-  // Imágenes para el primer portfolio item
-  await prisma.portfolioImage.upsert({
-    where: { id: "portfolio-image-1-1-seed" },
-    update: {},
-    create: {
-      id: "portfolio-image-1-1-seed",
-      imageUrl: "https://picsum.photos/800/600?random=1",
-      description: "Vista frontal del mueble de cocina",
-      order: 0,
-      portfolioItemId: portfolioItem1.id,
+    {
+      // 2. Maria Gonzalez (Verificado) - Albañil
+      name: "Maria",
+      lastName: "Gonzalez",
+      dni: "22222222",
+      isVerified: true,
+      email: "maria.gonzalez@example.com",
+      username: "maria_gonzalez",
+      description: "Construcción en general, reformas y ampliaciones.",
+      fields: [{ name: "Albañil", isMain: true }],
+      areas: [{ area: serviceAreaResistencia, isMain: true }],
+      portfolio: [
+        {
+          title: "Quincho con parrilla",
+          description: "Construcción desde cero de quincho familiar.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/maria1/800/600",
+              desc: "Estructura terminada",
+            },
+            {
+              url: "https://picsum.photos/seed/maria2/800/600",
+              desc: "Parrilla en detalle",
+            },
+          ],
+        },
+        {
+          title: "Revoque exterior",
+          description: "Revoque fino en fachada de vivienda.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/maria3/800/600",
+              desc: "Frente de la casa",
+            },
+            {
+              url: "https://picsum.photos/seed/maria4/800/600",
+              desc: "Terminación de muro",
+            },
+          ],
+        },
+      ],
     },
-  });
-
-  await prisma.portfolioImage.upsert({
-    where: { id: "portfolio-image-1-2-seed" },
-    update: {},
-    create: {
-      id: "portfolio-image-1-2-seed",
-      imageUrl: "https://picsum.photos/800/600?random=2",
-      description: "Detalle de cajones y herrajes",
-      order: 1,
-      portfolioItemId: portfolioItem1.id,
+    {
+      // 3. Carlos Lopez (No Verificado) - Plomero
+      name: "Carlos",
+      lastName: "Lopez",
+      dni: "33333333",
+      isVerified: false,
+      email: "carlos.lopez@example.com",
+      username: "carlos_lopez",
+      description: "Soluciones rápidas para problemas de plomería.",
+      fields: [{ name: "Plomero", isMain: true }],
+      areas: [{ area: serviceAreaCorrientes, isMain: true }],
+      portfolio: [
+        {
+          title: "Reparación de filtración",
+          description: "Arreglo de caño roto en baño.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/carlos1/800/600",
+              desc: "Caño dañado",
+            },
+            {
+              url: "https://picsum.photos/seed/carlos2/800/600",
+              desc: "Reparación finalizada",
+            },
+          ],
+        },
+        {
+          title: "Instalación de grifería",
+          description: "Cambio de grifería en cocina y baño.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/carlos3/800/600",
+              desc: "Grifería de cocina nueva",
+            },
+            {
+              url: "https://picsum.photos/seed/carlos4/800/600",
+              desc: "Grifería de baño instalada",
+            },
+          ],
+        },
+      ],
     },
-  });
-
-  const portfolioItem2 = await prisma.portfolioItem.upsert({
-    where: { id: "portfolio-item-2-seed" },
-    update: {},
-    create: {
-      id: "portfolio-item-2-seed",
-      title: "Instalación eléctrica residencial",
-      description:
-        "Instalación completa de sistema eléctrico en vivienda de 120m2, incluyendo tablero principal y sistema de iluminación LED.",
-      professionalId: professionalProfile.id,
-      fieldId: fieldElectricista.id,
+    {
+      // 4. Ana Martinez (No Verificado) - Gasista
+      name: "Ana",
+      lastName: "Martinez",
+      dni: "44444444",
+      isVerified: false,
+      email: "ana.martinez@example.com",
+      username: "ana_martinez",
+      description: "Gasista matriculada, instalaciones y revisiones.",
+      fields: [{ name: "Gasista", isMain: true }],
+      areas: [{ area: serviceAreaResistencia, isMain: true }],
+      portfolio: [
+        {
+          title: "Instalación de calefón",
+          description: "Colocación y prueba de calefón a gas.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/ana1/800/600",
+              desc: "Calefón instalado",
+            },
+            {
+              url: "https://picsum.photos/seed/ana2/800/600",
+              desc: "Conexión de gas",
+            },
+          ],
+        },
+        {
+          title: "Inspección de fugas",
+          description: "Revisión integral de instalación de gas.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/ana3/800/600",
+              desc: "Manómetro de prueba",
+            },
+            {
+              url: "https://picsum.photos/seed/ana4/800/600",
+              desc: "Cañerías revisadas",
+            },
+          ],
+        },
+      ],
     },
-  });
-
-  // Imágenes para el segundo portfolio item
-  await prisma.portfolioImage.upsert({
-    where: { id: "portfolio-image-2-1-seed" },
-    update: {},
-    create: {
-      id: "portfolio-image-2-1-seed",
-      imageUrl: "https://picsum.photos/800/600?random=3",
-      description: "Tablero eléctrico instalado",
-      order: 0,
-      portfolioItemId: portfolioItem2.id,
+    {
+      // 5. Pedro Sanchez (No Verificado) - Carpintero
+      name: "Pedro",
+      lastName: "Sanchez",
+      dni: "55555555",
+      isVerified: false,
+      email: "pedro.sanchez@example.com",
+      username: "pedro_sanchez",
+      description: "Restauración de muebles y trabajos en madera.",
+      fields: [{ name: "Carpintero", isMain: true }],
+      areas: [
+        { area: serviceAreaCorrientes, isMain: true },
+        { area: serviceAreaResistencia, isMain: false },
+      ],
+      portfolio: [
+        {
+          title: "Restauración de silla antigua",
+          description: "Lijado, encolado y barnizado de silla de roble.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/pedro1/800/600",
+              desc: "Estado original",
+            },
+            {
+              url: "https://picsum.photos/seed/pedro2/800/600",
+              desc: "Silla restaurada",
+            },
+          ],
+        },
+        {
+          title: "Estantería flotante",
+          description: "Instalación de estantes de madera para libros.",
+          images: [
+            {
+              url: "https://picsum.photos/seed/pedro3/800/600",
+              desc: "Estante colocado",
+            },
+            {
+              url: "https://picsum.photos/seed/pedro4/800/600",
+              desc: "Libros en estante",
+            },
+          ],
+        },
+      ],
     },
-  });
+  ];
 
-  await prisma.portfolioImage.upsert({
-    where: { id: "portfolio-image-2-2-seed" },
-    update: {},
-    create: {
-      id: "portfolio-image-2-2-seed",
-      imageUrl: "https://picsum.photos/800/600?random=4",
-      description: "Sistema de iluminación LED en sala",
-      order: 1,
-      portfolioItemId: portfolioItem2.id,
-    },
-  });
+  for (const p of professionalsData) {
+    // 1. Crear Persona
+    const person = await prisma.person.upsert({
+      where: { dni: p.dni },
+      update: {},
+      create: {
+        name: p.name,
+        lastName: p.lastName,
+        dni: p.dni,
+        isVerified: p.isVerified,
+      },
+    });
 
-  await prisma.portfolioImage.upsert({
-    where: { id: "portfolio-image-2-3-seed" },
-    update: {},
-    create: {
-      id: "portfolio-image-2-3-seed",
-      imageUrl: "https://picsum.photos/800/600?random=5",
-      description: "Cableado estructurado",
-      order: 2,
-      portfolioItemId: portfolioItem2.id,
-    },
-  });
+    // 2. Crear Usuario
+    const user = await prisma.user.upsert({
+      where: { mail: p.email },
+      update: {
+        password: hashPassword("profesional1234"),
+        roleId: professionalRole.id,
+      },
+      create: {
+        username: p.username,
+        mail: p.email,
+        password: hashPassword("profesional1234"),
+        roleId: professionalRole.id,
+        personId: person.id,
+      },
+    });
 
-  console.log(
-    `Portfolio items creados: ${portfolioItem1.title}, ${portfolioItem2.title}`
-  );
+    // 3. Crear Perfil Profesional
+    const professionalProfile = await prisma.professional.upsert({
+      where: { userId: user.id },
+      update: {
+        description: p.description,
+      },
+      create: {
+        userId: user.id,
+        description: p.description,
+        whatsappContact: "3794000000", // Default para todos por ahora
+      },
+    });
+
+    // 4. Vincular Rubros
+    for (const f of p.fields) {
+      const fieldEntity = fieldMap.get(f.name);
+      if (fieldEntity) {
+        await prisma.fieldProfessional.upsert({
+          where: {
+            professionalId_fieldId: {
+              professionalId: professionalProfile.id,
+              fieldId: fieldEntity.id,
+            },
+          },
+          update: { isMain: f.isMain },
+          create: {
+            professionalId: professionalProfile.id,
+            fieldId: fieldEntity.id,
+            isMain: f.isMain,
+          },
+        });
+      }
+    }
+
+    // 5. Vincular Áreas
+    for (const a of p.areas) {
+      await prisma.areaProfessional.upsert({
+        where: {
+          professionalId_areaId: {
+            professionalId: professionalProfile.id,
+            areaId: a.area.id,
+          },
+        },
+        update: { isMain: a.isMain },
+        create: {
+          professionalId: professionalProfile.id,
+          areaId: a.area.id,
+          isMain: a.isMain,
+        },
+      });
+    }
+
+    // 6. Crear Portfolio Items
+    let itemIndex = 1;
+    for (const item of p.portfolio) {
+      // Usamos un ID determinístico para que los upserts funcionen bien si se corre de nuevo
+      const itemId = `portfolio-${p.username}-${itemIndex}`;
+
+      // Asignamos el primer rubro del profesional por defecto si no es específico
+      const fieldEntity = fieldMap.get(p.fields[0].name);
+
+      const portfolioItem = await prisma.portfolioItem.upsert({
+        where: { id: itemId },
+        update: {},
+        create: {
+          id: itemId,
+          title: item.title,
+          description: item.description,
+          professionalId: professionalProfile.id,
+          fieldId: fieldEntity.id,
+        },
+      });
+
+      // 7. Crear Imágenes del Portfolio
+      let imgIndex = 1;
+      for (const img of item.images) {
+        const imgId = `${itemId}-img-${imgIndex}`;
+        await prisma.portfolioImage.upsert({
+          where: { id: imgId },
+          update: {},
+          create: {
+            id: imgId,
+            imageUrl: img.url,
+            description: img.desc,
+            order: imgIndex - 1,
+            portfolioItemId: portfolioItem.id,
+          },
+        });
+        imgIndex++;
+      }
+      itemIndex++;
+    }
+
+    console.log(`Profesional procesado: ${p.username}`);
+  }
 
   console.log("Seeding completado exitosamente.");
 }

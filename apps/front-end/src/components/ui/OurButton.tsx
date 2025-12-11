@@ -10,6 +10,7 @@ interface OurButtonProps {
   shadowColor?: string;
   textColor?: string;
   outlineColor?: string;
+  onClick?: () => void;
 }
 
 const OurButton = ({
@@ -19,6 +20,7 @@ const OurButton = ({
   shadowColor = "var(--color-gris-oscuro)",
   textColor = "var(--color-blanco-puro)",
   outlineColor = "var(--color-tierra-activa)",
+  onClick,
 }: OurButtonProps) => {
   return (
     <StyledWrapper
@@ -28,7 +30,7 @@ const OurButton = ({
       $textColor={textColor}
       $outlineColor={outlineColor}
     >
-      <button className="pushable">
+      <button className="pushable" {...(onClick ? { onClick } : {})}>
         <span className="shadow" />
         <span className="edge" />
         <span className="front"> {children} </span>

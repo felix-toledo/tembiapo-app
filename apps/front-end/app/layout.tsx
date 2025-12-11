@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Encontrá profesionales de confianza en el NEA.",
 };
 
+import { AuthProvider } from "../src/context/AuthContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

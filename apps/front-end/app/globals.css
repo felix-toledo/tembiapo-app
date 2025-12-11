@@ -13,11 +13,11 @@
   --font-mono: var(--font-geist-mono);
 
   /* Custom Variables Mapping */
-  --color-parana-profundo: var(--color-parana-profundo);
-  --color-tierra-activa: var(--color-tierra-activa);
-  --color-blanco-puro: var(--color-blanco-puro);
-  --color-gris-oscuro: var(--color-gris-oscuro);
-  --color-gris-fondo-claro: var(--color-gris-fondo-claro);
+  --color-parana-profundo: #314a6b;
+  --color-tierra-activa: #e85e25;
+  --color-blanco-puro: #ffffff;
+  --color-gris-oscuro: #333333;
+  --color-gris-fondo-claro: #f5f7fa;
 
   --font-primary: var(--font-primary);
   --font-secondary: var(--font-secondary);
