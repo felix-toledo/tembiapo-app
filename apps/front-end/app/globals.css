@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./variables.css";
 
 :root {
   --background: #ffffff;
@@ -10,6 +11,16 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Custom Variables Mapping */
+  --color-parana-profundo: #314a6b;
+  --color-tierra-activa: #e85e25;
+  --color-blanco-puro: #ffffff;
+  --color-gris-oscuro: #333333;
+  --color-gris-fondo-claro: #f5f7fa;
+
+  --font-primary: var(--font-primary);
+  --font-secondary: var(--font-secondary);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +34,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.input-primary {
+  @apply w-full min-w-[200px] px-5 py-3 border-2 border-gray-400 rounded-lg bg-white text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer uppercase text-sm;
 }

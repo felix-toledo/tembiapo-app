@@ -25,6 +25,7 @@ import { LoginResponseDTO } from '../DTOs/responses/login-response.dto';
 import { LoginRequestDTO } from '../DTOs/login-request.dto';
 import { RegisterResponseData } from '../DTOs/responses/register-response.dto';
 import { LogoutResponseDTO } from '../DTOs/responses/logout-response.dto';
+import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
 import {
   ForgotPasswordRequestDTO,
   ResetPasswordRequestDTO,
@@ -34,8 +35,8 @@ import {
   ResetPasswordResponseDTO,
 } from '../DTOs/responses/forgotPassword-response.dto';
 //==========ENTIDADES=============
-import {RefreshToken, User} from '@tembiapo/db'
-import { LogoutRequestDTO } from '../DTOs/logout-request.dto';
+import { RefreshToken, User } from '@tembiapo/db';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -95,19 +96,20 @@ export class AuthService {
         register.name,
         register.lastName,
         register.dni,
-        register.contactPhone,
       );
 
       ///creamos el usuario con la personID
       const user = await this.userRepository.createUser(
         register.username,
         register.email,
+        '',
         hashedPassword,
         proffesionalRole.id,
         person.id,
         false,
       );
 
+      // TODO: Implementar envío de email una vez configurado el servicio de email
       try {
         await this.mailService.sendWelcomeMail(
           register.email,
@@ -119,7 +121,7 @@ export class AuthService {
         // el usuario podrá pedir "Reenviar correo de confirmación" después.
         console.error('Error enviando email de verificación:', error);
       }
-      ///retornamos el person y user
+      // retornamos el person y user
       return { person, user };
     });
 
@@ -162,7 +164,10 @@ export class AuthService {
       throw new UnauthorizedException('El email o la contraseña es incorrecto');
     }
 
-    const payload = { email: user.mail, sub: user.id }; //creamos el payload (los valores) que va a guardar nuestro token
+    ///Obtenemos el rol del usuario que esta iniciando sesion para futuras protecciones
+    const role = await this.roleService.findById(user.roleId);
+
+    const payload = { email: user.mail, sub: user.id, role: role.name }; //creamos el payload (los valores) que va a guardar nuestro token
     const access_token = this.jwtService.sign(payload, {
       ///firmamos el token
       expiresIn: '15m', ///expiracion de 15 minutos
@@ -301,7 +306,6 @@ export class AuthService {
       throw new BadRequestException('Token de restablecimiento inválido');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const isValid = await bcrypt.compare(resetToken, user.hashResetPassword);
 
     if (!isValid) {

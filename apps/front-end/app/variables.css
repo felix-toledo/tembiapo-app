@@ -1,0 +1,12 @@
+:root {
+  /* Colors */
+  --color-parana-profundo: #314a6b;
+  --color-tierra-activa: #e85e25;
+  --color-blanco-puro: #ffffff;
+  --color-gris-oscuro: #333333;
+  --color-gris-fondo-claro: #f5f7fa;
+
+  /* Fonts (Placeholders as specific fonts were not provided) */
+  --font-primary: "Montserrat", sans-serif;
+  --font-secondary: "Inter", sans-serif;
+}

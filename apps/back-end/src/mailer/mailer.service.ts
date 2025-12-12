@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 const appUrl = process.env.APP_URL || 'http://localhost:3000';
+
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
@@ -20,7 +21,6 @@ export class MailService {
     await this.mailerService.sendMail({
       to: email,
       subject: 'Bienvenido a Tembiapó - Verifica tu cuenta',
-      // En un futuro, aquí usarás templates compilados (Pug, Handlebars o React Email)
       html: `
         <h1>Hola ${name}, bienvenido a la comunidad.</h1>
         <p>Para validar que eres un profesional real, por favor confirma tu correo:</p>
@@ -35,7 +35,7 @@ export class MailService {
     token: string,
     name: string,
   ): Promise<void> {
-    const url = `${appUrl}/auth/reset-password?token=${token}`;
+    const url = `${appUrl}/reset-password?token=${token}`;
 
     await this.mailerService.sendMail({
       to: email,

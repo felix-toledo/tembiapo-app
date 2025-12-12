@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ConflictException, Injectable } from '@nestjs/common';
 
 import { firstValueFrom } from 'rxjs';
@@ -38,7 +41,8 @@ export class GoogleAuthService {
     ///esperamos el codigo que va a llegar por la URL que nos proporciona google
     const clientId = this.configService.get<string>('CLIENT-ID'); ///obtenemos el client-id del .env
     const clientSecret = this.configService.get<string>('SECRET-CLIENT'); ///Obtenemos el secret-client del .env
-    const redirectUri = 'http://localhost:3000/v1/google/callback'; ///seteamos la uri de redireccionamiento (tiene que ser la misma que esta en GCP)
+    const APIURL = process.env.API_URL; ///Obtenemos el api-url del .env
+    const redirectUri = `${APIURL}/api/v1/google/callback`; ///seteamos la uri de redireccionamiento (tiene que ser la misma que esta en GCP)
 
     // 1. Intercambiamos el código por un token
     const tokenResponse = await firstValueFrom(
@@ -56,7 +60,7 @@ export class GoogleAuthService {
       ),
     );
 
-    // 2. Obtenemos el id_token y access_token de la respuesta
+    // 2. Obtenemos el id_token de la respuesta
     const { id_token } = tokenResponse.data;
 
     // 3. Decodificamos el id_token
@@ -67,6 +71,7 @@ export class GoogleAuthService {
       name: userData.given_name,
       lastName: userData.family_name || '',
       email: userData.email,
+      pictureUrl: userData.picture,
     };
 
     // 5. Buscamos el usuario por su email
@@ -75,8 +80,14 @@ export class GoogleAuthService {
       // si es true verificamos si OAuth es true
       if (userexists.isOauthUser) {
         /// si es true creamos los tokens y retornamos
+        ///Obtenemos el rol del usuario que esta iniciando sesion para futuras protecciones
+        const role = await this.roleService.findById(userexists.roleId);
 
-        const payload = { sub: googleDTO.email, email: googleDTO.email }; ///creamos el payload
+        const payload = {
+          sub: userexists.id,
+          email: googleDTO.email,
+          role: role.name,
+        }; ///creamos el payload
 
         const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' }); ///generamos el access token
 
@@ -111,11 +122,11 @@ export class GoogleAuthService {
           googleDTO.name,
           googleDTO.lastName,
           '',
-          '',
         );
         const user = await this.userRepository.createUser(
           '',
           googleDTO.email,
+          googleDTO.pictureUrl,
           '',
           role.id,
           person.id,
@@ -124,7 +135,7 @@ export class GoogleAuthService {
         return { user }; ///retornamos el user creado para poder crear sus tokens
       });
 
-      const payload = { sub: user.id, email: googleDTO.email }; ///creamos el payload
+      const payload = { sub: user.id, email: googleDTO.email, role: role.name }; ///creamos el payload
 
       const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' }); //generamos el access token
 

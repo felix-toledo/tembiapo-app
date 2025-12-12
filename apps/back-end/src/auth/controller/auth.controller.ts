@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Body,
@@ -19,7 +18,9 @@ import {
   ForgotPasswordRequestDTO,
   ResetPasswordRequestDTO,
 } from '../DTOs/forgotPassword-request.dto';
-@Controller('auth')
+
+import { API_PREFIX } from '../../app.controller';
+@Controller(`${API_PREFIX}/auth`)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -61,15 +62,19 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(@Req() req: Request, @Res() res: Response) {
     ///obtenemos el refresh token de la cookie
+    console.log('[Logout] Cookies recibidas:', req.cookies);
+    console.log('[Logout] Headers de cookies:', req.headers.cookie);
 
     const refreshToken = req.cookies['refresh-token'];
 
     //verificamos si el refresh token existe, si no existe devolvemos un error o un mensaje
     if (!refreshToken) {
-      return createApiResponse(null, false, {
+      console.log('[Logout] No se encontró refresh token en las cookies');
+      const errorResponse = createApiResponse(null, false, {
         message: 'No se encontro el refresh token en la cookie',
         code: 'NO_REFRESH_TOKEN',
       });
+      return res.status(HttpStatus.BAD_REQUEST).json(errorResponse);
     }
 
     ///llamamos al metodo de logout para invalidar el refresh token en DB

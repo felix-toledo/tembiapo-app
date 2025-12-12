@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER:-tembiapo_dev} # Valor por defecto si no está en .env
       POSTGRES_PASSWORD: ${DB_PASSWORD:-supersecretdev}
-      POSTGRES_DB: ${DB_NAME:-tembiapo_dev_db}
+      POSTGRES_DB: ${DB_NAME:-tembiapo_db_dev}
 
     # 3. Mapeo de Puertos
     # Expone el puerto 5432 del contenedor al puerto 5432 de tu máquina

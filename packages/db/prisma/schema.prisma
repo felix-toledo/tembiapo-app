@@ -31,6 +31,7 @@ model User {
   id        String @id @default(uuid())
   username  String? @unique
   mail      String @unique
+  avatarUrl String? /// URL de la foto de perfil del usuario
   password  String? // Puede ser null si el usuario se registra con OAuth
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -64,7 +65,6 @@ model Person {
   lastName      String  @map("last_name")
   dni           String?  @unique @db.VarChar(11)
   isVerified    Boolean @default(false) @map("is_verified")
-  contactPhone  String?  @map("contact_phone")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime? @updatedAt @map("updated_at")
 
@@ -89,7 +89,7 @@ model Role {
 model Professional {
   id              String   @id @default(uuid())
   description     String?
-  whatsappContact String?  @map("whatsapp_contact")
+  whatsappContact String  @map("whatsapp_contact")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime? @updatedAt @map("updated_at")
   deletedAt       DateTime? @map("deleted_at")
@@ -129,30 +129,33 @@ model Verification {
 }
 
 model Field {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  id        String    @id @default(uuid())
+  name      String    @unique
+  lucide_icon String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  // --- Relaciones ---
-  professionals FieldProfessional[]
+  // --- Relaciones ---
+  professionals FieldProfessional[]
+  portfolioItems PortfolioItem[]
 
   @@map("field") 
 }
 
 model ServiceArea {
-  id        String   @id @default(uuid())
-  city      String
-  province  String
-  country   String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  id        String    @id @default(uuid())
+  city      String
+  province  String
+  country   String 
+  postalCode String @unique @default("")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  // --- Relaciones ---
-  professionals AreaProfessional[]
+  // --- Relaciones ---
+  professionals AreaProfessional[]
 
-  // Un índice compuesto para búsquedas rápidas por ciudad/provincia
-  @@unique([city, province, country])
+  // Un índice compuesto para búsquedas rápidas por ciudad/provincia
+  @@unique([city, province, country])
   @@map("service_area")
 }
 
@@ -168,7 +171,10 @@ model PortfolioItem {
   professionalId String       @map("professional_id")
   professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade) // Si se borra el profesional, se borran sus items
 
-  images PortfolioImage[] // 1-a-N: Un item, muchas imágenes
+  fieldId String @map("field_id")
+  field   Field  @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  images PortfolioImage[] // 1-a-N: Un item, muchas imágenes
 
   // --- Índices ---
   @@index([professionalId]) // Índice en la FK
@@ -176,14 +182,15 @@ model PortfolioItem {
 }
 
 model PortfolioImage {
-  id            String   @id @default(uuid())
-  imageUrl      String   @map("image_url")
-  description   String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime? @updatedAt @map("updated_at")
-  deletedAt     DateTime? @map("deleted_at")
-  
-  // --- Relaciones ---
+  id            String      @id @default(uuid())
+  imageUrl      String      @map("image_url")
+  description   String
+  order         Int // 0 is for main Image
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime?   @updatedAt @map("updated_at")
+  deletedAt     DateTime?   @map("deleted_at")
+
+  // --- Relaciones ---
   portfolioItemId String        @map("portfolio_item_id")
   portfolioItem   PortfolioItem @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade) // Si se borra el item, se borran sus imágenes
 
