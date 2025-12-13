@@ -14,8 +14,8 @@
     "@tembiapo/types": "workspace:*",
     "lucide-react": "^0.556.0",
     "next": "16.0.3",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "react": "19.2.2",
+    "react-dom": "19.2.2",
     "styled-components": "^6.1.19"
   },
   "devDependencies": {

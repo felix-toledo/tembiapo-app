@@ -7,27 +7,24 @@ export async function GET(req: Request) {
     const token = cookieStore.get("session_token")?.value;
     const cookieHeader = req.headers.get("cookie") || "";
 
-    const backendRes = await fetch("http://localhost:3001/api/v1/users/me", {
+    // Use environment variable if available, else fallback to localhost:3001 as seen in other routes
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    // Ensure we don't duplicate /api/v1 if it's already in the env var
+    const baseUrl = envUrl.endsWith("/api/v1") ? envUrl : `${envUrl}/api/v1`;
+
+    // Call backend profile/me endpoint
+    const backendRes = await fetch(`${baseUrl}/profile/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        Cookie: cookieHeader, // Keep for refresh token if needed
+        Cookie: cookieHeader,
       },
     });
 
     const contentType =
       backendRes.headers.get("content-type") || "application/json";
     const data = await backendRes.text();
-
-    try {
-      const json = JSON.parse(data);
-      if (json.data && json.data.username) {
-        console.log(`[Proxy AuthMe] Authenticated User: ${json.data.username}`);
-      }
-    } catch (e) {
-      // ignore json parse error for logging
-    }
 
     return new Response(data, {
       status: backendRes.status,

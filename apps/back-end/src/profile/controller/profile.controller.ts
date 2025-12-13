@@ -27,6 +27,8 @@ import { API_PREFIX } from '../../app.controller';
 
 @ApiTags('Profile')
 @Controller(`${API_PREFIX}/profile`)
+@ApiTags('Profile')
+@Controller(`${API_PREFIX}/profile`)
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
@@ -44,6 +46,15 @@ export class ProfileController {
       userId,
       updateProfileRequest,
     );
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getMyProfessionalProfile(@Req() req) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userId: string = req.user.userId as string;
+    return await this.profileService.getProfessionalMe(userId);
   }
 
   @Post('professional')
