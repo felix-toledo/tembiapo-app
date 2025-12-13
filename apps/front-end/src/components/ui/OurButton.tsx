@@ -121,6 +121,11 @@ const StyledWrapper = styled.div<{
     font-size: 1rem;
     transform: translateY(-4px);
     transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+
+    @media (max-width: 768px) {
+      padding: 10px 16px;
+      font-size: 0.75rem;
+    }
   }
 
   .pushable:hover {

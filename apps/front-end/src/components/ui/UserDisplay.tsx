@@ -36,7 +36,7 @@ export default function UserDisplay({ user }: UserDisplayProps) {
           ${isPendingProfessional ? "hover:bg-orange-50" : "hover:bg-gray-50 hover:shadow-tierra-activa/10"}
         `}
       >
-        <div className="flex flex-col items-end">
+        <div className="hidden md:flex flex-col items-end">
           <span className="text-sm font-bold text-parana-profundo leading-tight">
             {user.name} {user.lastName}
           </span>
@@ -62,7 +62,7 @@ export default function UserDisplay({ user }: UserDisplayProps) {
               className={`h-full w-full rounded-full flex items-center justify-center text-white font-serif font-bold shadow-sm transition-all duration-300
               ${
                 isPendingProfessional
-                  ? "bg-white border-2 border-dashed border-tierra-activa text-tierra-activa"
+                  ? "bg-red-400/50 border-2 border-dashed border-tierra-activa text-tierra-activa"
                   : "bg-linear-to-br from-parana-profundo to-blue-800 border-2 border-gray-100"
               }
               `}

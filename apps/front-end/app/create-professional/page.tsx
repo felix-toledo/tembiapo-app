@@ -1,7 +1,12 @@
+import { CreateProfessionalClient } from "@/src/components/professional-creation/CreateProfessionalClient";
+import { getFields } from "@/src/data/fields/fields.data";
+import { getServiceAreas } from "@/src/data/service-areas/sa.data";
+
 export default async function CreateProfesional() {
+  const fields = await getFields();
+  const serviceAreas = await getServiceAreas();
+
   return (
-    <main className="min-h-screen bg-white flex flex-col">
-      <h1 className="text-black">TE AMO AMOR DE MI VIDA</h1>
-    </main>
+    <CreateProfessionalClient fields={fields} serviceAreas={serviceAreas} />
   );
 }
