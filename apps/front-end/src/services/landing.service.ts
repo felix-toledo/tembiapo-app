@@ -10,8 +10,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 // --- 1. FETCH DE PROFESIONALES (Principal) ---
 export async function fetchProfessionals(filters: { [key: string]: string | string[] | undefined }) {
-  
-  await new Promise((resolve) => setTimeout(resolve, 3000)); // Retraso artificial
 
   const params = new URLSearchParams();
   const page = typeof filters.page === 'string' ? filters.page : '1';
