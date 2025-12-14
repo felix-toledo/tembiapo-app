@@ -18,3 +18,11 @@ export function AutoScroll(id: string) {
   }
   return null;
 }
+
+// Función para generar una valoración "fake" basada en el ID
+export function getFakeRating(id: string): number {
+  const charCodeSum = id
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return ((charCodeSum % 11) + 40) / 10;
+}
