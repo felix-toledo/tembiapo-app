@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import OurButton from "../ui/OurButton";
 import { Field, ServiceArea } from "@tembiapo/db";
+import { AreaSelector } from "./AreaSelector";
+import { FieldSelector } from "./FieldSelector";
 
 interface CreateProfessionalFormProps {
   fields: Field[];
@@ -32,32 +34,29 @@ export function CreateProfessionalForm({
   const [selectedFields, setSelectedFields] = useState<SelectedItem[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<SelectedItem[]>([]);
 
-  // Selection inputs
-  const [currentFieldId, setCurrentFieldId] = useState("");
-  const [currentAreaId, setCurrentAreaId] = useState("");
-
-  const handleAddField = () => {
-    if (!currentFieldId) return;
-    if (selectedFields.some((f) => f.id === currentFieldId)) return;
-
-    const isFirst = selectedFields.length === 0;
-    setSelectedFields([
-      ...selectedFields,
-      { id: currentFieldId, isMain: isFirst },
-    ]);
-    setCurrentFieldId("");
+  // Toggling Logic
+  const toggleField = (id: string) => {
+    const exists = selectedFields.find((f) => f.id === id);
+    if (exists) {
+      // Remove
+      removeField(id);
+    } else {
+      // Add
+      const isFirst = selectedFields.length === 0;
+      setSelectedFields([...selectedFields, { id, isMain: isFirst }]);
+    }
   };
 
-  const handleAddArea = () => {
-    if (!currentAreaId) return;
-    if (selectedAreas.some((a) => a.id === currentAreaId)) return;
-
-    const isFirst = selectedAreas.length === 0;
-    setSelectedAreas([
-      ...selectedAreas,
-      { id: currentAreaId, isMain: isFirst },
-    ]);
-    setCurrentAreaId("");
+  const toggleArea = (id: string) => {
+    const exists = selectedAreas.find((a) => a.id === id);
+    if (exists) {
+      // Remove
+      removeArea(id);
+    } else {
+      // Add
+      const isFirst = selectedAreas.length === 0;
+      setSelectedAreas([...selectedAreas, { id, isMain: isFirst }]);
+    }
   };
 
   const removeField = (id: string) => {
@@ -126,7 +125,7 @@ export function CreateProfessionalForm({
         serviceAreas: selectedAreas,
       };
 
-      const res = await fetch("/api/v1/profile/professional", {
+      const res = await fetch("/api/profile/professional", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -207,133 +206,115 @@ export function CreateProfessionalForm({
           />
         </div>
 
-        {/* Fields Selector */}
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Rubros
+        {/* Componente de Rubros (Grid) */}
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Selecciona tus Rubros (Haz click para seleccionar)
           </label>
-          <div className="flex gap-2 mb-2">
-            <select
-              value={currentFieldId}
-              onChange={(e) => setCurrentFieldId(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-parana-profundo outline-none bg-white text-gray-900"
-            >
-              <option value="">Seleccionar rubro...</option>
-              {fields.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.name}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={handleAddField}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Agregar
-            </button>
-          </div>
+          <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+            <FieldSelector
+              fields={fields}
+              selectedIds={selectedFields.map((f) => f.id)}
+              onToggle={toggleField}
+            />
 
-          <div className="space-y-2 mt-4">
-            {selectedFields.map((sf) => {
-              const fieldName = fields.find((f) => f.id === sf.id)?.name;
-              return (
-                <div
-                  key={sf.id}
-                  className={`flex items-center justify-between p-3 rounded-lg border ${
-                    sf.isMain
-                      ? "bg-blue-50 border-blue-200"
-                      : "bg-white border-gray-200"
-                  }`}
-                >
-                  <span className="font-medium">{fieldName}</span>
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600">
-                      <input
-                        type="radio"
-                        checked={sf.isMain}
-                        onChange={() => setMainField(sf.id)}
-                        className="text-parana-profundo focus:ring-parana-profundo"
-                      />
-                      Principal
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => removeField(sf.id)}
-                      className="text-red-500 hover:text-red-700 text-sm font-medium"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
+            {/* List of selected items to manage 'Main' status */}
+            {selectedFields.length > 0 && (
+              <div className="mt-6 border-t border-gray-200 pt-4">
+                <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide font-semibold">
+                  Rubros seleccionados{" "}
+                  <span className="text-gray-400 font-normal">
+                    (Marca el principal)
+                  </span>
+                </p>
+                <div className="space-y-2">
+                  {selectedFields.map((sf) => {
+                    const fieldName = fields.find((f) => f.id === sf.id)?.name;
+                    return (
+                      <div
+                        key={sf.id}
+                        className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                          sf.isMain
+                            ? "bg-blue-50 border-blue-200"
+                            : "bg-white border-gray-200 hover:border-blue-200"
+                        }`}
+                      >
+                        <span className="font-medium text-gray-800">
+                          {fieldName}
+                        </span>
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600 hover:text-gray-900 select-none">
+                            <input
+                              type="radio"
+                              checked={sf.isMain}
+                              onChange={() => setMainField(sf.id)}
+                              className="w-4 h-4 text-parana-profundo focus:ring-parana-profundo border-gray-300"
+                            />
+                            Principal
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Service Areas Selector */}
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Áreas de Servicio
+        {/* Service Areas (Grid) */}
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Selecciona tus Áreas de Servicio (Haz click para seleccionar)
           </label>
-          <div className="flex gap-2 mb-2">
-            <select
-              value={currentAreaId}
-              onChange={(e) => setCurrentAreaId(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-parana-profundo outline-none bg-white text-gray-900"
-            >
-              <option value="">Seleccionar área...</option>
-              {serviceAreas.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.city}, {a.province}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={handleAddArea}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Agregar
-            </button>
-          </div>
+          <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+            <AreaSelector
+              serviceAreas={serviceAreas}
+              selectedIds={selectedAreas.map((a) => a.id)}
+              onToggle={toggleArea}
+            />
 
-          <div className="space-y-2 mt-4">
-            {selectedAreas.map((sa) => {
-              const area = serviceAreas.find((a) => a.id === sa.id);
-              return (
-                <div
-                  key={sa.id}
-                  className={`flex items-center justify-between p-3 rounded-lg border ${
-                    sa.isMain
-                      ? "bg-blue-50 border-blue-200"
-                      : "bg-white border-gray-200"
-                  }`}
-                >
-                  <span className="font-medium">
-                    {area?.city}, {area?.province}
+            {/* List of selected items to manage 'Main' status */}
+            {selectedAreas.length > 0 && (
+              <div className="mt-6 border-t border-gray-200 pt-4">
+                <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide font-semibold">
+                  Áreas seleccionadas{" "}
+                  <span className="text-gray-400 font-normal">
+                    (Marca la principal)
                   </span>
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600">
-                      <input
-                        type="radio"
-                        checked={sa.isMain}
-                        onChange={() => setMainArea(sa.id)}
-                        className="text-parana-profundo focus:ring-parana-profundo"
-                      />
-                      Principal
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => removeArea(sa.id)}
-                      className="text-red-500 hover:text-red-700 text-sm font-medium"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
+                </p>
+                <div className="space-y-2">
+                  {selectedAreas.map((sa) => {
+                    const area = serviceAreas.find((a) => a.id === sa.id);
+                    return (
+                      <div
+                        key={sa.id}
+                        className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                          sa.isMain
+                            ? "bg-blue-50 border-blue-200"
+                            : "bg-white border-gray-200 hover:border-blue-200"
+                        }`}
+                      >
+                        <span className="font-medium text-gray-800">
+                          {area?.city}, {area?.province}
+                        </span>
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600 hover:text-gray-900 select-none">
+                            <input
+                              type="radio"
+                              checked={sa.isMain}
+                              onChange={() => setMainArea(sa.id)}
+                              className="w-4 h-4 text-parana-profundo focus:ring-parana-profundo border-gray-300"
+                            />
+                            Principal
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         </div>
 

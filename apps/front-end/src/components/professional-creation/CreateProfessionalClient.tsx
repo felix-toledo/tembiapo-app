@@ -25,7 +25,7 @@ export function CreateProfessionalClient({
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
-      <main className="flex-grow py-10">
+      <main className="grow py-10">
         <CreateProfessionalForm fields={fields} serviceAreas={serviceAreas} />
       </main>
       <Footer />
