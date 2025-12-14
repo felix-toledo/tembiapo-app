@@ -6,4 +6,5 @@ export class UserInfoResponseDTO {
   name: string;
   lastName: string;
   isVerified: boolean;
+  role: string;
 }

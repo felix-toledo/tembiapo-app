@@ -65,8 +65,7 @@ export function Footer() {
           </div>
           <div>
             <h3 className="font-bold text-lg mb-4">Contacto</h3>
-            <p className="text-sm mb-2">📧 felixtoledoctes@gmail.com</p>
-            <p className="text-sm mb-2">📞 +54 379 463-6393</p>
+            <p className="text-sm mb-2">📧 soporte@tembiabo.app</p>
             <p className="text-sm">📍 Corrientes, Argentina</p>
           </div>
         </div>

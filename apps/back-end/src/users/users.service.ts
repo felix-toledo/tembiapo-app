@@ -29,6 +29,7 @@ export class UsersService {
       name: user.person.name,
       lastName: user.person.lastName,
       isVerified: user.person.isVerified,
+      role: user.role.name,
     };
 
     return createApiResponse(data, true);

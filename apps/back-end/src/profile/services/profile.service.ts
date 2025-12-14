@@ -156,6 +156,45 @@ export class ProfileService {
     return createApiResponse(data, true);
   }
 
+  async getProfessionalMe(
+    userId: string,
+  ): Promise<ApiResponse<getProfessionalResponseDTO>> {
+    const user: UserWithProfessionalData | null =
+      await this.professionalRepository.getAllProfessionalDataByUserId(userId);
+
+    if (!user || !user.person || !user.professional) {
+      throw new NotFoundException(
+        'El usuario no existe o no tiene un perfil profesional',
+      );
+    }
+
+    const data: getProfessionalResponseDTO = {
+      professionalId: user.professional.id,
+      name: user.person.name,
+      lastName: user.person.lastName,
+      username: user.username || '',
+      isVerified: user.person.isVerified,
+      avatarURL: user.avatarUrl || '',
+      description: user.professional.description || '',
+      whatsappContact: user.professional.whatsappContact,
+      area: user.professional.serviceAreas.map((sa) => ({
+        id: sa.area.id,
+        city: sa.area.city,
+        province: sa.area.province,
+        country: sa.area.country,
+        postalCode: sa.area.postalCode,
+        isMain: sa.isMain,
+      })),
+      fields: user.professional.fields.map((f) => ({
+        id: f.field.id,
+        name: f.field.name,
+        isMain: f.isMain,
+      })),
+    };
+
+    return createApiResponse(data, true);
+  }
+
   async getAllProfessionals(queryParams: {
     username?: string;
     isVerified?: boolean;

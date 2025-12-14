@@ -147,6 +147,31 @@ export class professionalRepository {
     });
   }
 
+  async getAllProfessionalDataByUserId(
+    userId: string,
+  ): Promise<UserWithProfessionalData | null> {
+    return await this.prisma.user.findFirst({
+      where: { id: userId },
+      include: {
+        person: true,
+        professional: {
+          include: {
+            serviceAreas: {
+              include: {
+                area: true,
+              },
+            },
+            fields: {
+              include: {
+                field: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   async getAllProfessionals(filters: {
     username?: string;
     isVerified?: boolean;
