@@ -20,12 +20,22 @@ export function Navbar({ wantButtons = true }: { wantButtons?: boolean }) {
         {/* Logo */}
         <Link
           href="/"
-          className="text-2xl font-serif font-bold tracking-tight flex items-center text-gray-900"
+          className="text-xl md:text-2xl font-serif font-bold tracking-tight flex items-center text-gray-900"
         >
-          <Image src="/isotipo.png" alt="Logo" width={50} height={50} />
-          <span className="ml-2 font-primary text-parana-profundo">TEMBI</span>
-          <span className="ml-px font-primary text-tierra-activa">APP</span>
-          <span className="ml-px font-primary text-parana-profundo">Ó</span>
+          <Image
+            src="/isotipo.png"
+            alt="Logo"
+            width={40}
+            height={40}
+            className="w-8 h-8 md:w-[50px] md:h-[50px]"
+          />
+          <div className="hidden sm:block">
+            <span className="ml-2 font-primary text-parana-profundo">
+              TEMBI
+            </span>
+            <span className="ml-px font-primary text-tierra-activa">APP</span>
+            <span className="ml-px font-primary text-parana-profundo">Ó</span>
+          </div>
         </Link>
 
         {/* Botones de Acción */}

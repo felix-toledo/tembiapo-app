@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import { ProfessionalCardProps, PaginationData } from '../../../../types'; // Ajusta la ruta si es necesario
+import { ProfessionalCardProps, PaginationData } from '@/types'; // Ajusta la ruta si es necesario
 import { ServiceArea } from '@tembiapo/db';
 import { ProfessionalCard } from '../../search/ProfessionalCard';
 import { FilterBar } from '../../search/FilterBar';
 import { Pagination } from '../../ui/Pagination';
 import { SearchInput } from '../../search/SearchInput';
 import LoaderSearch from '../../ui/loaders/LoaderSearch';
+import { getFakeRating } from '../../../lib/utils';
 
 interface FeaturedProsProps {
   title: string;
@@ -13,12 +14,6 @@ interface FeaturedProsProps {
   pagination: PaginationData;
   areas: ServiceArea[];
   isLoading?: boolean;
-}
-
-// Función para generar una valoración "fake" basada en el ID
-function getFakeRating(id: string): number {
-  const charCodeSum = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return ((charCodeSum % 11) + 40) / 10;
 }
 
 export function FeaturedPros({ title, professionals, pagination, areas, isLoading }: FeaturedProsProps) {

@@ -92,3 +92,39 @@ export interface ProfessionalProfile {
 
   portfolio: PortfolioItem[];
 }
+
+// apps/front-end/types/index.ts
+// Tipo principal que usan los componentes de perfil de usuario
+export interface UserProfileData {
+  professionalId: string;
+  name: string;
+  lastName: string;
+  username: string;
+  isVerified: boolean;
+  avatarURL: string | null; // Puede venir vacío según tu JSON
+  description: string;
+  whatsappContact: string;
+  area: UIServiceArea[];
+  fields: UIField[];
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+// apps/front-end/src/types/portfolio.ts
+
+export interface PortfolioImage {
+  id: string;
+  imageUrl: string;
+  description: string;
+  order: number;
+}
+
+export interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string | null;
+  images: PortfolioImage[]; // Array de imágenes
+}
