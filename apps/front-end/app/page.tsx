@@ -21,7 +21,7 @@ export default async function Home(props: {
   const suspenseKey = JSON.stringify(params);
 
   const cookieStore = await cookies();
-  const refreshToken = cookieStore.get("refresh-token");
+  // const refreshToken = cookieStore.get("refresh-token");
 
   return (
     <main className="min-h-screen bg-white flex flex-col">

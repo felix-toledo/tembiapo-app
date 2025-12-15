@@ -16,7 +16,10 @@ export function ChangePasswordForm() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "error" | "success";
+    text: string;
+  } | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -53,13 +56,19 @@ export function ChangePasswordForm() {
     setMessage(null);
 
     if (!token) {
-      setMessage({ type: "error", text: "Token de recuperación inválido o expirado." });
+      setMessage({
+        type: "error",
+        text: "Token de recuperación inválido o expirado.",
+      });
       return;
     }
 
     // Validar
     if (!validateForm()) {
-      setMessage({ type: "error", text: "Por favor corrige los errores en el formulario" });
+      setMessage({
+        type: "error",
+        text: "Por favor corrige los errores en el formulario",
+      });
       return;
     }
 
@@ -95,10 +104,11 @@ export function ChangePasswordForm() {
       } else {
         setMessage({
           type: "error",
-          text: data?.message || `Error al cambiar la contraseña: ${res.status}`,
+          text:
+            data?.message || `Error al cambiar la contraseña: ${res.status}`,
         });
       }
-    } catch (err) {
+    } catch {
       setMessage({
         type: "error",
         text: "No se pudo conectar con el servidor. Revisa tu conexión.",
@@ -135,8 +145,8 @@ export function ChangePasswordForm() {
 
       {!token && (
         <div className="mb-6 p-4 rounded-lg text-sm text-center border bg-red-50 text-red-600 border-red-100">
-          No se encontró un token de recuperación válido. Por favor solicita un nuevo enlace de
-          recuperación.
+          No se encontró un token de recuperación válido. Por favor solicita un
+          nuevo enlace de recuperación.
         </div>
       )}
 
@@ -164,7 +174,9 @@ export function ChangePasswordForm() {
               value={formData.password}
               onChange={handleChange}
               className={`w-full px-4 py-3 pr-12 rounded-lg border text-gray-900 ${
-                errors.password ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                errors.password
+                  ? "border-red-500 bg-red-50"
+                  : "border-gray-300 bg-gray-50"
               } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
               placeholder="••••••••"
               disabled={!token}
@@ -174,7 +186,9 @@ export function ChangePasswordForm() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
-              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-label={
+                showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+              }
             >
               {showPassword ? (
                 <svg
@@ -205,12 +219,18 @@ export function ChangePasswordForm() {
                     strokeLinejoin="round"
                     d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
                   />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               )}
             </button>
           </div>
-          {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+          )}
           <p className="mt-2 text-sm text-gray-500">
             La contraseña debe tener al menos 6 caracteres
           </p>
@@ -218,7 +238,8 @@ export function ChangePasswordForm() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Confirmar Nueva Contraseña <span className="text-tierra-activa">*</span>
+            Confirmar Nueva Contraseña{" "}
+            <span className="text-tierra-activa">*</span>
           </label>
           <div className="relative">
             <input
@@ -227,7 +248,9 @@ export function ChangePasswordForm() {
               value={formData.confirmPassword}
               onChange={handleChange}
               className={`w-full px-4 py-3 pr-12 rounded-lg border text-gray-900 ${
-                errors.confirmPassword ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                errors.confirmPassword
+                  ? "border-red-500 bg-red-50"
+                  : "border-gray-300 bg-gray-50"
               } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
               placeholder="••••••••"
               disabled={!token}
@@ -237,7 +260,11 @@ export function ChangePasswordForm() {
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
-              aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-label={
+                showConfirmPassword
+                  ? "Ocultar contraseña"
+                  : "Mostrar contraseña"
+              }
             >
               {showConfirmPassword ? (
                 <svg
@@ -268,13 +295,19 @@ export function ChangePasswordForm() {
                     strokeLinejoin="round"
                     d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
                   />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               )}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.confirmPassword}
+            </p>
           )}
         </div>
 
@@ -305,7 +338,11 @@ export function ChangePasswordForm() {
             stroke="currentColor"
             className="w-5 h-5 mr-2"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+            />
           </svg>
           Volver al inicio de sesión
         </Link>

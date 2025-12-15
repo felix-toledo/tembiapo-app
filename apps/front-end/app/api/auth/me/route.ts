@@ -25,7 +25,7 @@ export async function GET(req: Request) {
       if (json.data && json.data.username) {
         console.log(`[Proxy AuthMe] Authenticated User: ${json.data.username}`);
       }
-    } catch (e) {
+    } catch (error) {
       // ignore json parse error for logging
     }
 

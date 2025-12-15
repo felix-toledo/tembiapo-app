@@ -7,20 +7,29 @@ import OurButton from "../ui/OurButton";
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "error" | "success";
+    text: string;
+  } | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
 
     if (!email) {
-      setMessage({ type: "error", text: "Por favor ingresa tu correo electrónico." });
+      setMessage({
+        type: "error",
+        text: "Por favor ingresa tu correo electrónico.",
+      });
       return;
     }
 
     // Validar formato de email
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setMessage({ type: "error", text: "Por favor ingresa un correo electrónico válido." });
+      setMessage({
+        type: "error",
+        text: "Por favor ingresa un correo electrónico válido.",
+      });
       return;
     }
 
@@ -45,10 +54,11 @@ export function ForgotPasswordForm() {
       } else {
         setMessage({
           type: "error",
-          text: data?.message || "Error al procesar la solicitud: " + res.status,
+          text:
+            data?.message || "Error al procesar la solicitud: " + res.status,
         });
       }
-    } catch (err) {
+    } catch {
       setMessage({
         type: "error",
         text: "No se pudo conectar con el servidor. Revisa tu conexión.",
@@ -111,7 +121,8 @@ export function ForgotPasswordForm() {
             required
           />
           <p className="mt-2 text-sm text-gray-500">
-            Ingresa el correo asociado a tu cuenta y te enviaremos un enlace para restablecer tu contraseña.
+            Ingresa el correo asociado a tu cuenta y te enviaremos un enlace
+            para restablecer tu contraseña.
           </p>
         </div>
 
@@ -142,7 +153,11 @@ export function ForgotPasswordForm() {
             stroke="currentColor"
             className="w-5 h-5 mr-2"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+            />
           </svg>
           Volver al inicio de sesión
         </Link>

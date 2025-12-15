@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import OurButton from "../ui/OurButton";
 import { Field, ServiceArea } from "@tembiapo/db";
 import { AreaSelector } from "./AreaSelector";
@@ -21,7 +21,6 @@ export function CreateProfessionalForm({
   fields,
   serviceAreas,
 }: CreateProfessionalFormProps) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{
     type: "error" | "success";
@@ -135,7 +134,7 @@ export function CreateProfessionalForm({
       let data;
       try {
         data = await res.json();
-      } catch (err) {
+      } catch {
         data = null;
       }
 
@@ -153,7 +152,7 @@ export function CreateProfessionalForm({
           text: data?.message || `Error al crear perfil: ${res.status}`,
         });
       }
-    } catch (err) {
+    } catch {
       setMessage({
         type: "error",
         text: "Error de conexión. Intente nuevamente.",

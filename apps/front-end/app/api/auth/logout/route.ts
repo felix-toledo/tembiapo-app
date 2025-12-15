@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
@@ -29,9 +28,7 @@ export async function POST(req: Request) {
       // Continue anyway to clear frontend cookies
     }
 
-    const data = backendRes
-      ? await backendRes.json().catch(() => ({}))
-      : {};
+    const data = backendRes ? await backendRes.json().catch(() => ({})) : {};
 
     // 2. Create Response
     const response = NextResponse.json(
@@ -53,12 +50,15 @@ export async function POST(req: Request) {
     console.log("[Logout API] Cookies limpiadas, enviando respuesta");
 
     return response;
-  } catch (err) {
-    console.error("[Logout API] Error:", err);
+  } catch {
+    console.error("[Logout API] Error occurred");
 
     // Even on error, try to clear cookies
     const response = NextResponse.json(
-      { success: true, message: "Logout local exitoso (backend no disponible)" },
+      {
+        success: true,
+        message: "Logout local exitoso (backend no disponible)",
+      },
       { status: 200 }
     );
     response.cookies.delete("session_token");

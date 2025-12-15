@@ -22,7 +22,10 @@ export function RegisterForm() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "error" | "success";
+    text: string;
+  } | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -70,7 +73,9 @@ export function RegisterForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Limpiar error del campo cuando el usuario empieza a escribir
@@ -85,7 +90,10 @@ export function RegisterForm() {
 
     // Validar
     if (!validateForm()) {
-      setMessage({ type: "error", text: "Por favor corrige los errores en el formulario" });
+      setMessage({
+        type: "error",
+        text: "Por favor corrige los errores en el formulario",
+      });
       return;
     }
 
@@ -101,7 +109,10 @@ export function RegisterForm() {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        setMessage({ type: "success", text: "Registro exitoso. Redirigiendo al login..." });
+        setMessage({
+          type: "success",
+          text: "Registro exitoso. Redirigiendo al login...",
+        });
         // Limpiar formulario
         setFormData({
           name: "",
@@ -122,7 +133,7 @@ export function RegisterForm() {
           text: data?.message || `Error en el registro: ${res.status}`,
         });
       }
-    } catch (err) {
+    } catch {
       setMessage({
         type: "error",
         text: "No se pudo conectar con el servidor. Verifica que el backend esté corriendo.",
@@ -138,7 +149,9 @@ export function RegisterForm() {
         <h1 className="text-3xl font-serif text-parana-profundo font-bold mb-2">
           Registrarse como Profesional
         </h1>
-        <p className="text-gray-500">Completa el formulario para crear tu cuenta</p>
+        <p className="text-gray-500">
+          Completa el formulario para crear tu cuenta
+        </p>
       </div>
 
       {message && (
@@ -171,12 +184,16 @@ export function RegisterForm() {
                 value={formData.name}
                 onChange={handleChange}
                 className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
-                  errors.name ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                  errors.name
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-300 bg-gray-50"
                 } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
                 placeholder="Juan"
                 required
               />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+              )}
             </div>
 
             <div>
@@ -189,7 +206,9 @@ export function RegisterForm() {
                 value={formData.lastName}
                 onChange={handleChange}
                 className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
-                  errors.lastName ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                  errors.lastName
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-300 bg-gray-50"
                 } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
                 placeholder="Pérez"
                 required
@@ -212,11 +231,15 @@ export function RegisterForm() {
               maxLength={8}
               placeholder="12345678"
               className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
-                errors.dni ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                errors.dni
+                  ? "border-red-500 bg-red-50"
+                  : "border-gray-300 bg-gray-50"
               } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
               required
             />
-            {errors.dni && <p className="mt-1 text-sm text-red-600">{errors.dni}</p>}
+            {errors.dni && (
+              <p className="mt-1 text-sm text-red-600">{errors.dni}</p>
+            )}
           </div>
         </div>
 
@@ -236,7 +259,9 @@ export function RegisterForm() {
               value={formData.username}
               onChange={handleChange}
               className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
-                errors.username ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                errors.username
+                  ? "border-red-500 bg-red-50"
+                  : "border-gray-300 bg-gray-50"
               } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
               placeholder="juanperez"
               required
@@ -256,12 +281,16 @@ export function RegisterForm() {
               value={formData.email}
               onChange={handleChange}
               className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
-                errors.email ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                errors.email
+                  ? "border-red-500 bg-red-50"
+                  : "border-gray-300 bg-gray-50"
               } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
               placeholder="tucorreo@ejemplo.com"
               required
             />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -276,7 +305,9 @@ export function RegisterForm() {
                   value={formData.password}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 pr-12 rounded-lg border text-gray-900 ${
-                    errors.password ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                    errors.password
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-300 bg-gray-50"
                   } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
                   placeholder="••••••••"
                   required
@@ -285,16 +316,44 @@ export function RegisterForm() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
-                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={
+                    showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                  }
                 >
                   {showPassword ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                      />
                     </svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                   )}
                 </button>
@@ -306,7 +365,8 @@ export function RegisterForm() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirmar Contraseña <span className="text-tierra-activa">*</span>
+                Confirmar Contraseña{" "}
+                <span className="text-tierra-activa">*</span>
               </label>
               <div className="relative">
                 <input
@@ -315,7 +375,9 @@ export function RegisterForm() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 pr-12 rounded-lg border text-gray-900 ${
-                    errors.confirmPassword ? "border-red-500 bg-red-50" : "border-gray-300 bg-gray-50"
+                    errors.confirmPassword
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-300 bg-gray-50"
                   } focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all`}
                   placeholder="••••••••"
                   required
@@ -324,22 +386,54 @@ export function RegisterForm() {
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
-                  aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={
+                    showConfirmPassword
+                      ? "Ocultar contraseña"
+                      : "Mostrar contraseña"
+                  }
                 >
                   {showConfirmPassword ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                      />
                     </svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                   )}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.confirmPassword}
+                </p>
               )}
             </div>
           </div>
