@@ -3,6 +3,7 @@ node_modules/
 npm-debug.log
 pnpm-debug.log
 yarn-error.log
+pnpm-lock.yaml
 
 # Archivos de Build y Entorno
 .env
