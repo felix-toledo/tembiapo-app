@@ -20,7 +20,7 @@ export default function UserDisplay({ user }: UserDisplayProps) {
     } else if (isPendingProfessional) {
       redirect("/create-professional");
     } else {
-      redirect("/user/");
+      redirect(`/profile/${user.username}`);
     }
   }
   // Get initials for fallback

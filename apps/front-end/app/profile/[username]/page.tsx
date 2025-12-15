@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useFetch } from "@/src/hooks/useFetch";
 import { UserProfileData } from "@/types";
 import { UnverifiedProfileLayout } from "@/src/components/profile/UnverifiedProfileLayout";
-import { Navbar } from "@/src/components/landing/Navbar";
+import { Navbar } from "@/src/components/ui/Navbar";
 import { Footer } from "@/src/components/landing/Footer";
 import LoaderWaiter from "@/src/components/ui/loaders/LoaderWaiter";
 import { VerifiedProfileLayout } from "@/src/components/profile/VerifiedProfileLayout";

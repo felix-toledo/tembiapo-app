@@ -34,7 +34,9 @@ export function LoginForm() {
         window.location.href = "/";
         return;
       } else {
-        setMessage(data?.message || "Error en login: " + res.status);
+        setMessage(
+          data?.error?.message || "Chequea tus credenciales: " + res.statusText
+        );
       }
     } catch {
       setMessage("No se pudo conectar con el servidor. Revisa tu conexión.");

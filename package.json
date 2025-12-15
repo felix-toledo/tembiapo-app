@@ -9,6 +9,8 @@
     "dev:back": "cd apps/back-end && nest start --watch",
     "build:back": "cd apps/back-end && nest build",
     "build:front": "cd apps/front-end && pnpm run build",
+    "start:back": "cd apps/back-end && pnpm start:prod",
+    "start:front": "cd apps/front-end && pnpm start",
     "install:back": "cd apps/back-end && pnpm install",
     "dev:front": "cd apps/front-end && pnpm run dev",
     "install:front": "cd apps/front-end && pnpm install",
