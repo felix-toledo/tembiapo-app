@@ -2,7 +2,7 @@
 import type {
   Field as DBField,
   ServiceArea as DBServiceArea,
-  VerificationStatus,
+  // VerificationStatus,
 } from "@tembiapo/db";
 
 // --- 1. MODELOS DE UI (Lo que usan tus componentes) ---

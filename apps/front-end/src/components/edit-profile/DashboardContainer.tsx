@@ -1,53 +1,111 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useFetch } from '@/src/hooks/useFetch';
-import { ProfessionalResponseDTO } from '@/types';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/src/context/AuthContext';
+import { UIField, UIServiceArea } from '@/types';
+import { Professional } from '@/src/context/AuthContext'; 
 
-// Componentes
+// Componentes Visuales
 import { EditProfileSidebar } from './EditProfileSidebar';
 import { DashboardHeader } from './DashboardHeader';
 import { VerificationBanner } from './VerificationBanner';
 import { DashboardStats } from './DashboardStats';
 import { Modal } from '@/src/components/ui/Modal';
-import { EditDescriptionForm } from './forms/EditDescriptionForm';
 import LoaderWaiter from '@/src/components/ui/loaders/LoaderWaiter';
 
-export const DashboardContainer = () => {
-  // 1. Fetch de datos
-  const { data: apiData, loading, error } = useFetch<ProfessionalResponseDTO>('/api/profile/me');
+// Formularios
+import { EditDescriptionForm } from './forms/EditDescriptionForm';
+import { EditSkillsForm } from './forms/EditSkillsForm';
+import { EditCitiesForm } from './forms/EditCitiesForm';
 
-  // 2. Estado local para EDICIONES (Empieza en null)
-  const [localUserUpdates, setLocalUserUpdates] = useState<ProfessionalResponseDTO | null>(null);
-  
+// Gestor de Portafolio
+import { PortfolioManager } from './PortfolioManager';
+
+import { Field, ServiceArea } from '@tembiapo/db';
+
+interface Props {
+  availableFields: Field[]; 
+  availableAreas: ServiceArea[];
+}
+
+export const DashboardContainer = ({ availableFields, availableAreas }: Props) => {
+  // 1. CONSUMIR DATOS DEL CONTEXTO (Global State)
+  const { professional, loading: authLoading, fetchProfessional } = useAuth();
+
+  // 2. Estado local para actualizaciones optimistas
+  const [localUserUpdates, setLocalUserUpdates] = useState<Professional | null>(null);
   const [activeModal, setActiveModal] = useState<'description' | 'skills' | 'cities' | null>(null);
 
-  // 3. ESTADO DERIVADO
-  const displayUser = localUserUpdates || apiData;
+  // 3. Estado Derivado: Preferimos la edición local si existe, sino el dato del contexto
+  const displayUser = localUserUpdates || professional;
 
-  // Validaciones de carga
-  if (loading) return <LoaderWaiter messages={["Cargando tu panel...", "Obteniendo datos..."]} />;
+  // Reseteamos ediciones locales si el perfil profesional cambia (ej. recarga desde servidor)
+  useEffect(() => {
+    if (professional) {
+        setLocalUserUpdates(null);
+    }
+  }, [professional]);
+
+  // --- LÓGICA DE ACTUALIZACIÓN ---
+  const updateProfile = async (updatedFields: Partial<Professional>) => {
+    if (!displayUser) return;
+
+    const optimisticUpdate = { ...displayUser, ...updatedFields } as Professional;
+    setLocalUserUpdates(optimisticUpdate);
+    setActiveModal(null);
+
+    // B. Payload para Backend
+    const payload = {
+      biography: optimisticUpdate.description,
+      whatsappContact: optimisticUpdate.whatsappContact || "",
+      fields: (optimisticUpdate.fields || []).map(f => ({ id: f.id, isMain: f.isMain })),
+      serviceAreas: (optimisticUpdate.area || []).map(a => ({ id: a.id, isMain: a.isMain }))
+    };
+
+    try {
+      const res = await fetch('/api/profile/me', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Error server");
+      
+      console.log("✅ Perfil guardado exitosamente");
+
+      // C. ACTUALIZACIÓN GLOBAL
+      await fetchProfessional(); 
+
+    } catch (error) {
+      console.error("❌ Error al actualizar:", error);
+      alert("Hubo un error al guardar los cambios.");
+      setLocalUserUpdates(null);
+    }
+  };
+
+  // Handlers
+  const handleSaveDescription = (newDesc: string) => updateProfile({ description: newDesc });
+  const handleSaveSkills = (newFields: UIField[]) => updateProfile({ fields: newFields });
+  const handleSaveCities = (newAreas: UIServiceArea[]) => updateProfile({ area: newAreas });
+
+  // Validaciones
+  if (authLoading) return <LoaderWaiter messages={["Cargando tu panel...", "Sincronizando perfil..."]} />;
   
-  // Validaciones de error
-  if (error || !displayUser) return <div className="p-10 text-center">No se pudo cargar el perfil. Asegúrate de haber iniciado sesión.</div>;
+  // Si no hay perfil profesional cargado (y no está cargando), mostramos error
+  if (!displayUser) return (
+    <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-4">
+        <div className="bg-red-50 text-red-500 p-4 rounded-full mb-4">⚠️</div>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">No se encontró perfil profesional</h2>
+        <p className="text-gray-500">Parece que tu cuenta no tiene un perfil profesional asociado.</p>
+    </div>
+  );
 
-  // 4. ADAPTADORES DE DATOS
+  // Adaptadores
   const skillNames = displayUser.fields?.map(f => f.name) || [];
   const cityNames = displayUser.area?.map(a => a.city) || [];
   const fullName = `${displayUser.name} ${displayUser.lastName}`;
-  const stats = displayUser.stats || { jobsCompleted: 0, rating: 0 };
-
-  // 5. Handler para guardar descripción
-  const handleSaveDescription = (newDesc: string) => {
-    // Al guardar, tomamos los datos actuales y sobreescribimos la descripción
-    const updatedData = { ...displayUser, description: newDesc };
-    
-    // Actualizamos el estado local (UI Optimista)
-    setLocalUserUpdates(updatedData);
-    
-    // AQUÍ FALTARÍA: Llamada POST a la API para persistir el cambio
-    setActiveModal(null);
-  };
+  // Nota: Si 'stats' no está en tu interfaz Professional del contexto, usa defaults:
+  const stats = { jobsCompleted: 0, rating: 0 }; 
 
   return (
     <>
@@ -74,18 +132,28 @@ export const DashboardContainer = () => {
           
           <DashboardStats jobs={stats.jobsCompleted} rating={stats.rating} />
           
-          <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 border-dashed flex flex-col items-center justify-center text-gray-400 min-h-[200px]">
-              <p>Próximamente: Gestión de Portafolio</p>
-          </div>
+          {/* GESTIÓN DE PORTFOLIO */}
+          {displayUser.isVerified && displayUser.username ? (
+             <PortfolioManager 
+                username={displayUser.username}
+                userFields={displayUser.fields || []}
+             />
+          ) : (
+             <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 border-dashed flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-3xl">🔒</div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">Portafolio Bloqueado</h3>
+                <p className="text-gray-500 max-w-sm">
+                  Solo los profesionales verificados pueden subir fotos de sus trabajos. 
+                  Completa tu verificación para desbloquear esta función.
+                </p>
+             </div>
+          )}
+
         </div>
       </div>
 
-      {/* --- MODALES --- */}
-      <Modal 
-        isOpen={activeModal === 'description'} 
-        onClose={() => setActiveModal(null)} 
-        title="Editar Descripción"
-      >
+      {/* MODALES */}
+      <Modal isOpen={activeModal === 'description'} onClose={() => setActiveModal(null)} title="Editar Descripción">
         <EditDescriptionForm 
           initialDescription={displayUser.description || ""}
           onSave={handleSaveDescription}
@@ -93,7 +161,32 @@ export const DashboardContainer = () => {
         />
       </Modal>
 
-      {/* Otros modales... */}
+      <Modal isOpen={activeModal === 'skills'} onClose={() => setActiveModal(null)} title="Editar Habilidades">
+        <EditSkillsForm 
+          initialFields={(displayUser.fields || []).map(f => ({
+            ...f,
+            lucide_icon: null,       // Valor dummy
+            createdAt: new Date(),   // Valor dummy
+            updatedAt: null          // Valor dummy
+          }))}
+          availableOptions={availableFields}
+          onSave={handleSaveSkills}
+          onCancel={() => setActiveModal(null)}
+        />
+      </Modal>
+
+       <Modal isOpen={activeModal === 'cities'} onClose={() => setActiveModal(null)} title="Editar Ciudades">
+        <EditCitiesForm 
+          initialAreas={(displayUser.area || []).map(a => ({
+            ...a,
+            createdAt: new Date(), // Valor dummy
+            updatedAt: null        // Valor dummy
+          }))}
+          availableOptions={availableAreas}
+          onSave={handleSaveCities}
+          onCancel={() => setActiveModal(null)}
+        />
+      </Modal>
     </>
   );
 };
