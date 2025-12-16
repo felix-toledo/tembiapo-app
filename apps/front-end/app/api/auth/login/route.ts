@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     if (resOk(backendRes.status) && accessToken) {
       response.cookies.set("session_token", accessToken, {
         // httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: false,
         path: "/",
         sameSite: "lax",
         maxAge: 15 * 60, // Match backend 15m

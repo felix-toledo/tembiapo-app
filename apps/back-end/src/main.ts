@@ -4,11 +4,14 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
 import cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
+  app.use(json({ limit: '65mb' }));
+  app.use(urlencoded({ extended: true, limit: '65mb' }));
 
   app.enableCors({
     origin: process.env.APP_URL,
