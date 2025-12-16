@@ -201,7 +201,7 @@ export class PortfolioRepository {
     return await this.prisma.portfolioImage.create({
       data: {
         portfolioItemId,
-        imageUrl: dto.imageUrl,
+        imageUrl: dto.imageUrl ? dto.imageUrl : '',
         description: dto.description,
         order: dto.order,
       },
