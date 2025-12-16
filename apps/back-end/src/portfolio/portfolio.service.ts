@@ -15,12 +15,15 @@ import {
   PortfolioItemWithImages,
 } from './portfolio.repository';
 import { PortfolioImage } from '@tembiapo/db';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class PortfolioService {
   constructor(
     private prisma: PrismaService,
     private portfolioRepository: PortfolioRepository,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   // ==================== PORTFOLIO ITEM ====================
@@ -85,9 +88,19 @@ export class PortfolioService {
     userId: string,
     itemId: string,
     dto: AddPortfolioImageRequestDTO,
+    file?: Express.Multer.File,
   ): Promise<PortfolioImageResponseDTO> {
     const professional = await this.getProfessionalByUserId(userId);
     await this.verifyItemOwnership(itemId, professional.id);
+
+    if (file) {
+      const result = await this.cloudinaryService.uploadImage(file);
+      dto.imageUrl = result.secure_url;
+    }
+
+    if (!dto.imageUrl) {
+      throw new BadRequestException('Image URL or file is required');
+    }
 
     const image = await this.portfolioRepository.createPortfolioImage(
       itemId,

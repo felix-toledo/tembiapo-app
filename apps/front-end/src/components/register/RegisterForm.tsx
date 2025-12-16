@@ -527,7 +527,7 @@ export function RegisterForm() {
         </div>
 
         {/* Botones */}
-        <div className="pt-6 space-y-4">
+        <div className="pt-6 space-y-4 text-center">
           <div className="w-full h-12">
             <OurButton
               frontColor="var(--color-parana-profundo)"

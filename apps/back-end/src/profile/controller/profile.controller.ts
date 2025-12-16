@@ -16,6 +16,8 @@ import {
   ApiOperation,
   ApiQuery,
   ApiOkResponse,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
 import { updateProfileRequestDTO } from '../DTOs/update-profile.request.dto';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
@@ -42,6 +44,44 @@ export class ProfileController {
   @Roles('PROFESSIONAL')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('avatar'))
+  @ApiOperation({
+    summary: 'Update professional profile and optionally upload avatar',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        avatar: {
+          type: 'string',
+          format: 'binary',
+          description: 'Avatar image file',
+        },
+        biography: { type: 'string' },
+        whatsappContact: { type: 'string' },
+        fields: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              isMain: { type: 'boolean' },
+            },
+          },
+        },
+        serviceAreas: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              isMain: { type: 'boolean' },
+            },
+          },
+        },
+      },
+    },
+  })
   async updateProfile(
     @Body() updateProfileRequest: updateProfileRequestDTO,
     @UploadedFile() file: Express.Multer.File,

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 import { CreatePortfolioItemRequestDTO } from './dto/create-portfolio-item.request.dto';
 import { UpdatePortfolioItemRequestDTO } from './dto/update-portfolio-item.request.dto';
@@ -18,11 +19,15 @@ import {
   Patch,
   Req,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PortfolioService } from './portfolio.service';
 import { API_PREFIX } from '../app.controller';
 import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
 
+@ApiTags('Portfolio')
 @Controller(`${API_PREFIX}/portfolio`)
 export class PortfolioController {
   constructor(private readonly portfolioService: PortfolioService) {}
@@ -47,15 +52,35 @@ export class PortfolioController {
 
   @Post(':itemId/image')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiOperation({ summary: 'Add an image to a portfolio item' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Image file to upload',
+        },
+        description: { type: 'string' },
+        order: { type: 'number' },
+      },
+      required: ['description', 'order'],
+    },
+  })
   async addPortfolioImage(
     @Req() req: any,
     @Param('itemId') itemId: string,
     @Body() dto: AddPortfolioImageRequestDTO,
+    @UploadedFile() file?: Express.Multer.File,
   ): Promise<PortfolioImageResponseDTO> {
     return this.portfolioService.addPortfolioImage(
       req.user.userId,
       itemId,
       dto,
+      file,
     );
   }
 

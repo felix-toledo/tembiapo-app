@@ -12,8 +12,7 @@ export async function HeroSection() {
   const selectedImage = getRandomElement(heroImages);
 
   return (
-    <section className="relative w-full min-h-[85vh] md:min-h-[600px] flex flex-col items-center justify-center overflow-hidden">
-
+    <section className="relative w-full min-h-[85vh] md:min-h-[600px] flex flex-col items-center justify-center \">
       {/* --- CAPA 0: LA BASE (Imagen) --- */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -30,24 +29,33 @@ export async function HeroSection() {
 
       {/* --- CAPA 2: EL CONTENIDO (Texto y Botones) --- */}
       <div className="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center justify-center gap-8 md:gap-10 py-12">
-
         <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-balance drop-shadow-md">
           Tu casa es sagrada. <br className="hidden md:block" />
-          <span className="text-gray-200">Encontrá profesionales de confianza</span>
+          <span className="text-gray-200">
+            Encontrá profesionales de confianza
+          </span>
         </h1>
 
         <p className="text-gray-200 text-base sm:text-lg max-w-xl mx-auto md:hidden">
           Carpinteros, electricistas y más, validados por tu comunidad.
         </p>
 
-        <HeroSearchForm fields={fields}/>
+        <HeroSearchForm fields={fields} />
 
         <div className="flex flex-wrap justify-center gap-3 w-full">
-          <Badge icon={<CheckCircle size={16} className="text-green-600" />} text="Identidad Validada" />
-          <Badge icon={<Shield size={16} className="text-blue-600" />} text="Vecinos de tu ciudad" />
-          <Badge icon={<Star size={16} className="text-yellow-500" />} text="Reseñas Reales" />
+          <Badge
+            icon={<CheckCircle size={16} className="text-green-600" />}
+            text="Identidad Validada"
+          />
+          <Badge
+            icon={<Shield size={16} className="text-blue-600" />}
+            text="Vecinos de tu ciudad"
+          />
+          <Badge
+            icon={<Star size={16} className="text-yellow-500" />}
+            text="Reseñas Reales"
+          />
         </div>
-
       </div>
     </section>
   );

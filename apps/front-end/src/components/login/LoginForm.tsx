@@ -146,7 +146,7 @@ export function LoginForm() {
           </Link>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2  text-center">
           <div className="w-full h-12">
             <OurButton
               frontColor="var(--color-parana-profundo)"
