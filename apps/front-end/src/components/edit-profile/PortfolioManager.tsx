@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, AlertTriangle } from 'lucide-react'; // Importamos AlertTriangle
 import { useFetch } from '@/src/hooks/useFetch';
 import { Modal } from '@/src/components/ui/Modal';
 import { AddPortfolioForm, PortfolioFormData } from './forms/AddPortfolioForm';
 import { PortfolioItem } from '@/types';
+import { getFullImageUrl } from '@/src/lib/utils';
+
 
 interface Props {
     username: string;
@@ -14,12 +16,12 @@ interface Props {
 }
 
 export const PortfolioManager = ({ username, userFields }: Props) => {
-    // AHORA SÍ: Usamos refetch nativo
     const { data: initialItems, loading, refetch } = useFetch<PortfolioItem[]>(`/api/auth/portfolio/${username}`);
 
     const [items, setItems] = useState<PortfolioItem[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         if (initialItems) setItems(initialItems);
@@ -28,7 +30,6 @@ export const PortfolioManager = ({ username, userFields }: Props) => {
     const handleCreate = async (data: PortfolioFormData) => {
         setIsSaving(true);
         try {
-            // 1. Crear Item (con fieldId)
             const createRes = await fetch('/api/profile/me/portfolio', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -40,27 +41,37 @@ export const PortfolioManager = ({ username, userFields }: Props) => {
                 }),
             });
 
-            if (!createRes.ok) throw new Error("Error al crear el item");
+            if (!createRes.ok) {
+                const errorBody = await createRes.text();
+                console.error("❌ ERROR DEL BACKEND:", errorBody);
+                console.error("❌ STATUS:", createRes.status);
+                throw new Error(`Backend Error (${createRes.status}): ${errorBody}`);
+            }
+
             const newItem = await createRes.json();
             const itemId = newItem.id;
 
-            // 2. Subir Imágenes
-            const uploadPromises = data.files.map(async (file) => {
+            const uploadPromises = data.files.map(async (file, index) => {
                 const formData = new FormData();
-                formData.append("file", file); // Ajustar key según backend ("file", "image")
-
-                await fetch(`/api/profile/me/portfolio/${itemId}/image`, {
+                formData.append("file", file);
+                formData.append("description", file.name);
+                formData.append("order", index.toString());
+                const imgRes = await fetch(`/api/profile/me/portfolio/${itemId}/image`, {
                     method: 'POST',
                     body: formData,
                 });
+
+                if (!imgRes.ok) {
+                    const errText = await imgRes.text();
+                    console.error(`❌ Falló subida de imagen ${file.name}:`, errText);
+                } else {
+                    console.log(`✅ Imagen subida: ${file.name}`);
+                }
             });
 
             await Promise.all(uploadPromises);
-
-            // 3. RECARGA LIMPIA
             await refetch();
             setIsModalOpen(false);
-
         } catch (err) {
             console.error(err);
             alert("Hubo un error al crear el proyecto.");
@@ -68,24 +79,25 @@ export const PortfolioManager = ({ username, userFields }: Props) => {
             setIsSaving(false);
         }
     };
+    const promptDelete = (id: string) => {
+        setItemToDelete(id);
+    };
+    const confirmDelete = async () => {
+        if (!itemToDelete) return;
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("¿Borrar proyecto?")) return;
-
-        // UI Optimista (lo borramos visualmente primero)
+        // UI Optimista
         const prevItems = items;
-        setItems(items.filter(i => i.id !== id));
+        setItems(items.filter(i => i.id !== itemToDelete));
+        setItemToDelete(null);
 
         try {
-            const res = await fetch(`/api/profile/me/portfolio/${id}`, { method: 'DELETE' });
+            const res = await fetch(`/api/profile/me/portfolio/${itemToDelete}`, { method: 'DELETE' });
             if (!res.ok) throw new Error();
-
-            // Confirmamos con refetch en segundo plano para asegurar consistencia
             refetch();
         } catch (err) {
             console.error(err);
-            alert("Error al borrar");
-            setItems(prevItems); // Rollback si falla
+            alert("No se pudo borrar el proyecto");
+            setItems(prevItems);
         }
     };
 
@@ -107,19 +119,40 @@ export const PortfolioManager = ({ username, userFields }: Props) => {
                 {items?.map(item => (
                     <div key={item.id} className="relative group rounded-xl overflow-hidden border border-gray-100 aspect-4/3">
                         {item.images && item.images.length > 0 ? (
-                            <Image src={item.images[0].imageUrl} alt={item.title} fill className="object-cover" />
+                            (() => {
+                                const imgUrl = getFullImageUrl(item.images[0].imageUrl);
+                                // Detectamos si es entorno local
+                                const isLocal = imgUrl.includes("localhost") || imgUrl.includes("127.0.0.1");
+                                return (
+                                    <Image
+                                        src={imgUrl}
+                                        alt={item.title}
+                                        fill
+                                        className="object-cover"
+                                        unoptimized={isLocal}
+                                        onError={(e) => { e.currentTarget.src = "/placeholder.png" }}
+                                    />
+                                );
+                            })()
+
                         ) : (
                             <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">Sin foto</div>
                         )}
+
+                        {/* Overlay */}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                            <p className="text-white font-bold">{item.title}</p>
-                            <button onClick={() => handleDelete(item.id)} className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors">
+                            <p className="text-white font-bold truncate">{item.title}</p>
+
+                            {/* Botón de borrar llama a promptDelete */}
+                            <button
+                                onClick={() => promptDelete(item.id)}
+                                className="absolute top-2 right-2 p-2 bg-white/20 text-white rounded-full hover:bg-red-500 hover:text-white transition-colors"
+                            >
                                 <Trash2 size={16} />
                             </button>
                         </div>
                     </div>
                 ))}
-
                 {items.length === 0 && (
                     <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-100 rounded-xl">
                         No tienes proyectos cargados.
@@ -127,6 +160,7 @@ export const PortfolioManager = ({ username, userFields }: Props) => {
                 )}
             </div>
 
+            {/* --- MODAL DE CREACIÓN --- */}
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Nuevo Proyecto">
                 <AddPortfolioForm
                     userFields={userFields}
@@ -135,6 +169,43 @@ export const PortfolioManager = ({ username, userFields }: Props) => {
                     isLoading={isSaving}
                 />
             </Modal>
+
+            {/* --- NUEVO MODAL DE CONFIRMACIÓN DE BORRADO --- */}
+            <Modal
+                isOpen={!!itemToDelete}
+                onClose={() => setItemToDelete(null)}
+                title="Eliminar Proyecto"
+            >
+                <div className="flex flex-col items-center text-center space-y-4">
+                    <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-500">
+                        <AlertTriangle size={24} />
+                    </div>
+                    <div>
+                        <p className="text-gray-600">
+                            ¿Estás seguro de que quieres eliminar este proyecto?
+                        </p>
+                        <p className="text-sm text-gray-400 mt-1">
+                            Esta acción no se puede deshacer.
+                        </p>
+                    </div>
+
+                    <div className="flex gap-3 w-full pt-4">
+                        <button
+                            onClick={() => setItemToDelete(null)}
+                            className="flex-1 py-2.5 px-4 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            onClick={confirmDelete}
+                            className="flex-1 py-2.5 px-4 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-200"
+                        >
+                            Sí, Eliminar
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
         </div>
     );
 };

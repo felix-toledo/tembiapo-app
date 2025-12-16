@@ -1,6 +1,7 @@
 "use client";
 
 import OurButton from '@/src/components/ui/OurButton'; // Reusamos tu botón 3D
+import Link from 'next/dist/client/link';
 
 export const VerificationBanner = () => {
   return (
@@ -14,10 +15,11 @@ export const VerificationBanner = () => {
       <p className="text-gray-500 mb-6 max-w-md">
         Verifica tu identidad para acceder a todos los beneficios, aparecer primero en las búsquedas y generar más confianza.
       </p>
-      
+      <Link href={"/profile/verify"}>
       <OurButton>
         Comenzar Verificación
       </OurButton>
+      </Link>
     </div>
   );
 };

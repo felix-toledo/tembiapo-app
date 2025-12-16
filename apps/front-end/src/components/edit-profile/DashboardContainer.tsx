@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/src/context/AuthContext';
 import { UIField, UIServiceArea } from '@/types';
-import { Professional } from '@/src/context/AuthContext'; 
+import { Professional } from '@/src/context/AuthContext';
 
 // Componentes Visuales
 import { EditProfileSidebar } from './EditProfileSidebar';
@@ -24,7 +24,7 @@ import { PortfolioManager } from './PortfolioManager';
 import { Field, ServiceArea } from '@tembiapo/db';
 
 interface Props {
-  availableFields: Field[]; 
+  availableFields: Field[];
   availableAreas: ServiceArea[];
 }
 
@@ -42,7 +42,7 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
   // Reseteamos ediciones locales si el perfil profesional cambia (ej. recarga desde servidor)
   useEffect(() => {
     if (professional) {
-        setLocalUserUpdates(null);
+      setLocalUserUpdates(null);
     }
   }, [professional]);
 
@@ -70,11 +70,11 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
       });
 
       if (!res.ok) throw new Error("Error server");
-      
+
       console.log("✅ Perfil guardado exitosamente");
 
       // C. ACTUALIZACIÓN GLOBAL
-      await fetchProfessional(); 
+      await fetchProfessional();
 
     } catch (error) {
       console.error("❌ Error al actualizar:", error);
@@ -90,30 +90,29 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
 
   // Validaciones
   if (authLoading) return <LoaderWaiter messages={["Cargando tu panel...", "Sincronizando perfil..."]} />;
-  
+
   // Si no hay perfil profesional cargado (y no está cargando), mostramos error
   if (!displayUser) return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-4">
-        <div className="bg-red-50 text-red-500 p-4 rounded-full mb-4">⚠️</div>
-        <h2 className="text-xl font-bold text-gray-800 mb-2">No se encontró perfil profesional</h2>
-        <p className="text-gray-500">Parece que tu cuenta no tiene un perfil profesional asociado.</p>
+      <div className="bg-red-50 text-red-500 p-4 rounded-full mb-4">⚠️</div>
+      <h2 className="text-xl font-bold text-gray-800 mb-2">No se encontró perfil profesional</h2>
+      <p className="text-gray-500">Parece que tu cuenta no tiene un perfil profesional asociado.</p>
     </div>
   );
-
   // Adaptadores
   const skillNames = displayUser.fields?.map(f => f.name) || [];
   const cityNames = displayUser.area?.map(a => a.city) || [];
   const fullName = `${displayUser.name} ${displayUser.lastName}`;
   // Nota: Si 'stats' no está en tu interfaz Professional del contexto, usa defaults:
-  const stats = { jobsCompleted: 0, rating: 0 }; 
+  const stats = { jobsCompleted: 0, rating: 0 };
 
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          
+
         {/* COLUMNA IZQUIERDA */}
         <div className="lg:col-span-1 lg:sticky lg:top-24">
-          <EditProfileSidebar 
+          <EditProfileSidebar
             avatarUrl={displayUser.avatarURL}
             description={displayUser.description}
             skills={skillNames}
@@ -126,27 +125,31 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
 
         {/* COLUMNA DERECHA */}
         <div className="lg:col-span-2 space-y-8">
-          <DashboardHeader name={fullName} profession={skillNames[0] || "Profesional"} />
-          
+          <DashboardHeader
+            name={fullName}
+            // Busca el que tiene isMain=true, si no existe usa el primero, sino "Profesional"
+            profession={displayUser.fields?.find(f => f.isMain)?.name || displayUser.fields?.[0]?.name || "Profesional"}
+          />
+
           {!displayUser.isVerified && <VerificationBanner />}
-          
+
           <DashboardStats jobs={stats.jobsCompleted} rating={stats.rating} />
-          
+
           {/* GESTIÓN DE PORTFOLIO */}
           {displayUser.isVerified && displayUser.username ? (
-             <PortfolioManager 
-                username={displayUser.username}
-                userFields={displayUser.fields || []}
-             />
+            <PortfolioManager
+              username={displayUser.username}
+              userFields={displayUser.fields || []}
+            />
           ) : (
-             <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 border-dashed flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-3xl">🔒</div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Portafolio Bloqueado</h3>
-                <p className="text-gray-500 max-w-sm">
-                  Solo los profesionales verificados pueden subir fotos de sus trabajos. 
-                  Completa tu verificación para desbloquear esta función.
-                </p>
-             </div>
+            <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 border-dashed flex flex-col items-center justify-center text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-3xl">🔒</div>
+              <h3 className="text-lg font-bold text-gray-800 mb-2">Portafolio Bloqueado</h3>
+              <p className="text-gray-500 max-w-sm">
+                Solo los profesionales verificados pueden subir fotos de sus trabajos.
+                Completa tu verificación para desbloquear esta función.
+              </p>
+            </div>
           )}
 
         </div>
@@ -154,7 +157,7 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
 
       {/* MODALES */}
       <Modal isOpen={activeModal === 'description'} onClose={() => setActiveModal(null)} title="Editar Descripción">
-        <EditDescriptionForm 
+        <EditDescriptionForm
           initialDescription={displayUser.description || ""}
           onSave={handleSaveDescription}
           onCancel={() => setActiveModal(null)}
@@ -162,7 +165,7 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
       </Modal>
 
       <Modal isOpen={activeModal === 'skills'} onClose={() => setActiveModal(null)} title="Editar Habilidades">
-        <EditSkillsForm 
+        <EditSkillsForm
           initialFields={(displayUser.fields || []).map(f => ({
             ...f,
             lucide_icon: null,       // Valor dummy
@@ -175,8 +178,8 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
         />
       </Modal>
 
-       <Modal isOpen={activeModal === 'cities'} onClose={() => setActiveModal(null)} title="Editar Ciudades">
-        <EditCitiesForm 
+      <Modal isOpen={activeModal === 'cities'} onClose={() => setActiveModal(null)} title="Editar Ciudades">
+        <EditCitiesForm
           initialAreas={(displayUser.area || []).map(a => ({
             ...a,
             createdAt: new Date(), // Valor dummy

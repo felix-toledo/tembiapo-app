@@ -37,7 +37,7 @@ export class PortfolioRepository {
         fieldId: dto.fieldId,
         // Create related images
         images: {
-          create: dto.images.map((image) => ({
+          create: (dto.images || []).map((image) => ({
             imageUrl: image.imageUrl,
             description: image.description,
             order: image.order,
@@ -201,7 +201,7 @@ export class PortfolioRepository {
     return await this.prisma.portfolioImage.create({
       data: {
         portfolioItemId,
-        imageUrl: dto.imageUrl,
+        imageUrl: dto.imageUrl || '',
         description: dto.description,
         order: dto.order,
       },

@@ -12,6 +12,8 @@ import { FieldModule } from './fields/field.module';
 import { ServiceAreaModule } from './service-area/service-area.module';
 import { UsersModule } from './users/users.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -23,6 +25,10 @@ import { PortfolioModule } from './portfolio/portfolio.module';
       ///Importamos el configModule para obtener las variables de entorno del archivo .env del backend
       isGlobal: true, //Lo hacemos global para que lo podamos usar en cualquier parte del codigo
       envFilePath: '.env', /// le mandamos la ruta del .env a cargar
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads', // Esto crea la ruta http://localhost:3001/uploads/...
     }),
     GoogleAuthModule,
     ProfileModule,
