@@ -7,11 +7,13 @@ import { RefreshTokenCleanupService } from './services/refresh-token-cleanup.ser
 import { MailModule } from '../mailer/mailer.module';
 import { JwtStrategy } from '../shared/strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MailModule,
+    CloudinaryModule,
     ConfigModule,
     JwtModule.registerAsync({
       ///registramos de forma asincrona el modulo de jwt donde importamos el configModule y configService

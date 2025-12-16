@@ -7,7 +7,10 @@ import {
   HttpCode,
   Res,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { RegisterRequestDTO } from '../DTOs/register-request.dto';
@@ -26,8 +29,12 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() registerDTO: RegisterRequestDTO) {
-    return await this.authService.register(registerDTO);
+  @UseInterceptors(FileInterceptor('avatar'))
+  async register(
+    @Body() registerDTO: RegisterRequestDTO,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.authService.register(registerDTO, file);
   }
 
   @Post('login')

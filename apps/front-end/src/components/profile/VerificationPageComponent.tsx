@@ -220,7 +220,7 @@ function IntroStep({ onStart }: { onStart: () => void }) {
       <div className="w-full pt-8">
         <button
           onClick={onStart}
-          className="w-full py-4 bg-[var(--color-parana-profundo)] text-white rounded-xl font-semibold shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          className="w-full py-4 bg-parana-profundo text-white rounded-xl font-semibold shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >
           Comenzar verificación
           <ChevronRight className="w-5 h-5" />
@@ -323,7 +323,7 @@ function CameraStep({
             className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border-2 border-white shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] ${
               type === "dni"
                 ? "w-[85%] aspect-[1.586/1] rounded-lg" // ID Card ratio
-                : "w-[70%] aspect-[3/4] rounded-full" // Selfie oval
+                : "w-[70%] aspect-3/4 rounded-full" // Selfie oval
             }`}
           >
             {/* Scan animation line */}
@@ -381,7 +381,7 @@ function ProcessingStep() {
       <div className="relative">
         <div className="w-24 h-24 rounded-full border-4 border-blue-100 animate-pulse" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-10 h-10 text-[var(--color-parana-profundo)] animate-spin" />
+          <Loader2 className="w-10 h-10 text-parana-profundo animate-spin" />
         </div>
       </div>
       <div>

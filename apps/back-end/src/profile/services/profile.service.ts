@@ -26,6 +26,7 @@ import { Professional, User } from '@tembiapo/db';
 import { createApiResponse } from '../../shared/utils/api-response.factory';
 import { ApiResponse } from '@tembiapo/types';
 import { getProfessionalResponseDTO } from '../DTOs/responses/get-professional.response.dto';
+import { CloudinaryService } from '../../cloudinary/cloudinary.service';
 @Injectable()
 export class ProfileService {
   constructor(
@@ -33,12 +34,14 @@ export class ProfileService {
     private userRepository: UserRepository,
     private personRepository: PersonRepository,
     private roleService: RoleService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   ///=============METODO PARA CREAR LA CUENTA DE PROFESIONAL=================
   async createProfessionalProfile(
     id: string,
     createProfessionalProfile: createProfessionalRequestDTO,
+    file?: Express.Multer.File,
   ): Promise<ApiResponse<createProfessionalResponseDTO>> {
     const doesTheUserHaveAprofessionalProfile: Professional | null =
       await this.professionalRepository.getProfessionalByUserId(id);
@@ -47,6 +50,11 @@ export class ProfileService {
       throw new ConflictException(
         'El usuario ya cuenta con un perfil profesional',
       );
+    }
+
+    if (file) {
+      const uploadResult = await this.cloudinaryService.uploadImage(file);
+      await this.userRepository.updateAvatar(id, uploadResult.secure_url);
     }
 
     /// si existe el usuario y no tiene cuenta de profesional, creamos su cuenta
@@ -73,11 +81,17 @@ export class ProfileService {
   async updateProfile(
     id: string,
     updateProfileRequest: updateProfileRequestDTO,
+    file?: Express.Multer.File,
   ): Promise<ApiResponse<updateProfileResponseDTO>> {
     const user: User | null = await this.userRepository.findById(id);
 
     if (!user) {
       throw new NotFoundException('No existe ningun usuario asociado a ese ID');
+    }
+
+    if (file) {
+      const uploadResult = await this.cloudinaryService.uploadImage(file);
+      await this.userRepository.updateAvatar(id, uploadResult.secure_url);
     }
 
     const userRole = await this.roleService.findById(user.roleId);

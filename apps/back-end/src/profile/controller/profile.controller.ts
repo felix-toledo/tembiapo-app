@@ -24,6 +24,11 @@ import { Roles } from '../../shared/decorators/role.decorator';
 import { ProfileService } from '../services/profile.service';
 import { createProfessionalRequestDTO } from '../DTOs/create-professional.request.dto';
 import { API_PREFIX } from '../../app.controller';
+import { UseInterceptors, UploadedFiles, UploadedFile } from '@nestjs/common';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 
 @ApiTags('Profile')
 @Controller(`${API_PREFIX}/profile`)
@@ -36,8 +41,10 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('PROFESSIONAL')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('avatar'))
   async updateProfile(
     @Body() updateProfileRequest: updateProfileRequestDTO,
+    @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -45,6 +52,7 @@ export class ProfileController {
     return await this.profileService.updateProfile(
       userId,
       updateProfileRequest,
+      file,
     );
   }
 
@@ -60,15 +68,19 @@ export class ProfileController {
   @Post('professional')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   async createProfessional(
     @Body() createProfesionalRequest: createProfessionalRequestDTO,
+    @UploadedFiles() files: { avatar?: Express.Multer.File[] },
     @Req() req,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userId: string = req.user.userId as string;
+    const avatar = files?.avatar?.[0];
     return await this.profileService.createProfessionalProfile(
       userId,
       createProfesionalRequest,
+      avatar,
     );
   }
 

@@ -25,7 +25,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "via.placeholder.com", // Por si usas placeholders simples
         pathname: "**",
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "**",
+      },
     ],
     qualities: [75, 80, 90], // (Lo que agregamos antes para las imágenes)
   },

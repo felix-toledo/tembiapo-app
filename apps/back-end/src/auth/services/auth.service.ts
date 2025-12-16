@@ -36,6 +36,7 @@ import {
 } from '../DTOs/responses/forgotPassword-response.dto';
 //==========ENTIDADES=============
 import { RefreshToken, User } from '@tembiapo/db';
+import { CloudinaryService } from '../../cloudinary/cloudinary.service';
 
 @Injectable()
 export class AuthService {
@@ -47,10 +48,12 @@ export class AuthService {
     private jwtService: JwtService,
     private refreshTokenRepository: RefreshTokenRepository,
     private mailService: MailService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   async register(
     register: RegisterRequestDTO,
+    file?: Express.Multer.File,
   ): Promise<ApiResponse<RegisterResponseData | null>> {
     if (register === null) {
       throw new BadRequestException('No se encontro un DTO en la request');
@@ -89,6 +92,12 @@ export class AuthService {
     ///6. Obtenemos el rol de profesional
     const proffesionalRole = await this.roleService.findByName('PROFESSIONAL');
 
+    let avatarUrl = '';
+    if (file) {
+      const uploadResult = await this.cloudinaryService.uploadImage(file);
+      avatarUrl = uploadResult.secure_url;
+    }
+
     ///7. creamos una transaccion para crear el usuario y la persona asociada
     await this.prisma.$transaction(async () => {
       ///creamos la persona primero
@@ -102,7 +111,7 @@ export class AuthService {
       const user = await this.userRepository.createUser(
         register.username,
         register.email,
-        '',
+        avatarUrl,
         hashedPassword,
         proffesionalRole.id,
         person.id,

@@ -2,22 +2,40 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    // Forward incoming JSON body
-    const body = await req.json().catch(() => null);
-
-    // Forward cookies from the browser (if any)
+    const contentTypeHeader = req.headers.get("content-type") || "";
     const cookie = req.headers.get("cookie") || "";
 
-    const backendRes = await fetch("http://localhost:3001/api/v1/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(cookie ? { cookie } : {}),
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    const headers: HeadersInit = {};
+    if (cookie) {
+      headers["cookie"] = cookie;
+    }
 
-    const contentType = backendRes.headers.get("content-type") || "application/json";
+    let body: BodyInit | undefined;
+
+    if (contentTypeHeader.includes("multipart/form-data")) {
+      // If it's form-data, we get the formData object
+      // and let fetch generate the correct boundary
+      const formData = await req.formData();
+      body = formData;
+      // DO NOT set Content-Type header here, fetch will do it with boundary
+    } else {
+      // Create JSON body
+      const json = await req.json().catch(() => null);
+      body = json ? JSON.stringify(json) : undefined;
+      headers["Content-Type"] = "application/json";
+    }
+
+    const backendRes = await fetch(
+      "http://localhost:3001/api/v1/auth/register",
+      {
+        method: "POST",
+        headers: headers,
+        body: body,
+      }
+    );
+
+    const contentType =
+      backendRes.headers.get("content-type") || "application/json";
     const text = await backendRes.text();
 
     // Forward Set-Cookie header from backend to browser if present

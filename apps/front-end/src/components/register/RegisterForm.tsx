@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import OurButton from "../ui/OurButton";
+import { User, Camera, X } from "lucide-react";
+import Image from "next/image";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -14,6 +16,7 @@ export function RegisterForm() {
     name: "",
     lastName: "",
     dni: "",
+    avatar: null as File | null,
     // Datos de User
     username: "",
     email: "",
@@ -29,6 +32,7 @@ export function RegisterForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Validación del lado del cliente
   const validateForm = (): boolean => {
@@ -84,6 +88,23 @@ export function RegisterForm() {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, avatar: e.target.files![0] }));
+    const file = e.target.files![0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, avatar: null }));
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
@@ -100,10 +121,21 @@ export function RegisterForm() {
     setLoading(true);
 
     try {
+      const dataToSend = new FormData();
+      dataToSend.append("name", formData.name);
+      dataToSend.append("lastName", formData.lastName);
+      dataToSend.append("dni", formData.dni);
+      dataToSend.append("username", formData.username);
+      dataToSend.append("email", formData.email);
+      dataToSend.append("password", formData.password);
+      dataToSend.append("confirmPassword", formData.confirmPassword);
+      if (formData.avatar) {
+        dataToSend.append("avatar", formData.avatar);
+      }
+
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: dataToSend,
       });
 
       const data = await res.json().catch(() => ({}));
@@ -118,6 +150,7 @@ export function RegisterForm() {
           name: "",
           lastName: "",
           dni: "",
+          avatar: null,
           username: "",
           email: "",
           password: "",
@@ -130,7 +163,7 @@ export function RegisterForm() {
       } else {
         setMessage({
           type: "error",
-          text: data?.message || `Error en el registro: ${res.status}`,
+          text: data?.error?.message || `Error en el registro: ${res.status}`,
         });
       }
     } catch {
@@ -172,6 +205,60 @@ export function RegisterForm() {
           <h2 className="text-lg font-semibold text-parana-profundo border-b border-gray-200 pb-2">
             Datos Personales
           </h2>
+
+          <div className="flex flex-col items-center justify-center mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Foto de Perfil (Opcional)
+            </label>
+            <div className="relative group">
+              <div
+                className={`w-32 h-32 rounded-full border-4 flex items-center justify-center overflow-hidden transition-all duration-300 ${
+                  previewUrl
+                    ? "border-parana-profundo shadow-lg"
+                    : "border-dashed border-gray-300 bg-gray-50 hover:border-parana-profundo hover:bg-white"
+                }`}
+              >
+                {previewUrl ? (
+                  <Image
+                    src={previewUrl}
+                    alt="Preview"
+                    width={128}
+                    height={128}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-16 h-16 text-gray-400 group-hover:text-parana-profundo transition-colors duration-300" />
+                )}
+              </div>
+
+              {previewUrl ? (
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="absolute bottom-0 right-0 bg-red-500 text-white p-2 rounded-full shadow-md hover:bg-red-600 transition-colors"
+                  title="Eliminar foto"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              ) : (
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute bottom-0 right-0 bg-parana-profundo text-white p-2 rounded-full shadow-md hover:bg-opacity-90 transition-colors cursor-pointer"
+                  title="Subir foto"
+                >
+                  <Camera className="w-4 h-4" />
+                </label>
+              )}
+            </div>
+            <input
+              id="avatar-upload"
+              type="file"
+              name="avatar"
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+          </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
@@ -224,7 +311,7 @@ export function RegisterForm() {
               DNI (8 dígitos) <span className="text-tierra-activa">*</span>
             </label>
             <input
-              type="text"
+              type="number"
               name="dni"
               value={formData.dni}
               onChange={handleChange}

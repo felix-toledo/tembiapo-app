@@ -143,4 +143,14 @@ export class UserRepository {
       },
     });
   }
+
+  /// Actualizar avatar
+  async updateAvatar(id: string, avatarUrl: string): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        avatarUrl,
+      },
+    });
+  }
 }
