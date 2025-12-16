@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
     if (resOk(backendRes.status) && accessToken) {
       response.cookies.set("session_token", accessToken, {
-        httpOnly: true,
+        // httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "lax",

@@ -44,15 +44,23 @@ export interface Professional {
   }>;
 }
 
+interface Verification {
+  id: string;
+  status: string;
+  createdAt: string;
+}
+
 interface AuthContextType {
   user: User | null;
   professional: Professional | null | undefined; // undefined: not checked, null: not found/error
+  verification: Verification | null;
   loading: boolean;
   isAuthenticated: boolean;
   login: () => Promise<void>; // Triggers the fetch user logic
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   fetchProfessional: () => Promise<void>;
+  fetchVerification: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [professional, setProfessional] = useState<
     Professional | null | undefined
   >(undefined);
+  const [verification, setVerification] = useState<Verification | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfessional = async () => {
@@ -87,6 +96,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const fetchVerification = async () => {
+    try {
+      const res = await fetch("/api/verify/me", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (res.ok) {
+        // Backend returns the verification object directly or null/empty
+        const text = await res.text();
+        if (text) {
+          const data = JSON.parse(text);
+          setVerification(data);
+        } else {
+          setVerification(null);
+        }
+      } else {
+        setVerification(null);
+      }
+    } catch (error) {
+      console.error("Error fetching verification status:", error);
+      setVerification(null);
+    }
+  };
+
   const fetchUser = async () => {
     try {
       setLoading(true);
@@ -102,6 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(data.data);
           // Also fetch professional data if user exists
           await fetchProfessional();
+          await fetchVerification();
         } else {
           setUser(null);
           setProfessional(undefined);
@@ -127,6 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async () => {
     await fetchUser();
     await fetchProfessional();
+    await fetchVerification();
   };
 
   const logout = async () => {
@@ -144,6 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("Limpiando usuario y redirigiendo...");
       setUser(null);
       setProfessional(undefined);
+      setVerification(null);
       window.location.href = "/login";
     }
   };
@@ -153,12 +190,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         professional,
+        verification,
         loading,
         isAuthenticated: !!user,
         login,
         logout,
         refreshUser: fetchUser,
         fetchProfessional,
+        fetchVerification,
       }}
     >
       {children}

@@ -12,6 +12,8 @@ import { FieldModule } from './fields/field.module';
 import { ServiceAreaModule } from './service-area/service-area.module';
 import { UsersModule } from './users/users.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { VerifyAccountModule } from './verify-account/verify.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { PortfolioModule } from './portfolio/portfolio.module';
     ServiceAreaModule,
     UsersModule,
     PortfolioModule,
+    CloudinaryModule,
+    VerifyAccountModule,
   ],
   controllers: [AppController],
   providers: [AppService],

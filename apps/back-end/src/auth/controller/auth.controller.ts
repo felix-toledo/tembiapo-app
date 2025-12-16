@@ -43,7 +43,7 @@ export class AuthController {
 
     res.cookie('refresh-token', refreshToken, {
       ///creamos la cookie
-      httpOnly: true, /// para que el frontend no la vea
+      // httpOnly: true, /// para que el frontend no la vea
       secure: false, //Ponemos true en produccion | false en desarrollo
       sameSite: 'strict', // proteccion contra CSRF
       maxAge: 7 * 24 * 60 * 60 * 1000, //duracion de 7 dias
@@ -82,7 +82,7 @@ export class AuthController {
 
     ///limpiamos la cookie
     res.clearCookie('refresh-token', {
-      httpOnly: true,
+      // httpOnly: true,
       secure: false,
       sameSite: 'strict',
     });

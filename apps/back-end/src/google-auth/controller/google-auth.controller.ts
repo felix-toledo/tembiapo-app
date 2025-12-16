@@ -20,7 +20,7 @@ export class GoogleAuthController {
 
     ///creamos la cookie
     res.cookie('refresh-token', refreshToken, {
-      httpOnly: true,
+      // httpOnly: true,
       secure: false, //falso en desarrollo | true en produccion
       sameSite: 'strict', //proteccion contra CSRF
       maxAge: 7 * 24 * 60 * 60 * 1000, //duracion de 7 dias
