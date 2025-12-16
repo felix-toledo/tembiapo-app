@@ -4,7 +4,7 @@ import React, { use } from 'react';
 import { useFetch } from '@/src/hooks/useFetch';
 import { UserProfileData } from '@/types';
 import { UnverifiedProfileLayout } from '@/src/components/profile/UnverifiedProfileLayout';
-import { Navbar } from "@/src/components/landing/Navbar";
+import { Navbar } from "@/src/components/ui/Navbar";
 import { Footer } from "@/src/components/landing/Footer";
 import LoaderWaiter from '@/src/components/ui/loaders/LoaderWaiter';
 import { VerifiedProfileLayout } from '@/src/components/profile/VerifiedProfileLayout';
@@ -20,10 +20,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   
   // OPCIÓN A: MODO PROXY (Solución temporal para CORS)
   // Llamamos a nuestra propia API interna de Next.js
-  const fetchUrl = `/api/auth/profile/${username}`;
+  // const fetchUrl = `/api/auth/profile/${username}`;
 
   // OPCIÓN B: MODO DIRECTO (Ideal para producción con CORS arreglado)
-  // const fetchUrl = `${DIRECT_API_URL}/profile/${username}`;
+  const fetchUrl = `${DIRECT_API_URL}/profile/${username}`;
 
   // ----------------------------------------
 
@@ -45,9 +45,9 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             <p className="text-gray-500 max-w-md mt-2">
                 {error ? `Detalle técnico: ${error}` : `No encontramos al usuario "${username}".`}
             </p>
-            <a href="/" className="mt-6 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors">
+            <link href="/" className="mt-6 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors">
                 Volver al inicio
-            </a>
+            </link>
         </div>
         <Footer />
       </div>

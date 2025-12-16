@@ -128,3 +128,22 @@ export interface PortfolioItem {
   description: string | null;
   images: PortfolioImage[]; // Array de imágenes
 }
+
+export interface ProfessionalResponseDTO {
+  professionalId: string;
+  name: string;
+  lastName: string;
+  username: string;
+  isVerified: boolean;
+  avatarURL: string | null;
+  description: string;
+  whatsappContact: string;
+  area: UIServiceArea[];
+  fields: UIField[];
+  // Agrego stats opcionales por si el backend no los trae aún, 
+  // para no romper la UI que espera rating/jobs
+  stats?: {
+    jobsCompleted: number;
+    rating: number;
+  };
+}
