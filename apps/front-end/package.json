@@ -14,7 +14,7 @@
     "@tembiapo/types": "workspace:*",
     "clsx": "^2.1.1",
     "lucide-react": "^0.556.0",
-    "next": "16.0.3",
+    "next": "16.0.10",
     "react": "19.2.2",
     "react-dom": "19.2.2",
     "react-qr-code": "^2.0.18",
