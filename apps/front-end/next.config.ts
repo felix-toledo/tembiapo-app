@@ -14,16 +14,16 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "picsum.photos",
-        pathname: "**", // Permite cualquier ruta dentro de picsum
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com", // Agrego este también porque lo usaste en los mocks
         pathname: "**",
       },
       {
         protocol: "https",
-        hostname: "via.placeholder.com", // Por si usas placeholders simples
+        hostname: "images.unsplash.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "via.placeholder.com",
         pathname: "**",
       },
       {
@@ -31,7 +31,20 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "**",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3001",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "3001",
+        pathname: "/**",
+      },
     ],
+    dangerouslyAllowSVG: true,
     qualities: [75, 80, 90], // (Lo que agregamos antes para las imágenes)
   },
 };

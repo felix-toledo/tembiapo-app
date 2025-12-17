@@ -6,6 +6,7 @@ import Link from "next/link";
 import OurButton from "../ui/OurButton";
 import { User, Camera, X } from "lucide-react";
 import Image from "next/image";
+import { compressImage } from "@/src/lib/image-compression";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -88,10 +89,22 @@ export function RegisterForm() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, avatar: e.target.files![0] }));
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
-    if (file) {
+    if (!file) return;
+
+    try {
+      // Compress image before setting state
+      const compressedFile = await compressImage(file);
+
+      setFormData((prev) => ({ ...prev, avatar: compressedFile }));
+
+      const url = URL.createObjectURL(compressedFile);
+      setPreviewUrl(url);
+    } catch (error) {
+      console.error("Error compressing image:", error);
+      // Fallback to original file optionally, or show error
+      setFormData((prev) => ({ ...prev, avatar: file }));
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }

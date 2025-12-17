@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsOptional, IsNumber } from 'class-validator';
 
 export class AddPortfolioImageRequestDTO {
   @IsString()
@@ -6,10 +7,10 @@ export class AddPortfolioImageRequestDTO {
   imageUrl?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   description: string;
 
+  @Type(() => Number)
   @IsNumber()
-  @IsNotEmpty()
   order: number;
 }

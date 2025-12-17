@@ -19,6 +19,8 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "../src/context/AuthContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RootLayout({
   children,
@@ -31,7 +33,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <StyledComponentsRegistry>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <ToastContainer />
+          </AuthProvider>
         </StyledComponentsRegistry>
       </body>
     </html>

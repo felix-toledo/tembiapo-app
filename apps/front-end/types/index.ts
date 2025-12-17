@@ -127,3 +127,16 @@ export interface PortfolioItem {
   description: string | null;
   images: PortfolioImage[]; // Array de imágenes
 }
+
+export interface ProfessionalResponseDTO {
+  professionalId: string;
+  name: string;
+  lastName: string;
+  username: string;
+  isVerified: boolean;
+  avatarURL: string | null;
+  description: string;
+  whatsappContact: string;
+  area: UIServiceArea[];
+  fields: UIField[];
+}

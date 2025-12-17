@@ -11,7 +11,7 @@ import LoaderWaiter from "@/src/components/ui/loaders/LoaderWaiter";
 import { VerifiedProfileLayout } from "@/src/components/profile/VerifiedProfileLayout";
 
 // URL del Backend directo (Para cuando se arregle CORS)
-// const DIRECT_API_URL = process.env.NEXT_PUBLIC_API_URL;
+const DIRECT_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ProfilePage({
   params,
@@ -24,13 +24,10 @@ export default function ProfilePage({
   // --- SELECCIÓN DE ESTRATEGIA DE FETCH ---
 
   // OPCIÓN A: MODO PROXY (Solución temporal para CORS)
-  // Llamamos a nuestra propia API interna de Next.js
-  const fetchUrl = `/api/auth/profile/${username}`;
+  // const fetchUrl = `/api/auth/profile/${username}`;
 
   // OPCIÓN B: MODO DIRECTO (Ideal para producción con CORS arreglado)
-  // const fetchUrl = `${DIRECT_API_URL}/profile/${username}`;
-
-  // ----------------------------------------
+  const fetchUrl = `${DIRECT_API_URL}/profile/${username}`;
 
   const { data, loading, error } = useFetch<UserProfileData>(fetchUrl);
 
@@ -47,7 +44,7 @@ export default function ProfilePage({
   if (error || !data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 flex-col gap-4">
-        <Navbar /> {/* Mantenemos navbar para no perder navegación */}
+        <Navbar />
         <div className="flex flex-col items-center justify-center grow p-4 text-center">
           <h1 className="text-4xl font-bold text-gray-300 mb-2">Ups!</h1>
           <p className="text-xl font-semibold text-gray-800">
@@ -58,12 +55,12 @@ export default function ProfilePage({
               ? `Detalle técnico: ${error}`
               : `No encontramos al usuario "${username}".`}
           </p>
-          <Link
+          <link
             href="/"
             className="mt-6 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
           >
             Volver al inicio
-          </Link>
+          </link>
         </div>
         <Footer />
       </div>

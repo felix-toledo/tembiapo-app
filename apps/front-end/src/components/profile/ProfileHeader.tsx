@@ -1,11 +1,48 @@
 import { UserProfileData } from "@/types";
-import { getFakeRating } from "@/src/lib/utils"; // Importamos la utilidad
+import { getFakeRating } from "@/src/lib/utils";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
+import { PortfolioFormData } from "../edit-profile/forms/AddPortfolioForm";
+import { useFetch } from "@/src/hooks/useFetch";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 interface Props {
   data: UserProfileData;
 }
+const AnimatedNumber = ({
+  value,
+  isFloat = false,
+}: {
+  value: number;
+  isFloat?: boolean;
+}) => {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const duration = 2000;
+    const startValue = 0;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 4);
+      const current = startValue + (value - startValue) * easeProgress;
+
+      setDisplayValue(current);
+
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+
+    window.requestAnimationFrame(step);
+  }, [value]);
+
+  return (
+    <span>{isFloat ? displayValue.toFixed(1) : Math.floor(displayValue)}</span>
+  );
+};
 
 export const ProfileHeader = ({ data }: Props) => {
   const fullName = `${data.name} ${data.lastName}`;
@@ -16,8 +53,12 @@ export const ProfileHeader = ({ data }: Props) => {
   const ratingColor = data.isVerified ? "text-yellow-400" : "text-gray-300";
   const ratingText = data.isVerified ? "text-gray-900" : "text-gray-400";
 
-  // Simulamos "Trabajos Realizados" basado en el rating (solo visual por ahora)
-  const jobsCount = data.isVerified ? Math.floor(rating * 8) : 0;
+  // Obtenemos los trabajos reales para el contador
+  const { data: portfolioItems } = useFetch<PortfolioFormData[]>(
+    data.username ? `/api/auth/portfolio/${data.username}` : ""
+  );
+
+  const jobsCount = portfolioItems ? portfolioItems.length : 0;
 
   const getInitials = (name: string, lastName: string) => {
     return `${name[0] || ""}${lastName[0] || ""}`.toUpperCase();
@@ -34,6 +75,7 @@ export const ProfileHeader = ({ data }: Props) => {
               alt={fullName}
               fill
               className="object-cover"
+              sizes="(max-width: 640px) 128px, 160px"
             />
           ) : (
             <span className="text-4xl sm:text-5xl font-bold text-gray-500">
@@ -79,7 +121,8 @@ export const ProfileHeader = ({ data }: Props) => {
           <div className="flex items-center space-x-1">
             <span className={`text-3xl ${ratingColor}`}>★</span>
             <span className={`text-3xl font-bold leading-none ${ratingText}`}>
-              {rating.toFixed(1)}
+              {/* ANIMACIÓN DE RATING */}
+              <AnimatedNumber value={rating} isFloat={true} />
             </span>
           </div>
           <span className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">
@@ -92,7 +135,8 @@ export const ProfileHeader = ({ data }: Props) => {
           <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl border border-gray-100 min-w-[100px]">
             <div className="flex items-center space-x-1">
               <span className="text-3xl font-bold leading-none text-gray-900">
-                {jobsCount}
+                {/* ANIMACIÓN DE TRABAJOS */}
+                <AnimatedNumber value={jobsCount} />
               </span>
             </div>
             <span className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">

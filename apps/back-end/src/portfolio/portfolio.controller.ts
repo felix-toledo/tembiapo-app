@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 import { CreatePortfolioItemRequestDTO } from './dto/create-portfolio-item.request.dto';
 import { UpdatePortfolioItemRequestDTO } from './dto/update-portfolio-item.request.dto';
 import { AddPortfolioImageRequestDTO } from './dto/add-portfolio-image.request.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePortfolioImageRequestDTO } from './dto/update-portfolio-image.request.dto';
 import { PortfolioItemResponseDTO } from './dto/portfolio-item.response.dto';
 import { PortfolioImageResponseDTO } from './dto/portfolio-image.response.dto';
@@ -21,6 +24,8 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PortfolioService } from './portfolio.service';
@@ -45,37 +50,25 @@ export class PortfolioController {
     @Req() req: any,
     @Body() dto: CreatePortfolioItemRequestDTO,
   ): Promise<PortfolioItemResponseDTO> {
-    // Assuming req.user.id is populated by some auth middleware/guard
-
     return this.portfolioService.createPortfolioItem(req.user.userId, dto);
   }
 
   @Post(':itemId/image')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  @ApiOperation({ summary: 'Add an image to a portfolio item' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: {
-          type: 'string',
-          format: 'binary',
-          description: 'Image file to upload',
-        },
-        description: { type: 'string' },
-        order: { type: 'number' },
-      },
-      required: ['description', 'order'],
-    },
-  })
+  // 1. Interceptamos el archivo con nombre 'file' (el que pusimos en el FormData del front)
+  @UseInterceptors(FileInterceptor('file'))
+  // 2. Activamos la transformación para que "0" (string) se vuelva 0 (numero)
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async addPortfolioImage(
     @Req() req: any,
     @Param('itemId') itemId: string,
     @Body() dto: AddPortfolioImageRequestDTO,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<PortfolioImageResponseDTO> {
+    if (file) {
+      dto.imageUrl = file.filename || file.originalname;
+    }
+
     return this.portfolioService.addPortfolioImage(
       req.user.userId,
       itemId,
@@ -83,6 +76,7 @@ export class PortfolioController {
       file,
     );
   }
+  // ==========================================
 
   @Delete(':itemId')
   @UseGuards(JwtAuthGuard)
