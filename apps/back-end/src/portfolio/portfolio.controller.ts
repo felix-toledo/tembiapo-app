@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
+
+import { ApiTags } from '@nestjs/swagger';
 
 import { CreatePortfolioItemRequestDTO } from './dto/create-portfolio-item.request.dto';
 import { UpdatePortfolioItemRequestDTO } from './dto/update-portfolio-item.request.dto';
 import { AddPortfolioImageRequestDTO } from './dto/add-portfolio-image.request.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePortfolioImageRequestDTO } from './dto/update-portfolio-image.request.dto';
 import { PortfolioItemResponseDTO } from './dto/portfolio-item.response.dto';
 import { PortfolioImageResponseDTO } from './dto/portfolio-image.response.dto';

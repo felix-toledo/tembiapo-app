@@ -80,42 +80,42 @@ export class professionalRepository {
         },
       });
 
-      // Delete existing field relationships
-      await tx.fieldProfessional.deleteMany({
-        where: { professionalId: id },
-      });
-
-      // Create new field relationships
-      if (
-        updateProfileRequest.fields &&
-        updateProfileRequest.fields.length > 0
-      ) {
-        await tx.fieldProfessional.createMany({
-          data: updateProfileRequest.fields.map((field) => ({
-            professionalId: id,
-            fieldId: field.id,
-            isMain: field.isMain,
-          })),
+      // Update fields if provided
+      if (updateProfileRequest.fields) {
+        // Delete existing field relationships
+        await tx.fieldProfessional.deleteMany({
+          where: { professionalId: id },
         });
+
+        // Create new field relationships
+        if (updateProfileRequest.fields.length > 0) {
+          await tx.fieldProfessional.createMany({
+            data: updateProfileRequest.fields.map((field) => ({
+              professionalId: id,
+              fieldId: field.id,
+              isMain: field.isMain,
+            })),
+          });
+        }
       }
 
-      // Delete existing service area relationships
-      await tx.areaProfessional.deleteMany({
-        where: { professionalId: id },
-      });
-
-      // Create new service area relationships
-      if (
-        updateProfileRequest.serviceAreas &&
-        updateProfileRequest.serviceAreas.length > 0
-      ) {
-        await tx.areaProfessional.createMany({
-          data: updateProfileRequest.serviceAreas.map((area) => ({
-            professionalId: id,
-            areaId: area.id,
-            isMain: area.isMain,
-          })),
+      // Update service areas if provided
+      if (updateProfileRequest.serviceAreas) {
+        // Delete existing service area relationships
+        await tx.areaProfessional.deleteMany({
+          where: { professionalId: id },
         });
+
+        // Create new service area relationships
+        if (updateProfileRequest.serviceAreas.length > 0) {
+          await tx.areaProfessional.createMany({
+            data: updateProfileRequest.serviceAreas.map((area) => ({
+              professionalId: id,
+              areaId: area.id,
+              isMain: area.isMain,
+            })),
+          });
+        }
       }
     });
 

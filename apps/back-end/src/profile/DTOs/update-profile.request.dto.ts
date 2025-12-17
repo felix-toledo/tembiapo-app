@@ -1,19 +1,23 @@
-import { IsString, Matches, IsArray } from 'class-validator';
+import { IsString, Matches, IsArray, IsOptional } from 'class-validator';
 import { Field, ServiceArea } from './create-professional.request.dto';
 
 export class updateProfileRequestDTO {
   @IsString()
-  biography: string;
+  @IsOptional()
+  biography?: string;
 
   @IsString()
   @Matches(/^\d+$/, {
     message: 'El número de WhatsApp debe contener solo numeros.',
   })
-  whatsappContact: string;
+  @IsOptional()
+  whatsappContact?: string;
 
   @IsArray()
-  fields: Field[];
+  @IsOptional()
+  fields?: Field[];
 
   @IsArray()
-  serviceAreas: ServiceArea[];
+  @IsOptional()
+  serviceAreas?: ServiceArea[];
 }
