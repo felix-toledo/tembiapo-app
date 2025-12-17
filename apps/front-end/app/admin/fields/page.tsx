@@ -53,8 +53,8 @@ export default function Fields() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Rubros</h1>
-          <p className="text-gray-600 mt-2">Gestión de rubros profesionales</p>
+          <h1 className="text-3xl font-bold text-gray-900">Rubros</h1>
+          <p className="text-gray-700 mt-2">Gestión de rubros profesionales</p>
         </div>
         <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
           + Nuevo Rubro
