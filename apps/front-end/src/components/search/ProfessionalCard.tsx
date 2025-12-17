@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import { CheckBadgeIcon } from '@heroicons/react/24/solid';
+import { MapPinIcon } from '@heroicons/react/24/outline'; // Opcional, si quieres mostrar ciudad
 
-// Definimos las props locales (o podrías importarlas de tus types globales)
 interface ProfessionalCardProps {
   name: string;
   profession: string;
   rating: number;
   imageUrl?: string | null;
-  isVerified?: boolean; 
+  isVerified?: boolean;
 }
 
 export function ProfessionalCard({ 
@@ -17,57 +17,77 @@ export function ProfessionalCard({
   imageUrl, 
   isVerified = false 
 }: ProfessionalCardProps) {
+
+  // Helper para iniciales si no hay foto
+  const getInitials = (fullName: string) => {
+    const names = fullName.split(' ');
+    return `${names[0]?.[0] || ''}${names[1]?.[0] || ''}`.toUpperCase();
+  };
+
   return (
-    <div className="flex flex-col items-center p-4 transition-transform hover:-translate-y-1 duration-200">
+    <div className="group h-full flex flex-col items-center bg-white border border-gray-100 rounded-4xl p-6 shadow-sm hover:shadow-xl hover:border-orange-100 transition-all duration-300 relative overflow-hidden">
       
-      {/* Avatar Container */}
-      <div className="relative mb-3">
-        
-        {/* Círculo del Avatar */}
-        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-200 flex items-center justify-center border-2 border-transparent relative overflow-hidden shadow-sm">
-            
+      {/* Fondo decorativo sutil en hover */}
+      <div className="absolute top-0 left-0 w-full h-20 bg-linear-to-b from-gray-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      {/* --- AVATAR CONTAINER --- */}
+      <div className="relative mb-5 z-10">
+        {/* Anillo animado en hover */}
+        <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 bg-white border-2 border-gray-100 group-hover:border-[#E35205] transition-colors duration-300 shadow-sm relative">
+          
+          <div className="w-full h-full rounded-full relative overflow-hidden bg-gray-50">
             {imageUrl ? (
-              // CASO A: Tenemos foto
               <Image 
                 src={imageUrl} 
                 alt={`Foto de ${name}`}
                 fill
-                className="object-cover"
-                sizes="(max-width: 768px) 96px, 128px"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                sizes="(max-width: 768px) 112px, 128px"
               />
             ) : (
-              // CASO B: No tenemos foto (Placeholder)
-              <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-              </svg>
+              // Placeholder con Iniciales
+              <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 font-bold text-3xl group-hover:text-gray-500 transition-colors">
+                {getInitials(name)}
+              </div>
             )}
+          </div>
 
+          {/* Badge de Verificación (Integrado en el avatar) */}
+          {isVerified && (
+            <div className="absolute bottom-1 right-1 bg-white rounded-full p-0.5 shadow-sm" title="Profesional Verificado">
+              <CheckBadgeIcon className="h-6 w-6 text-blue-600" />
+            </div>
+          )}
         </div>
 
-        {/* Estrella de Rating (Esquina superior derecha) */}
-        <div className="absolute top-0 right-0 bg-white border border-gray-200 shadow-md rounded-full px-2 py-0.5 flex items-center gap-1 z-10">
-          <span className="text-yellow-500 text-sm">★</span>
-          <span className="text-xs font-bold text-gray-900">{rating.toFixed(1)}</span>
+        {/* Badge de Rating (Flotante) */}
+        <div className="absolute -top-2 -right-2 bg-white border border-gray-100 shadow-md rounded-full px-3 py-1 flex items-center gap-1.5 transform group-hover:-translate-y-1 transition-transform duration-300">
+          <span className="text-yellow-400 text-base">★</span>
+          <span className="text-sm font-bold text-gray-900">{rating.toFixed(1)}</span>
         </div>
       </div>
 
-      {/* Info Text */}
-      <div className="text-center w-full">
-        <div className="flex items-center justify-center gap-1">
-            <h3 className="text-sm sm:text-base text-gray-700 font-medium truncate max-w-[150px]">
-              {name}
-            </h3>
-            
-            {/* LÓGICA DE VERIFICADO: Solo se muestra si es true */}
-            {isVerified && (
-              <CheckBadgeIcon className="h-4 w-4 text-blue-600 shrink-0" title="Identidad Verificada" />
-            )}
-        </div>
+      {/* --- INFO TEXT --- */}
+      <div className="text-center w-full z-10 flex flex-col items-center grow">
         
-        <p className="text-lg sm:text-xl font-bold text-gray-900 capitalize mt-1 leading-tight">
+        {/* Nombre */}
+        <h3 className="text-gray-900 font-bold text-lg mb-1 truncate w-full px-2 group-hover:text-[#E35205] transition-colors">
+          {name}
+        </h3>
+
+        {/* Profesión (Estilo Tag) */}
+        <div className="inline-block px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-sm font-medium text-gray-600 mb-4 group-hover:bg-orange-50 group-hover:text-[#E35205] group-hover:border-orange-100 transition-all">
           {profession}
-        </p>
+        </div>
+
+        {/* Botón visual "Ver Perfil" (Opcional, pero ayuda al CTA) */}
+        <div className="mt-auto pt-2 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+          <span className="text-sm font-semibold text-gray-900 border-b-2 border-[#E35205]">
+            Ver perfil completo
+          </span>
+        </div>
       </div>
+
     </div>
   );
 }

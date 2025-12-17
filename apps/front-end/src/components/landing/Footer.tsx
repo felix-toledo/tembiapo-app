@@ -1,79 +1,109 @@
+import { Facebook, Instagram, Twitter, Mail, MapPin, Heart } from "lucide-react";
+
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-[#3B5277] text-white py-12 md:py-16">
+    <footer className="bg-[#3B5277] text-white pt-16 pb-8 border-t-4 border-[#E35205]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+        
+        {/* Grid Principal */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-16">
+          
+          {/* Columna 1: Marca y Redes (Ocupa 2 espacios en pantallas grandes) */}
+          <div className="lg:col-span-2 space-y-6">
+            <div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-white">
+                Tembiapó<span className="text-[#E35205]">.</span>
+              </h2>
+              <p className="mt-4 text-gray-300 leading-relaxed max-w-sm">
+                Conectando el talento del NEA con quienes lo necesitan. 
+                Seguridad, rapidez y trato directo en una sola plataforma.
+              </p>
+            </div>
+
+            {/* Redes Sociales */}
+            <div className="flex space-x-4">
+              {[Instagram, Facebook, Twitter].map((Icon, idx) => (
+                <a
+                  key={idx}
+                  href="#"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#E35205] hover:text-white transition-all duration-300 group"
+                >
+                  <Icon size={20} className="text-gray-300 group-hover:text-white" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Columna 2: Clientes */}
           <div>
-            <h3 className="font-bold text-lg mb-4">Para Clientes</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Buscar Profesionales
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Cómo Funciona
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Preguntas Frecuentes
-                </a>
-              </li>
+            <h3 className="font-bold text-lg mb-6 text-white border-b border-[#E35205] inline-block pb-2">
+              Para Clientes
+            </h3>
+            <ul className="space-y-4">
+              {['Buscar Profesionales', 'Cómo Funciona', 'Garantía de Seguridad', 'Preguntas Frecuentes'].map((item) => (
+                <li key={item}>
+                  <a href="#" className="text-gray-300 hover:text-[#E35205] hover:pl-2 transition-all duration-300 text-sm">
+                    {item}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
+
+          {/* Columna 3: Profesionales */}
           <div>
-            <h3 className="font-bold text-lg mb-4">Para Profesionales</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Registrarse
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Verificación
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Contáctanos
-                </a>
-              </li>
+            <h3 className="font-bold text-lg mb-6 text-white border-b border-[#E35205] inline-block pb-2">
+              Para Expertos
+            </h3>
+            <ul className="space-y-4">
+              {['Unirse como Profesional', 'Proceso de Verificación', 'Historias de Éxito', 'Centro de Ayuda'].map((item) => (
+                <li key={item}>
+                  <a href="#" className="text-gray-300 hover:text-[#E35205] hover:pl-2 transition-all duration-300 text-sm">
+                    {item}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
+
+          {/* Columna 4: Contacto */}
           <div>
-            <h3 className="font-bold text-lg mb-4">Legal</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Términos de Uso
+            <h3 className="font-bold text-lg mb-6 text-white border-b border-[#E35205] inline-block pb-2">
+              Contacto
+            </h3>
+            <ul className="space-y-4 text-sm text-gray-300">
+              <li className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-[#E35205] shrink-0" />
+                <a href="mailto:soporte@tembiapo.app" className="hover:text-white transition-colors">
+                  soporte@tembiapo.app
                 </a>
               </li>
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Privacidad
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
-                  Seguridad
-                </a>
+              <li className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-[#E35205] shrink-0" />
+                <span>
+                  Corrientes Capital,<br />
+                  Argentina
+                </span>
               </li>
             </ul>
-          </div>
-          <div>
-            <h3 className="font-bold text-lg mb-4">Contacto</h3>
-            <p className="text-sm mb-2">📧 soporte@tembiabo.app</p>
-            <p className="text-sm">📍 Corrientes, Argentina</p>
           </div>
         </div>
 
-        <div className="border-t border-white/20 pt-8 text-center">
-          <p className="text-sm text-white/80">
-            Hecho con orgullo en Corrientes. © 2025 Tembiapó.
+        {/* Barra Inferior */}
+        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+          <p>
+            © {currentYear} Tembiapó. Todos los derechos reservados.
           </p>
+          
+          <div className="flex items-center gap-6">
+            <a href="#" className="hover:text-white transition-colors">Privacidad</a>
+            <a href="#" className="hover:text-white transition-colors">Términos</a>
+            <span className="flex items-center gap-1 text-white/60">
+              Hecho con <Heart size={14} className="text-[#E35205] fill-[#E35205]" /> en Corrientes
+            </span>
+          </div>
         </div>
       </div>
     </footer>
