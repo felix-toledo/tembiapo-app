@@ -22,6 +22,9 @@ import { EditCitiesForm } from './forms/EditCitiesForm';
 import { PortfolioManager } from './PortfolioManager';
 
 import { Field, ServiceArea } from '@tembiapo/db';
+import { useFetch } from '@/src/hooks/useFetch';
+import { PortfolioFormData } from './forms/AddPortfolioForm';
+import { getFakeRating } from '@/src/lib/utils';
 
 interface Props {
   availableFields: Field[];
@@ -38,6 +41,10 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
 
   // 3. Estado Derivado: Preferimos la edición local si existe, sino el dato del contexto
   const displayUser = localUserUpdates || professional;
+
+  const { data: portfolioItems } = useFetch<PortfolioFormData[]>(
+    displayUser?.username ? `/api/auth/portfolio/${displayUser.username}` : ''
+  );
 
   // Reseteamos ediciones locales si el perfil profesional cambia (ej. recarga desde servidor)
   useEffect(() => {
@@ -103,8 +110,9 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
   const skillNames = displayUser.fields?.map(f => f.name) || [];
   const cityNames = displayUser.area?.map(a => a.city) || [];
   const fullName = `${displayUser.name} ${displayUser.lastName}`;
-  // Nota: Si 'stats' no está en tu interfaz Professional del contexto, usa defaults:
-  const stats = { jobsCompleted: 0, rating: 0 };
+    const jobsCount = portfolioItems ? portfolioItems.length : 0;
+  const rating = getFakeRating(displayUser.professionalId);
+  const stats = { jobsCount, rating };
 
   return (
     <>
@@ -127,13 +135,13 @@ export const DashboardContainer = ({ availableFields, availableAreas }: Props) =
         <div className="lg:col-span-2 space-y-8">
           <DashboardHeader
             name={fullName}
-            // Busca el que tiene isMain=true, si no existe usa el primero, sino "Profesional"
             profession={displayUser.fields?.find(f => f.isMain)?.name || displayUser.fields?.[0]?.name || "Profesional"}
+            username={displayUser.username}
           />
 
           {!displayUser.isVerified && <VerificationBanner />}
 
-          <DashboardStats jobs={stats.jobsCompleted} rating={stats.rating} />
+          <DashboardStats jobs={stats.jobsCount} rating={stats.rating} isVerified={displayUser.isVerified} />
 
           {/* GESTIÓN DE PORTFOLIO */}
           {displayUser.isVerified && displayUser.username ? (

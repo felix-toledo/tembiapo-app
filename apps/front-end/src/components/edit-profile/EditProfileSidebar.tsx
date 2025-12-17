@@ -21,7 +21,6 @@ interface Props {
   description: string;
   skills: string[];
   cities: string[];
-  // NUEVAS PROPS: Funciones para abrir modales
   onEditDescription?: () => void;
   onEditSkills?: () => void;
   onEditCities?: () => void;

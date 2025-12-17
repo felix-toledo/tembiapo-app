@@ -1,10 +1,44 @@
 import { UserProfileData } from '@/types';
-import { getFakeRating } from '@/src/lib/utils'; // Importamos la utilidad
-import { CheckBadgeIcon } from '@heroicons/react/24/solid'; // Asegúrate de tener heroicons instalados
+import { getFakeRating } from '@/src/lib/utils';
+import { CheckBadgeIcon } from '@heroicons/react/24/solid';
+import { PortfolioFormData } from '../edit-profile/forms/AddPortfolioForm';
+import { useFetch } from '@/src/hooks/useFetch';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface Props {
   data: UserProfileData;
 }
+const AnimatedNumber = ({ value, isFloat = false }: { value: number, isFloat?: boolean }) => {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const duration = 2000;
+    const startValue = 0;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 4); 
+      const current = startValue + (value - startValue) * easeProgress;
+
+      setDisplayValue(current);
+
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+
+    window.requestAnimationFrame(step);
+  }, [value]);
+
+  return (
+    <span>
+      {isFloat ? displayValue.toFixed(1) : Math.floor(displayValue)}
+    </span>
+  );
+};
 
 export const ProfileHeader = ({ data }: Props) => {
   const fullName = `${data.name} ${data.lastName}`;
@@ -14,9 +48,13 @@ export const ProfileHeader = ({ data }: Props) => {
   const rating = data.isVerified ? getFakeRating(data.professionalId) : 0.0;
   const ratingColor = data.isVerified ? "text-yellow-400" : "text-gray-300";
   const ratingText = data.isVerified ? "text-gray-900" : "text-gray-400";
+
+  // Obtenemos los trabajos reales para el contador
+  const { data: portfolioItems } = useFetch<PortfolioFormData[]>(
+     data.username ? `/api/auth/portfolio/${data.username}` : ''
+  );
   
-  // Simulamos "Trabajos Realizados" basado en el rating (solo visual por ahora)
-  const jobsCount = data.isVerified ? Math.floor(rating * 8) : 0;
+  const jobsCount = portfolioItems ? portfolioItems.length : 0;
 
   const getInitials = (name: string, lastName: string) => {
     return `${name[0] || ''}${lastName[0] || ''}`.toUpperCase();
@@ -29,7 +67,13 @@ export const ProfileHeader = ({ data }: Props) => {
       <div className="sm:mr-8 shrink-0">
         <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gray-200 border-4 border-white shadow-md flex items-center justify-center relative overflow-hidden">
           {data.avatarURL ? (
-            <img src={data.avatarURL} alt={fullName} className="w-full h-full object-cover" />
+            <Image 
+              src={data.avatarURL} 
+              alt={fullName} 
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 128px, 160px"
+            />
           ) : (
             <span className="text-4xl sm:text-5xl font-bold text-gray-500">
               {getInitials(data.name, data.lastName)}
@@ -68,7 +112,10 @@ export const ProfileHeader = ({ data }: Props) => {
         <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl border border-gray-100 min-w-[100px]">
           <div className="flex items-center space-x-1">
             <span className={`text-3xl ${ratingColor}`}>★</span>
-            <span className={`text-3xl font-bold leading-none ${ratingText}`}>{rating.toFixed(1)}</span>
+            <span className={`text-3xl font-bold leading-none ${ratingText}`}>
+              {/* ANIMACIÓN DE RATING */}
+              <AnimatedNumber value={rating} isFloat={true} />
+            </span>
           </div>
           <span className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">Valoración</span>
         </div>
@@ -77,7 +124,10 @@ export const ProfileHeader = ({ data }: Props) => {
         {data.isVerified && (
            <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl border border-gray-100 min-w-[100px]">
              <div className="flex items-center space-x-1">
-               <span className="text-3xl font-bold leading-none text-gray-900">{jobsCount}</span>
+               <span className="text-3xl font-bold leading-none text-gray-900">
+                 {/* ANIMACIÓN DE TRABAJOS */}
+                 <AnimatedNumber value={jobsCount} />
+               </span>
              </div>
              <span className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">Trabajos</span>
            </div>

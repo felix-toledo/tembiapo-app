@@ -140,10 +140,4 @@ export interface ProfessionalResponseDTO {
   whatsappContact: string;
   area: UIServiceArea[];
   fields: UIField[];
-  // Agrego stats opcionales por si el backend no los trae aún, 
-  // para no romper la UI que espera rating/jobs
-  stats?: {
-    jobsCompleted: number;
-    rating: number;
-  };
 }
