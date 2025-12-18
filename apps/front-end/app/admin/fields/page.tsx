@@ -23,11 +23,13 @@ export default function Fields() {
 
   async function fetchFields() {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-      const res = await fetch(`${API_URL}/api/v1/fields`);
+      const res = await fetch("/api/fields");
       const data = await res.json();
       
-      if (data.success && data.data) {
+      // El backend puede devolver el array directamente o envuelto en { success, data }
+      if (Array.isArray(data)) {
+        setFields(data);
+      } else if (data.success && data.data) {
         setFields(data.data);
       }
     } catch (error) {
@@ -68,7 +70,7 @@ export default function Fields() {
             placeholder="Buscar rubro..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-gray-700 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
