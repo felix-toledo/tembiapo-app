@@ -172,6 +172,10 @@ export class PortfolioService {
       id: item.id,
       title: item.title,
       description: item.description,
+      field: {
+        id: item.field.id,
+        name: item.field.name,
+      },
       images: item.images.map((img) => this.mapPortfolioImageToDTO(img)),
     };
   }

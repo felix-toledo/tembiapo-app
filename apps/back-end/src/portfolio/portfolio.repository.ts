@@ -10,6 +10,7 @@ import { UpdatePortfolioImageRequestDTO } from './dto/update-portfolio-image.req
 export type PortfolioItemWithImages = Prisma.PortfolioItemGetPayload<{
   include: {
     images: true;
+    field: true;
   };
 }>;
 
@@ -45,6 +46,7 @@ export class PortfolioRepository {
         },
       },
       include: {
+        field: true,
         images: {
           where: {
             deletedAt: null, // Only include non-deleted images
@@ -71,6 +73,7 @@ export class PortfolioRepository {
         deletedAt: null, // Only non-deleted items
       },
       include: {
+        field: true,
         images: {
           where: {
             deletedAt: null,
@@ -97,6 +100,7 @@ export class PortfolioRepository {
         deletedAt: null,
       },
       include: {
+        field: true,
         images: {
           where: {
             deletedAt: null,
@@ -130,6 +134,7 @@ export class PortfolioRepository {
         deletedAt: null,
       },
       include: {
+        field: true,
         images: {
           where: {
             deletedAt: null,
