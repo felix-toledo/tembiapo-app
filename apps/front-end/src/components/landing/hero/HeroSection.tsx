@@ -1,19 +1,21 @@
-import { CheckCircle, Shield, Star } from "lucide-react";
+import { CheckCircle, Shield, Star, MapPin } from "lucide-react";
 import Image from "next/image";
 import { getFields } from "@/src/data/fields/fields.data";
 import { getRandomElement } from "@/src/lib/utils";
 import { HeroSearchForm } from "./HeroSearchForm";
+// 1. Importamos el nuevo componente
+import { HeroTitle } from "./HeroTitle"; 
 
 export async function HeroSection() {
   const fields = await getFields();
 
-  // Seleccionar aleatoriamente una de las dos imágenes de fondo
   const heroImages = ["/hero_image_1.png", "/hero_image_2.png"];
   const selectedImage = getRandomElement(heroImages);
 
   return (
-    <section className="relative w-full min-h-[85vh] md:min-h-[600px] flex flex-col items-center justify-center \">
-      {/* --- CAPA 0: LA BASE (Imagen) --- */}
+    <section className="relative w-full min-h-[85vh] md:min-h-[650px] flex flex-col items-center justify-center overflow-visible">
+      
+      {/* --- CAPA 0: IMAGEN DE FONDO --- */}
       <div className="absolute inset-0 z-0">
         <Image
           src={selectedImage}
@@ -24,36 +26,45 @@ export async function HeroSection() {
         />
       </div>
 
-      {/* --- CAPA 1: EL TINTE (Overlay) --- */}
-      <div className="absolute inset-0 bg-black/60 z-10" />
+      {/* --- CAPA 1: OSCURECIMIENTO --- */}
+      <div className="absolute inset-0 bg-black/50 z-10" />
 
-      {/* --- CAPA 2: EL CONTENIDO (Texto y Botones) --- */}
-      <div className="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center justify-center gap-8 md:gap-10 py-12">
-        <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-balance drop-shadow-md">
-          Tu casa es sagrada. <br className="hidden md:block" />
-          <span className="text-gray-200">
-            Encontrá profesionales de confianza
-          </span>
-        </h1>
+      {/* --- CAPA 2: CONTENIDO --- */}
+      <div className="relative z-30 w-full max-w-5xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center justify-center gap-6 py-12">
+        
+        {/* Badge superior */}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-2 shadow-lg">
+          <MapPin size={14} className="text-[#E35205]" />
+          <span>La red de expertos del NEA</span>
+        </div>
 
-        <p className="text-gray-200 text-base sm:text-lg max-w-xl mx-auto md:hidden">
-          Carpinteros, electricistas y más, validados por tu comunidad.
+        {/* 2. Reemplazamos el H1 estático por el componente dinámico */}
+        {/* Quitamos las clases de animación de entrada aquí porque el componente interno ya maneja su propia animación */}
+        <HeroTitle />
+
+        <p className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300 text-gray-100 text-lg sm:text-xl max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-md">
+          Conectamos tus necesidades con los profesionales mejor calificados de tu ciudad. 
+          Rápido, seguro y garantizado.
         </p>
 
-        <HeroSearchForm fields={fields} />
+        {/* Buscador */}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 w-full flex justify-center relative z-50">
+          <HeroSearchForm fields={fields} />
+        </div>
 
-        <div className="flex flex-wrap justify-center gap-3 w-full">
-          <Badge
-            icon={<CheckCircle size={16} className="text-green-600" />}
-            text="Identidad Validada"
+        {/* Badges de confianza */}
+        <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500 flex flex-wrap justify-center gap-4 mt-8 w-full relative z-40">
+          <GlassBadge
+            icon={<Shield className="w-5 h-5 text-blue-400" />}
+            title="Identidad Verificada"
           />
-          <Badge
-            icon={<Shield size={16} className="text-blue-600" />}
-            text="Vecinos de tu ciudad"
+          <GlassBadge
+            icon={<CheckCircle className="w-5 h-5 text-green-400" />}
+            title="Garantía de Servicio"
           />
-          <Badge
-            icon={<Star size={16} className="text-yellow-500" />}
-            text="Reseñas Reales"
+          <GlassBadge
+            icon={<Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />}
+            title="Reseñas Reales"
           />
         </div>
       </div>
@@ -61,13 +72,15 @@ export async function HeroSection() {
   );
 }
 
-// Pequeño componente local para limpiar el código repetitivo de los badges
-function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
+function GlassBadge({ icon, title }: { icon: React.ReactNode; title: string }) {
+  // ... (Este componente sigue igual)
   return (
-    <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-sm border border-gray-200/50">
-      {icon}
-      <span className="text-xs sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-        {text}
+    <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/10 px-5 py-3 rounded-2xl shadow-lg hover:bg-black/60 transition-all cursor-default group">
+      <div className="group-hover:scale-110 transition-transform duration-300">
+        {icon}
+      </div>
+      <span className="text-sm font-medium text-white tracking-wide shadow-black drop-shadow-sm">
+        {title}
       </span>
     </div>
   );
