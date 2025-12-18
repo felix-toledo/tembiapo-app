@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, ArrowRightIcon } from '@heroicons/react/24/outline'; // Agregué ArrowRight para el botón
 import { AutoScroll } from '@/src/lib/utils';
 
 export function SearchInput() {
@@ -27,27 +27,46 @@ export function SearchInput() {
     };
 
     return (
-        <div className="relative w-full">
+        <div className="relative w-full group">
+            {/* Input Principal */}
             <input
                 key={currentQ}
-
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar por nombre..."
-                className="w-full pl-10 pr-12 py-3 border-2 border-gray-400 rounded-lg 
-                   text-gray-900 placeholder:text-gray-500 font-medium
-                   focus:outline-none focus:ring-2 focus:ring-gray-400 
-                   bg-white shadow-sm transition-all"
+                className="                   
+                    w-full pl-12 pr-14 py-4 
+                    bg-white border border-gray-200 rounded-full 
+                    text-gray-900 font-medium placeholder:text-gray-400
+                    shadow-sm transition-all duration-300 ease-in-out
+                    outline-none
+                    focus:border-[#E35205] focus:ring-4 focus:ring-[#E35205]/10 focus:shadow-md
+                    group-hover:border-gray-300
+                "
             />
-            {/* ... iconos y botones ... */}
-            <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            
+            {/* Icono Izquierdo (Decorativo) */}
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-[#E35205] transition-colors">
+                <MagnifyingGlassIcon className="h-6 w-6" />
+            </div>
+
+            {/* Botón Derecho (Acción) */}
             <button
                 onClick={() => handleSearch(searchTerm)}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 bg-gray-800 text-white rounded-md"
+                className="
+                    absolute right-2 top-1/2 transform -translate-y-1/2 
+                    p-2.5 rounded-full 
+                    bg-[#E35205] text-white 
+                    shadow-md hover:shadow-lg hover:bg-[#d14900] hover:scale-105
+                    active:scale-95
+                    transition-all duration-200
+                "
+                aria-label="Buscar"
             >
-                <MagnifyingGlassIcon className="h-4 w-4" />
+                {/* Cambié la lupa por una flecha para indicar "Ir", pero puedes dejar la lupa si prefieres */}
+                <ArrowRightIcon className="h-5 w-5 stroke-[2.5]" /> 
             </button>
         </div>
     );
