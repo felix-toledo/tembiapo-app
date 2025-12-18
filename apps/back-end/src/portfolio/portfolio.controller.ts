@@ -74,7 +74,6 @@ export class PortfolioController {
       file,
     );
   }
-  // ==========================================
 
   @Delete(':itemId')
   @UseGuards(JwtAuthGuard)

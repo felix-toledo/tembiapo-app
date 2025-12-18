@@ -10,9 +10,9 @@ interface OurButtonProps {
   shadowColor?: string;
   textColor?: string;
   outlineColor?: string;
-  // 1. Agregamos las props necesarias para interactividad y estilos externos
   className?: string;
   onClick?: () => void;
+  borderRadius?: string; 
 }
 
 const OurButton = ({
@@ -22,9 +22,9 @@ const OurButton = ({
   shadowColor = "var(--color-gris-oscuro)",
   textColor = "var(--color-blanco-puro)",
   outlineColor = "var(--color-tierra-activa)",
-  // 2. Recibimos las props
   className,
   onClick,
+  borderRadius = "8px", 
 }: OurButtonProps) => {
   return (
     <StyledWrapper
@@ -33,11 +33,9 @@ const OurButton = ({
       $shadowColor={shadowColor}
       $textColor={textColor}
       $outlineColor={outlineColor}
-      // 3. Pasamos la className al contenedor principal (el Wrapper)
-      // Esto permite que si le pasas "w-full", el wrapper ocupe todo el ancho.
+      $borderRadius={borderRadius} 
       className={className}
     >
-      {/* 4. Pasamos el onClick al botón nativo interno */}
       <button className="pushable" onClick={onClick}>
         <span className="shadow" />
         <span className="edge" />
@@ -53,10 +51,9 @@ const StyledWrapper = styled.div<{
   $shadowColor: string;
   $textColor: string;
   $outlineColor: string;
+  $borderRadius: string; 
 }>`
-  /* IMPORTANTE: Esto asegura que el wrapper no bloquee el ancho */
   display: inline-block;
-  /* Si le pasas w-full desde fuera, Tailwind sobrescribirá este display a block o flex */
 
   .pushable {
     position: relative;
@@ -68,10 +65,8 @@ const StyledWrapper = styled.div<{
     outline-color: ${(props) => props.$outlineColor};
     transition: filter 250ms;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    width: 100%; /* Esto hace que el botón llene al wrapper */
+    width: 100%;
   }
-
-  /* ... El resto de tus estilos (.shadow, .edge, .front, hovers) se mantienen IGUAL ... */
 
   .shadow {
     position: absolute;
@@ -80,7 +75,8 @@ const StyledWrapper = styled.div<{
     height: 100%;
     width: 100%;
     background: ${(props) => props.$shadowColor};
-    border-radius: 8px;
+    /* 5. USAMOS LA VARIABLE AQUÍ */
+    border-radius: ${(props) => props.$borderRadius}; 
     filter: blur(2px);
     will-change: transform;
     transform: translateY(2px);
@@ -93,7 +89,8 @@ const StyledWrapper = styled.div<{
     left: 0;
     height: 100%;
     width: 100%;
-    border-radius: 8px;
+    /* 6. USAMOS LA VARIABLE AQUÍ */
+    border-radius: ${(props) => props.$borderRadius};
     background: ${(props) =>
       props.$edgeColor ||
       `linear-gradient(
@@ -111,7 +108,8 @@ const StyledWrapper = styled.div<{
     justify-content: center;
     gap: 8px;
     position: relative;
-    border-radius: 8px;
+    /* 7. USAMOS LA VARIABLE AQUÍ */
+    border-radius: ${(props) => props.$borderRadius};
     background: ${(props) => props.$frontColor};
     padding: 16px 32px;
     color: ${(props) => props.$textColor};
@@ -128,33 +126,13 @@ const StyledWrapper = styled.div<{
     }
   }
 
-  .pushable:hover {
-    filter: brightness(110%);
-  }
-
-  .pushable:hover .front {
-    transform: translateY(-6px);
-    transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
-  }
-
-  .pushable:active .front {
-    transform: translateY(-2px);
-    transition: transform 34ms;
-  }
-
-  .pushable:hover .shadow {
-    transform: translateY(4px);
-    transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
-  }
-
-  .pushable:active .shadow {
-    transform: translateY(1px);
-    transition: transform 34ms;
-  }
-
-  .pushable:focus:not(:focus-visible) {
-    outline: none;
-  }
+  /* ... El resto de hovers y active se mantienen igual ... */
+  .pushable:hover { filter: brightness(110%); }
+  .pushable:hover .front { transform: translateY(-6px); transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5); }
+  .pushable:active .front { transform: translateY(-2px); transition: transform 34ms; }
+  .pushable:hover .shadow { transform: translateY(4px); transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5); }
+  .pushable:active .shadow { transform: translateY(1px); transition: transform 34ms; }
+  .pushable:focus:not(:focus-visible) { outline: none; }
 `;
 
 export default OurButton;

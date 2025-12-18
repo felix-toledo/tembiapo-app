@@ -21,10 +21,10 @@ import { EditCitiesForm } from "./forms/EditCitiesForm";
 
 // Gestor de Portafolio
 import { PortfolioManager } from "./PortfolioManager";
+import { PortfolioItem } from "@/types";
 
 import { Field, ServiceArea } from "@tembiapo/db";
 import { useFetch } from "@/src/hooks/useFetch";
-import { PortfolioFormData } from "./forms/AddPortfolioForm";
 import { getFakeRating } from "@/src/lib/utils";
 
 interface Props {
@@ -50,7 +50,10 @@ export const DashboardContainer = ({
   // 3. Estado Derivado: Preferimos la edición local si existe, sino el dato del contexto
   const displayUser = localUserUpdates || professional;
 
-  const { data: portfolioItems } = useFetch<PortfolioFormData[]>(
+  const { data: portfolioItems,
+    loading: loadingPortfolio, 
+    refetch: refreshPortfolio
+   } = useFetch<PortfolioItem[]>(
     displayUser?.username ? `/api/auth/portfolio/${displayUser.username}` : ""
   );
 
@@ -222,6 +225,9 @@ export const DashboardContainer = ({
             <PortfolioManager
               username={displayUser.username}
               userFields={displayUser.fields || []}
+              initialItems={portfolioItems || []}
+              isLoading={loadingPortfolio}
+              onUpdate={refreshPortfolio}
             />
           ) : (
             <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 border-dashed flex flex-col items-center justify-center text-center">
