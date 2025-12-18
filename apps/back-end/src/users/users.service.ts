@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../auth/repository/user.repository';
 import { UserInfoResponseDTO } from './dto/user-info.response.dto';
@@ -29,6 +30,7 @@ export class UsersService {
       name: user.person.name,
       lastName: user.person.lastName,
       isVerified: user.person.isVerified,
+      isPremium: user.professional?.isPremium || false,
       role: user.role.name,
     };
 

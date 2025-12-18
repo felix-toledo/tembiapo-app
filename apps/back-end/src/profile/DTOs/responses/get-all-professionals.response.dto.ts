@@ -7,6 +7,7 @@ export interface ProfessionalItemDTO {
   description: string;
   whatsappContact: string;
   isVerified: boolean;
+  isPremium: boolean;
   area: Array<{
     id: string;
     city: string;

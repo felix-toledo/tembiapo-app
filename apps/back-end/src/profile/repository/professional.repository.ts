@@ -261,9 +261,21 @@ export class professionalRepository {
         },
         skip,
         take: limit,
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: [
+          {
+            professional: {
+              isPremium: 'desc',
+            },
+          },
+          {
+            person: {
+              isVerified: 'desc',
+            },
+          },
+          {
+            createdAt: 'desc',
+          },
+        ],
       }),
       this.prisma.user.count({
         where: whereConditions,

@@ -74,6 +74,7 @@ export class UserRepository {
       include: {
         person: true,
         role: true,
+        professional: true,
       },
     });
   }

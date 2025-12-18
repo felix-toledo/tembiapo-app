@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { ChevronDown, Search, Check } from "lucide-react";
+import { ChevronDown, Search, Check, X } from "lucide-react";
 
 interface SelectWithSearcherProps<T> {
   data: T[];
@@ -10,6 +10,7 @@ interface SelectWithSearcherProps<T> {
   setSelectedItem: (item: T) => void;
   placeholder?: string;
   className?: string;
+  onClear?: () => void;
 }
 
 export function SelectWithSearcher<T>({
@@ -19,6 +20,7 @@ export function SelectWithSearcher<T>({
   setSelectedItem,
   placeholder = "Seleccionar...",
   className = "",
+  onClear,
 }: SelectWithSearcherProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,11 +75,26 @@ export function SelectWithSearcher<T>({
         >
           {selectedItem ? String(selectedItem[property]) : placeholder}
         </span>
-        <ChevronDown
-          className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-            isOpen ? "transform rotate-180" : ""
-          }`}
-        />
+        <div className="flex items-center gap-2">
+          {selectedItem && onClear && (
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClear();
+              }}
+              className="p-1 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </div>
+          )}
+          <ChevronDown
+            className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
+              isOpen ? "transform rotate-180" : ""
+            }`}
+          />
+        </div>
       </button>
 
       {/* Dropdown Menu */}

@@ -147,6 +147,7 @@ export function FeaturedPros({
                                 rating={rating}
                                 imageUrl={pro.avatarURL}
                                 isVerified={pro.isVerified}
+                                isPremium={pro.isPremium}
                               />
                             </Link>
                           </motion.div>

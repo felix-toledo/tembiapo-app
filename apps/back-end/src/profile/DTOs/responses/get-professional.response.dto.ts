@@ -19,6 +19,7 @@ export class getProfessionalResponseDTO {
   lastName: string;
   username: string;
   isVerified: boolean;
+  isPremium: boolean;
   avatarURL: string;
   description: string;
   whatsappContact: string;

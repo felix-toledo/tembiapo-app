@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ConflictException,
   Injectable,
@@ -152,6 +153,7 @@ export class ProfileService {
       avatarURL: user.avatarUrl || '',
       description: user.professional.description || '',
       whatsappContact: user.professional.whatsappContact,
+      isPremium: user.professional.isPremium,
       area: user.professional.serviceAreas.map((sa) => ({
         id: sa.area.id,
         city: sa.area.city,
@@ -189,6 +191,7 @@ export class ProfileService {
       username: user.username || '',
       isVerified: user.person.isVerified,
       avatarURL: user.avatarUrl || '',
+      isPremium: user.professional.isPremium,
       description: user.professional.description || '',
       whatsappContact: user.professional.whatsappContact,
       area: user.professional.serviceAreas.map((sa) => ({
@@ -273,6 +276,7 @@ export class ProfileService {
         description: user.professional!.description || '',
         whatsappContact: user.professional!.whatsappContact,
         isVerified: user.person.isVerified,
+        isPremium: user.professional!.isPremium,
         area: user.professional!.serviceAreas.map((sa) => ({
           id: sa.area.id,
           city: sa.area.city,

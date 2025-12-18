@@ -33,6 +33,7 @@ export interface ProfessionalCardProps {
   description: string | null;
   whatsappContact: string;
   rating: number; // Calculado en el front por ahora
+  isPremium: boolean;
 
   // Relaciones con la propiedad extra 'isMain'
   fields: UIField[];
@@ -70,6 +71,7 @@ export interface ProfessionalProfile {
   username: string;
   avatarURL: string | null;
   isVerified: boolean;
+  isPremium: boolean;
   rating: number;
   description: string;
   whatsappContact: string;
@@ -100,6 +102,7 @@ export interface UserProfileData {
   lastName: string;
   username: string;
   isVerified: boolean;
+  isPremium: boolean;
   avatarURL: string | null; // Puede venir vacío según tu JSON
   description: string;
   whatsappContact: string;
@@ -134,6 +137,7 @@ export interface ProfessionalResponseDTO {
   lastName: string;
   username: string;
   isVerified: boolean;
+  isPremium: boolean;
   avatarURL: string | null;
   description: string;
   whatsappContact: string;
