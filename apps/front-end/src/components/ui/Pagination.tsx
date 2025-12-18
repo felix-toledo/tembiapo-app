@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 interface PaginationProps {
   currentPage: number;
@@ -11,16 +11,17 @@ interface PaginationProps {
 export function Pagination({ currentPage, totalPages }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const handlePageChange = (newPage: number) => {
     // 1. Copiamos los parámetros actuales (filtros, etc.)
     const params = new URLSearchParams(searchParams.toString());
-    
-    // 2. Actualizamos solo la página
-    params.set('page', newPage.toString());
 
-    // 3. Navegamos
-    router.push(`/search?${params.toString()}`);
+    // 2. Actualizamos solo la página
+    params.set("page", newPage.toString());
+
+    // 3. Navegamos (Usamos pathname dinámico para que funcione en / y en /search)
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   if (totalPages <= 1) return null; // No mostrar si hay una sola página

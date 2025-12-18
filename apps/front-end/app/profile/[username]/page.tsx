@@ -55,12 +55,12 @@ export default function ProfilePage({
               ? `Detalle técnico: ${error}`
               : `No encontramos al usuario "${username}".`}
           </p>
-          <link
+          <Link
             href="/"
             className="mt-6 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
           >
             Volver al inicio
-          </link>
+          </Link>
         </div>
         <Footer />
       </div>

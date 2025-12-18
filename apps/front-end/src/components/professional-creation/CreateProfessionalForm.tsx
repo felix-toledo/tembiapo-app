@@ -193,16 +193,22 @@ export function CreateProfessionalForm({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Contacto WhatsApp (Solo números)
           </label>
-          <input
-            type="text"
-            value={whatsappContact}
-            onChange={(e) =>
-              setWhatsappContact(e.target.value.replace(/\D/g, ""))
-            }
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all bg-white text-gray-900"
-            placeholder="595981123456"
-            required
-          />
+          <div className="flex row gap-1">
+            <div className="text-gray-900 border-gray-300 border px-2 flex justify-center text-center items-center flex-nowrap w-auto rounded-lg">
+              +54
+            </div>
+            <input
+              type="text"
+              value={whatsappContact}
+              onChange={(e) =>
+                setWhatsappContact(e.target.value.replace(/\D/g, ""))
+              }
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-parana-profundo focus:border-transparent outline-none transition-all bg-white text-gray-900"
+              placeholder="3794000000"
+              maxLength={10}
+              required
+            />
+          </div>
         </div>
 
         {/* Componente de Rubros (Grid) */}
