@@ -438,7 +438,7 @@ function ManualReviewStep() {
       </div>
       <div className="w-full pt-8">
         <button
-          onClick={() => (window.location.href = "/dashboard")} // Or router.push
+          onClick={() => (window.location.href = "/user")} // Or router.push
           className="w-full py-4 bg-yellow-600 text-white rounded-xl font-semibold shadow-lg shadow-yellow-900/20 active:scale-[0.98] transition-all"
         >
           Ir al Inicio

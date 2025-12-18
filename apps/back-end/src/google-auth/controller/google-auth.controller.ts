@@ -20,7 +20,7 @@ export class GoogleAuthController {
     const apiResponse = await this.googleAuthService.handleGoogleCallback(code);
     ///agarramos los atributos del data
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { message, accessToken, refreshToken } = apiResponse.data as any;
+    const { accessToken, refreshToken } = apiResponse.data as any;
 
     ///creamos la cookie
     res.cookie('refresh-token', refreshToken, {

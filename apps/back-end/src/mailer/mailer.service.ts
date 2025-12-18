@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
-const appUrl = process.env.APP_URL || 'http://localhost:3000';
+const appUrl = process.env.FRONT_URL || 'http://localhost:3001';
 
 @Injectable()
 export class MailService {
