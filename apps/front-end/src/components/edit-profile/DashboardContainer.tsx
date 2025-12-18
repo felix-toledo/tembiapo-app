@@ -187,7 +187,7 @@ export const DashboardContainer = ({
     <>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* COLUMNA IZQUIERDA */}
-        <div className="lg:col-span-1 lg:sticky lg:top-24">
+        <div className="lg:col-span-1 lg:top-24">
           <EditProfileSidebar
             avatarUrl={displayUser.avatarURL}
             description={displayUser.description}
@@ -210,6 +210,8 @@ export const DashboardContainer = ({
               "Profesional"
             }
             username={displayUser.username}
+            isPremium={displayUser.isPremium}
+            isVerified={displayUser.isVerified}
           />
 
           {!displayUser.isVerified && <VerificationBanner />}

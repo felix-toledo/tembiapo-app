@@ -29,6 +29,7 @@ export interface Professional {
   avatarURL: string;
   description: string;
   whatsappContact: string;
+  isPremium: boolean;
   area: Array<{
     id: string;
     city: string;

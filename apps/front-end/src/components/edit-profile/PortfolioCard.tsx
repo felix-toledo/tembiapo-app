@@ -17,7 +17,6 @@ interface PortfolioCardProps {
   onDelete: (id: string) => void;
 }
 
-// 2. Definimos las variantes de la animación (Slide)
 const variants = {
   enter: (direction: number) => ({
     x: direction > 0 ? "100%" : direction < 0 ? "-100%" : 0,
@@ -44,22 +43,19 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
   const imageIndex = Math.abs(page % images.length);
   const currentImage = images[imageIndex];
 
-  // Lógica de URL
   const imgUrl = currentImage ? getFullImageUrl(currentImage.imageUrl) : "";
   const isLocal = imgUrl.includes("localhost") || imgUrl.includes("127.0.0.1");
 
-  // Función para cambiar de imagen
   const paginate = (newDirection: number, e: React.MouseEvent) => {
     e.stopPropagation();
     setPage([page + newDirection, newDirection]);
   };
 
   return (
-    <div className="relative group rounded-xl overflow-hidden border border-gray-100 aspect-4/3 bg-gray-50">
+    <div className="relative group rounded-xl overflow-hidden border border-gray-100 aspect-4/3 bg-gray-50 shadow-sm hover:shadow-md transition-shadow">
       {/* --- VISOR DE IMÁGENES ANIMADO --- */}
       {images.length > 0 ? (
         <>
-          {/* AnimatePresence maneja la salida del componente anterior */}
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={page}
@@ -88,7 +84,7 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
             </motion.div>
           </AnimatePresence>
 
-          {/* Controles del Carrusel (Solo si hay más de 1 imagen) */}
+          {/* Controles del Carrusel */}
           {hasMultipleImages && (
             <>
               <button
@@ -105,7 +101,6 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
                 <ChevronRight size={16} />
               </button>
 
-              {/* Indicador de posición (puntitos) */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
                 {images.map((_, idx) => (
                   <div
@@ -129,9 +124,20 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
       )}
 
       {/* --- OVERLAY DE INFORMACIÓN --- */}
-      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20 pointer-events-none">
-        <p className="text-white font-bold truncate text-lg">{item.title}</p>
-        <p className="text-white/80 text-xs line-clamp-2">{item.description}</p>
+      <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20 pointer-events-none">
+        {/* 👇 AQUÍ ESTÁ EL NUEVO RUBRO (EYEBROW STYLE) */}
+        {item.field && (
+          <span className="text-[#E35205] text-[10px] drop-shadow-[0_1px_1px_rgba(0,0,0,1)] font-extrabold uppercase tracking-widest mb-1">
+            {item.field.name}
+          </span>
+        )}
+
+        <p className="text-white font-bold truncate text-lg leading-tight">
+          {item.title}
+        </p>
+        <p className="text-gray-300 text-xs line-clamp-2 mt-1">
+          {item.description}
+        </p>
 
         {/* Botón borrar */}
         <button
@@ -139,7 +145,7 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
             e.stopPropagation();
             onDelete(item.id);
           }}
-          className="absolute top-2 right-2 p-2 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-red-500 hover:text-white transition-all transform hover:scale-110 pointer-events-auto"
+          className="absolute top-2 right-2 p-2 bg-white/10 backdrop-blur-md text-white rounded-full hover:bg-red-500 hover:text-white transition-all transform hover:scale-110 pointer-events-auto border border-white/20"
           title="Eliminar proyecto"
         >
           <Trash2 size={16} />
