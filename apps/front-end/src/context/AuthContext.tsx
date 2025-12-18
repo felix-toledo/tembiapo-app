@@ -75,9 +75,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfessional = async () => {
     try {
+      const token = localStorage.getItem("token");
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch("/api/profile/me", {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers,
       });
 
       if (res.ok) {
@@ -98,9 +107,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchVerification = async () => {
     try {
+      const token = localStorage.getItem("token");
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch("/api/verify/me", {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers,
       });
 
       if (res.ok) {
@@ -124,9 +142,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUser = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch("/api/auth/me", {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers,
       });
 
       if (res.ok) {
@@ -140,10 +167,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setUser(null);
           setProfessional(undefined);
+          if (token) localStorage.removeItem("token");
         }
       } else {
         setUser(null);
         setProfessional(undefined);
+        if (token) localStorage.removeItem("token");
       }
     } catch (error) {
       console.error("Error checking auth status:", error);
@@ -181,6 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setProfessional(undefined);
       setVerification(null);
+      localStorage.removeItem("token");
       window.location.href = "/login";
     }
   };

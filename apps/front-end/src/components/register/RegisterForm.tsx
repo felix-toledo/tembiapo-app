@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import OurButton from "../ui/OurButton";
+import LoginWithGoogleButton from "../ui/LoginWithGoogleButton";
 import { User, Camera, X } from "lucide-react";
 import Image from "next/image";
 import { compressImage } from "@/src/lib/image-compression";
@@ -553,6 +554,17 @@ export function RegisterForm() {
           </div>
         </div>
       </form>
+
+      <div className="mt-8 relative flex items-center justify-center">
+        <div className="border-t border-gray-200 w-full absolute"></div>
+        <span className="bg-white px-4 text-sm text-gray-500 relative z-10">
+          O regístrate con
+        </span>
+      </div>
+
+      <div className="mt-6">
+        <LoginWithGoogleButton text="Registrarse con Google" />
+      </div>
 
       <div className="mt-8 pt-6 border-t border-gray-100 text-center text-gray-500 text-sm">
         ¿Ya tienes una cuenta?{" "}

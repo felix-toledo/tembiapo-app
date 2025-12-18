@@ -4,6 +4,7 @@ import { useState } from "react";
 import OurButton from "../ui/OurButton";
 import Link from "next/link";
 import { useAuth } from "@/src/context/AuthContext";
+import LoginWithGoogleButton from "../ui/LoginWithGoogleButton";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -165,6 +166,17 @@ export function LoginForm() {
           {message}
         </div>
       )}
+
+      <div className="mt-8 relative flex items-center justify-center">
+        <div className="border-t border-gray-200 w-full absolute"></div>
+        <span className="bg-white px-4 text-sm text-gray-500 relative z-10">
+          O continúa con
+        </span>
+      </div>
+
+      <div className="mt-6">
+        <LoginWithGoogleButton />
+      </div>
 
       <div className="mt-8 pt-6 border-t border-gray-100 text-center text-gray-500 text-sm">
         ¿No tienes una cuenta?{" "}
