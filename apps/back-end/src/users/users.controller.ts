@@ -16,6 +16,12 @@ import { API_PREFIX } from '../app.controller';
 export class UsersController {
   constructor(private userService: UsersService) {}
 
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getAllUsers() {
+    return await this.userService.getAllUsers();
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)

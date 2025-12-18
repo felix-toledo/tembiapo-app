@@ -9,6 +9,11 @@ import { ApiResponse } from '@tembiapo/types';
 export class UsersService {
   constructor(private userRepository: UserRepository) {}
 
+  async getAllUsers(): Promise<ApiResponse<any>> {
+    const users = await this.userRepository.findAllUsersWithDetails();
+    return createApiResponse(users, true);
+  }
+
   async getUserInfo(userId: string): Promise<ApiResponse<UserInfoResponseDTO>> {
     const user = await this.userRepository.findUserWithPerson(userId);
 

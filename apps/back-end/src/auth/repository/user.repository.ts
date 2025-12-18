@@ -108,6 +108,22 @@ export class UserRepository {
     });
   }
 
+  /// Buscar todos los usuarios con su información de persona y rol
+  async findAllUsersWithDetails() {
+    return await this.prisma.user.findMany({
+      where: {
+        deletedAt: null,
+      },
+      include: {
+        person: true,
+        role: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   /// Cambiar contraseña
   async changePassword(id: string, newPassword: string): Promise<User> {
     return await this.prisma.user.update({
