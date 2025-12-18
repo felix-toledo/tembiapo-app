@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     title: "Tembiapó - Profesionales de Confianza",
     description:
       "La plataforma líder en el NEA para encontrar y contratar profesionales calificados. Soluciones rápidas y seguras para tu hogar.",
-    url: "https://tembiapo.com",
+    url: "https://tembiapo.app",
     siteName: "Tembiapó",
     locale: "es_AR",
     type: "website",
