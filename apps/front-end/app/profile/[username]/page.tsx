@@ -24,10 +24,11 @@ export default function ProfilePage({
   // --- SELECCIÓN DE ESTRATEGIA DE FETCH ---
 
   // OPCIÓN A: MODO PROXY (Solución temporal para CORS)
-  // const fetchUrl = `/api/auth/profile/${username}`;
+  // OPCIÓN A: MODO PROXY (Solución temporal para CORS)
+  const fetchUrl = `/api/auth/profile/${username}`;
 
   // OPCIÓN B: MODO DIRECTO (Ideal para producción con CORS arreglado)
-  const fetchUrl = `${DIRECT_API_URL}/profile/${username}`;
+  // const fetchUrl = `${DIRECT_API_URL}/profile/${username}`;
 
   const { data, loading, error } = useFetch<UserProfileData>(fetchUrl);
 

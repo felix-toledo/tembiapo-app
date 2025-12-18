@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
 // URL real de tu Backend (NestJS)
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001/api/v1";
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001/api/v1";
 
 export async function GET(
   request: Request,
@@ -27,7 +28,6 @@ export async function GET(
     return NextResponse.json(data, {
       status: backendRes.status,
     });
-
   } catch (err) {
     console.error("Profile Proxy Error:", err);
     return NextResponse.json(
