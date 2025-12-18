@@ -21,7 +21,6 @@ export default function LoginWithGoogleButton({
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
     // Important: this redirect_uri must match EXACTLY what backend sends to Google for exchange
     const redirectUri = `${apiUrl}/google/callback`;
-    console.log("DEBUG REDIRECT URI:", redirectUri);
     const scope = [
       "https://www.googleapis.com/auth/userinfo.profile",
       "https://www.googleapis.com/auth/userinfo.email",
@@ -39,7 +38,6 @@ export default function LoginWithGoogleButton({
       scope
     )}&access_type=offline&prompt=consent`;
 
-    console.log("Redirecting to Google Auth with URI:", redirectUri);
     window.location.href = authUrl;
   };
 

@@ -36,8 +36,6 @@ export async function fetchProfessionals(filters: {
       pagination: PaginationData;
     }> = await res.json();
 
-    console.log("obtuve", json.data.professionals);
-
     return {
       professionals: json.data.professionals,
       pagination: json.data.pagination,

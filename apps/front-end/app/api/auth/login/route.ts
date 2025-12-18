@@ -34,7 +34,6 @@ export async function POST(req: Request) {
         maxAge: 15 * 60, // Match backend 15m
       });
     } else {
-      console.log("Login Proxy: AccessToken not found in response", data);
     }
 
     // Forward backend cookies (like refresh-token) AFTER setting session_token

@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Tembiapó",
   description: "Encontrá profesionales de confianza en el NEA.",
+  manifest: "/manifest.json",
 };
 
 import { AuthProvider } from "../src/context/AuthContext";

@@ -86,8 +86,6 @@ export class VerificationService {
         image2_url: selfieSignedUrl,
       };
 
-      console.log('Sending verification request with URLs:', payload);
-
       const { data } = await lastValueFrom(
         this.httpService.post<VerificationResponseDto>(
           'http://192.241.183.41:5000/verify-faces',
@@ -100,7 +98,6 @@ export class VerificationService {
         ),
       );
       externalVerificationRef = data;
-      console.log('External verification response:', externalVerificationRef);
     } catch (error) {
       console.error('External verification API error:', error);
       throw new InternalServerErrorException(

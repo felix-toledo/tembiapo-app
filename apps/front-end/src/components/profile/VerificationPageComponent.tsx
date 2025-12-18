@@ -112,7 +112,6 @@ function MobileBodyComponent() {
   const { verification } = useAuth(); // Get verification status from context
   useEffect(() => {
     if (verification) {
-      console.log("Verification status:", verification.status);
       // If verification exists and is NOT approved, go to manual review
       if (verification.status !== "ok" && verification.status !== "okByAdmin") {
         setStep("manual_review");
@@ -149,7 +148,6 @@ function MobileBodyComponent() {
       }
 
       const data = await response.json();
-      console.log("Verification response:", data);
 
       if (data.match) {
         setStep("success");

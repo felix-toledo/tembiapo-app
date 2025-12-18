@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Trash2, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import {
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Image as ImageIcon,
+} from "lucide-react";
 import { PortfolioItem } from "@/types";
 import { getFullImageUrl } from "@/src/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,7 +20,7 @@ interface PortfolioCardProps {
 // 2. Definimos las variantes de la animación (Slide)
 const variants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? "100%" : direction < 0 ? "-100%" : 0, 
+    x: direction > 0 ? "100%" : direction < 0 ? "-100%" : 0,
     opacity: 0,
   }),
   center: {
@@ -49,22 +54,15 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
     setPage([page + newDirection, newDirection]);
   };
 
-  console.log("DEBUG CARD:", { 
-    title: item.title, 
-    imagesLength: images.length, 
-    currentImageURL: currentImage?.imageUrl 
-  });
-
   return (
     <div className="relative group rounded-xl overflow-hidden border border-gray-100 aspect-4/3 bg-gray-50">
-      
       {/* --- VISOR DE IMÁGENES ANIMADO --- */}
       {images.length > 0 ? (
         <>
           {/* AnimatePresence maneja la salida del componente anterior */}
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
-              key={page} 
+              key={page}
               custom={direction}
               variants={variants}
               initial="enter"
@@ -85,7 +83,7 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
                 onError={(e) => {
                   e.currentTarget.src = "/placeholder.png";
                 }}
-                priority={true} 
+                priority={true}
               />
             </motion.div>
           </AnimatePresence>
@@ -113,7 +111,9 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
                   <div
                     key={idx}
                     className={`w-1.5 h-1.5 rounded-full shadow-sm transition-all duration-300 ${
-                      idx === imageIndex ? "bg-white scale-125 w-3" : "bg-white/50"
+                      idx === imageIndex
+                        ? "bg-white scale-125 w-3"
+                        : "bg-white/50"
                     }`}
                   />
                 ))}
@@ -132,7 +132,7 @@ export const PortfolioCard = ({ item, onDelete }: PortfolioCardProps) => {
       <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20 pointer-events-none">
         <p className="text-white font-bold truncate text-lg">{item.title}</p>
         <p className="text-white/80 text-xs line-clamp-2">{item.description}</p>
-        
+
         {/* Botón borrar */}
         <button
           onClick={(e) => {

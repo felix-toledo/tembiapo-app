@@ -4,7 +4,8 @@ import { getFields } from "@/src/data/fields/fields.data";
 import { getRandomElement } from "@/src/lib/utils";
 import { HeroSearchForm } from "./HeroSearchForm";
 // 1. Importamos el nuevo componente
-import { HeroTitle } from "./HeroTitle"; 
+import { HeroTitle } from "./HeroTitle";
+import { InstallPWAButton } from "./InstallPWAButton";
 
 export async function HeroSection() {
   const fields = await getFields();
@@ -14,7 +15,6 @@ export async function HeroSection() {
 
   return (
     <section className="relative w-full min-h-[85vh] md:min-h-[650px] flex flex-col items-center justify-center overflow-visible">
-      
       {/* --- CAPA 0: IMAGEN DE FONDO --- */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -31,7 +31,6 @@ export async function HeroSection() {
 
       {/* --- CAPA 2: CONTENIDO --- */}
       <div className="relative z-30 w-full max-w-5xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center justify-center gap-6 py-12">
-        
         {/* Badge superior */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-2 shadow-lg">
           <MapPin size={14} className="text-[#E35205]" />
@@ -43,14 +42,17 @@ export async function HeroSection() {
         <HeroTitle />
 
         <p className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300 text-gray-100 text-lg sm:text-xl max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-md">
-          Conectamos tus necesidades con los profesionales mejor calificados de tu ciudad. 
-          Rápido, seguro y garantizado.
+          Conectamos tus necesidades con los profesionales mejor calificados de
+          tu ciudad. Rápido, seguro y garantizado.
         </p>
 
         {/* Buscador */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 w-full flex justify-center relative z-50">
           <HeroSearchForm fields={fields} />
         </div>
+
+        {/* Botón de Instalación PWA (Solo Mobile) */}
+        <InstallPWAButton />
 
         {/* Badges de confianza */}
         <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500 flex flex-wrap justify-center gap-4 mt-8 w-full relative z-40">

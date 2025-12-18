@@ -2,7 +2,8 @@
 
 import { NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001/api/v1";
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001/api/v1";
 
 export async function GET(
   request: Request,
@@ -10,9 +11,8 @@ export async function GET(
 ) {
   try {
     const { username } = await params;
-    
+
     // Log para confirmar que Next.js encontró el archivo
-    console.log(`📂 [PROXY PORTFOLIO] Buscando portfolio para: ${username}`);
 
     const res = await fetch(`${BACKEND_URL}/portfolio/${username}`, {
       headers: { "Content-Type": "application/json" },
@@ -20,17 +20,15 @@ export async function GET(
     });
 
     if (!res.ok) {
-       console.log(`❌ [PROXY] Backend respondió: ${res.status}`);
-       // Devolvemos array vacío en vez de error para que la UI no explote
-       return NextResponse.json([], { status: 200 }); 
+      // Devolvemos array vacío en vez de error para que la UI no explote
+      return NextResponse.json([], { status: 200 });
     }
 
     const data = await res.json();
     // Tu backend devuelve un array directo, así que lo pasamos tal cual
-    const finalData = Array.isArray(data) ? data : (data.data || []);
+    const finalData = Array.isArray(data) ? data : data.data || [];
 
     return NextResponse.json(finalData, { status: 200 });
-
   } catch (error) {
     console.error("🔥 [PROXY ERROR]", error);
     return NextResponse.json([], { status: 500 });

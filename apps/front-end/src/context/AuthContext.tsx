@@ -196,9 +196,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      console.log("Iniciando logout...");
       const response = await fetch("/api/auth/logout", { method: "POST" });
-      console.log("Respuesta del logout:", response.status);
 
       if (!response.ok) {
         console.error("Error en logout:", await response.text());
@@ -206,7 +204,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Error durante logout:", error);
     } finally {
-      console.log("Limpiando usuario y redirigiendo...");
       setUser(null);
       setProfessional(undefined);
       setVerification(null);

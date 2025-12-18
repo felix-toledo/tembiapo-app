@@ -69,14 +69,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(@Req() req: Request, @Res() res: Response) {
     ///obtenemos el refresh token de la cookie
-    console.log('[Logout] Cookies recibidas:', req.cookies);
-    console.log('[Logout] Headers de cookies:', req.headers.cookie);
 
     const refreshToken = req.cookies['refresh-token'];
 
     //verificamos si el refresh token existe, si no existe devolvemos un error o un mensaje
     if (!refreshToken) {
-      console.log('[Logout] No se encontró refresh token en las cookies');
       const errorResponse = createApiResponse(null, false, {
         message: 'No se encontro el refresh token en la cookie',
         code: 'NO_REFRESH_TOKEN',

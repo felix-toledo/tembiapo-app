@@ -50,10 +50,11 @@ export const DashboardContainer = ({
   // 3. Estado Derivado: Preferimos la edición local si existe, sino el dato del contexto
   const displayUser = localUserUpdates || professional;
 
-  const { data: portfolioItems,
-    loading: loadingPortfolio, 
-    refetch: refreshPortfolio
-   } = useFetch<PortfolioItem[]>(
+  const {
+    data: portfolioItems,
+    loading: loadingPortfolio,
+    refetch: refreshPortfolio,
+  } = useFetch<PortfolioItem[]>(
     displayUser?.username ? `/api/auth/portfolio/${displayUser.username}` : ""
   );
 
@@ -98,7 +99,6 @@ export const DashboardContainer = ({
 
       if (!res.ok) throw new Error("Error server");
 
-      console.log("✅ Perfil guardado exitosamente");
       toast.success("Perfil actualizado correctamente");
 
       // C. ACTUALIZACIÓN GLOBAL

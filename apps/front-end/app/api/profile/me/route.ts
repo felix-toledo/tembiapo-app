@@ -72,9 +72,6 @@ async function handleProxy(req: Request, method: string) {
     }
 
     // 4. Llamada al Backend
-    console.log(
-      `📡 [PROXY ${method}] Enviando petición a: ${baseUrl}/profile/me`
-    );
 
     const backendRes = await fetch(`${baseUrl}/profile/me`, fetchOptions);
 
