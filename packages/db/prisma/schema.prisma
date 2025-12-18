@@ -87,15 +87,16 @@ model Role {
 }
 
 model Professional {
-  id              String   @id @default(uuid())
-  description     String?
-  whatsappContact String  @map("whatsapp_contact")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime? @updatedAt @map("updated_at")
-  deletedAt       DateTime? @map("deleted_at")
+  id              String    @id @default(uuid())
+  description     String?
+  whatsappContact String  @map("whatsapp_contact")
+  isPremium       Boolean @default(false)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime? @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
 
-  // --- Relaciones ---
-  userId String @unique @map("user_id") // Relación 1-a-1
+  // --- Relaciones ---
+  userId String @unique @map("user_id") // Relación 1-a-1
   user   User   @relation(fields: [userId], references: [id])
 
   portfolioItems PortfolioItem[] // 1-a-N: Un profesional, muchos items
