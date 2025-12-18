@@ -59,6 +59,10 @@ export interface ApiSuccessResponse<T> {
 export interface PortfolioItem {
   id: string;
   title: string;
+  field?: { 
+    id: string; 
+    name: string 
+  };
   description: string | null;
   imageUrl: string;
 }

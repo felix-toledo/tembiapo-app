@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { PortfolioItem } from '@/types';
 import { PortfolioDetailModal } from './PortfolioDetailModal';
+
 interface Props {
   items: PortfolioItem[];
   isLoading?: boolean;
@@ -42,7 +43,7 @@ export const PortfolioSection = ({ items, isLoading }: Props) => {
               <div 
                 key={item.id} 
                 onClick={() => setSelectedItem(item)}
-                className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
+                className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1"
               >
                 {/* Imagen */}
                 <div className="relative aspect-4/3 overflow-hidden bg-gray-100">
@@ -57,12 +58,18 @@ export const PortfolioSection = ({ items, isLoading }: Props) => {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">Sin Imagen</div>
                   )}
-                  {/* Overlay con icono de "Ver más" opcional */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Overlay sutil al hacer hover */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                 </div>
                 
                 {/* Contenido Texto */}
                 <div className="p-4">
+                  {item.field && (
+                    <div className="text-[#E35205] text-[10px] font-extrabold uppercase tracking-widest mb-1.5">
+                      {item.field.name}
+                    </div>
+                  )}
+
                   <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors truncate">
                     {item.title}
                   </h3>
@@ -76,7 +83,7 @@ export const PortfolioSection = ({ items, isLoading }: Props) => {
         </div>
       </div>
 
-      {/* 5. Renderizamos el Modal fuera del loop */}
+      {/* Renderizamos el Modal */}
       <PortfolioDetailModal 
         key={selectedItem?.id || 'modal-closed'} 
         isOpen={!!selectedItem}

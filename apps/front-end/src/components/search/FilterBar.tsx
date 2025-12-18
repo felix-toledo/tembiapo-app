@@ -21,7 +21,7 @@ export function FilterBar({ areas }: FilterBarProps) {
     } else {
       params.delete(key);
     }
-    
+
     // Mantenemos tu lógica exacta de navegación
     router.push(`/?${params.toString()}#results`, { scroll: false });
   };
@@ -31,7 +31,7 @@ export function FilterBar({ areas }: FilterBarProps) {
 
   return (
     <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-4 mb-8">
-      
+
       {/* Label Móvil / Decorativo */}
       <div className="flex items-center gap-2 mb-4 sm:hidden text-gray-400 font-medium text-sm">
         <SlidersHorizontal size={16} />
@@ -39,13 +39,13 @@ export function FilterBar({ areas }: FilterBarProps) {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-evenly items-stretch sm:items-center">
-        
+
         {/* 1. FILTRO DE UBICACIÓN */}
         <div className="relative group w-full sm:w-auto min-w-[200px]">
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-[#E35205] transition-colors pointer-events-none">
             <MapPin size={18} />
           </div>
-          <select 
+          <select
             className={`
               w-full appearance-none bg-white pl-10 pr-10 py-3 rounded-xl border 
               text-sm font-medium text-gray-700 outline-none transition-all cursor-pointer
@@ -72,7 +72,7 @@ export function FilterBar({ areas }: FilterBarProps) {
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-blue-600 transition-colors pointer-events-none">
             <ShieldCheck size={18} />
           </div>
-          <select 
+          <select
             className={`
               w-full appearance-none bg-white pl-10 pr-10 py-3 rounded-xl border 
               text-sm font-medium text-gray-700 outline-none transition-all cursor-pointer
@@ -85,30 +85,6 @@ export function FilterBar({ areas }: FilterBarProps) {
             <option value="">Cualquier estado</option>
             <option value="true">Verificados</option>
             <option value="false">No verificados</option>
-          </select>
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-            <ChevronDown size={16} />
-          </div>
-        </div>
-
-        {/* 3. FILTRO DE VALORACIÓN */}
-        <div className="relative group w-full sm:w-auto min-w-[180px]">
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-yellow-500 transition-colors pointer-events-none">
-            <Star size={18} />
-          </div>
-          <select 
-            className={`
-              w-full appearance-none bg-white pl-10 pr-10 py-3 rounded-xl border 
-              text-sm font-medium text-gray-700 outline-none transition-all cursor-pointer
-              focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500
-              ${isActive('rating') ? 'border-yellow-500 bg-yellow-50/10' : 'border-gray-200 hover:border-gray-300'}
-            `}
-            onChange={(e) => handleFilterChange('rating', e.target.value)}
-            defaultValue={searchParams.get('rating') || ''}
-          >
-            <option value="">Cualquier valoración</option>
-            <option value="5">★★★★★ (5)</option>
-            <option value="4">★★★★☆ (4+)</option>
           </select>
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
             <ChevronDown size={16} />

@@ -52,12 +52,13 @@ export const EditProfileSidebar = ({
   };
 
   return (
-    <div className="bg-white rounded-[2.5rem] px-8 py-5 border border-gray-100 shadow-sm h-full flex flex-col gap-10 text-center">
+    <div className="bg-white rounded-[2.5rem] px-8 py-8 border border-gray-100 shadow-sm flex flex-col gap-10 text-center w-full">
+      
       {/* 1. SECCIÓN AVATAR */}
       <div className="flex flex-col items-center">
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="w-40 h-40 rounded-full bg-gray-200 border-4 border-white shadow-md flex items-center justify-center relative overflow-hidden group cursor-pointer"
+          className="w-40 h-40 rounded-full bg-gray-200 border-4 border-white shadow-md flex items-center justify-center relative overflow-hidden group cursor-pointer transition-transform hover:scale-105"
         >
           {avatarUrl ? (
             <Image
@@ -70,7 +71,7 @@ export const EditProfileSidebar = ({
           ) : (
             <UserIcon size={64} className="text-gray-400" />
           )}
-          {/* Overlay hover para indicar edición */}
+          {/* Overlay hover */}
           <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <PencilIcon className="text-white" />
           </div>
@@ -95,11 +96,10 @@ export const EditProfileSidebar = ({
       {/* 2. SECCIÓN DESCRIPCIÓN */}
       <div>
         <h3 className="text-gray-900 font-bold mb-3 text-lg">Descripción</h3>
-        <p className="text-gray-500 text-sm leading-relaxed line-clamp-4 px-2 whitespace-pre-line">
+        <p className="text-gray-500 text-sm leading-relaxed line-clamp-6 px-2 whitespace-pre-line">
           {description ||
             "Agrega una descripción para que los clientes te conozcan mejor."}
         </p>
-        {/* Usamos la prop onEditDescription */}
         <EditButton label="Editar" onClick={onEditDescription} />
       </div>
 
@@ -113,7 +113,7 @@ export const EditProfileSidebar = ({
             skills.map((skill, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-white border border-gray-300 rounded-xl text-sm text-gray-700"
+                className="px-3 py-1 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 font-medium"
               >
                 {skill}
               </span>
@@ -135,7 +135,7 @@ export const EditProfileSidebar = ({
             cities.map((city, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-white border border-gray-300 rounded-xl text-sm text-gray-700"
+                className="px-3 py-1 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 font-medium"
               >
                 {city}
               </span>
