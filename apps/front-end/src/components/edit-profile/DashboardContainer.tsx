@@ -14,10 +14,12 @@ import { DashboardStats } from "./DashboardStats";
 import { Modal } from "@/src/components/ui/Modal";
 import LoaderWaiter from "@/src/components/ui/loaders/LoaderWaiter";
 
-// Formularios
+// Formularios y Modales
 import { EditDescriptionForm } from "./forms/EditDescriptionForm";
 import { EditSkillsForm } from "./forms/EditSkillsForm";
 import { EditCitiesForm } from "./forms/EditCitiesForm";
+// 👇 1. Importamos el nuevo Modal de Teléfono
+import { EditPhoneModal } from "./forms/EditPhoneModal"; 
 
 // Gestor de Portafolio
 import { PortfolioManager } from "./PortfolioManager";
@@ -43,11 +45,13 @@ export const DashboardContainer = ({
   const [localUserUpdates, setLocalUserUpdates] = useState<Professional | null>(
     null
   );
+  
+  // 👇 2. Agregamos "phone" al tipo de modal activo
   const [activeModal, setActiveModal] = useState<
-    "description" | "skills" | "cities" | null
+    "description" | "skills" | "cities" | "phone" | null
   >(null);
 
-  // 3. Estado Derivado: Preferimos la edición local si existe, sino el dato del contexto
+  // 3. Estado Derivado
   const displayUser = localUserUpdates || professional;
 
   const {
@@ -58,14 +62,15 @@ export const DashboardContainer = ({
     displayUser?.username ? `/api/auth/portfolio/${displayUser.username}` : ""
   );
 
-  // Reseteamos ediciones locales si el perfil profesional cambia (ej. recarga desde servidor)
+  // Reseteamos ediciones locales si el perfil cambia
   useEffect(() => {
     if (professional) {
       setLocalUserUpdates(null);
     }
   }, [professional]);
 
-  // --- LÓGICA DE ACTUALIZACIÓN ---
+  // --- LÓGICA DE ACTUALIZACIÓN GENÉRICA ---
+  // Esta función cierra el modal automáticamente (usada para desc, skills, cities)
   const updateProfile = async (updatedFields: Partial<Professional>) => {
     if (!displayUser) return;
 
@@ -73,10 +78,11 @@ export const DashboardContainer = ({
       ...displayUser,
       ...updatedFields,
     } as Professional;
+    
     setLocalUserUpdates(optimisticUpdate);
-    setActiveModal(null);
+    setActiveModal(null); // Cierra el modal inmediatamente para optimismo
 
-    // B. Payload para Backend
+    // Payload para Backend
     const payload = {
       biography: optimisticUpdate.description,
       whatsappContact: optimisticUpdate.whatsappContact || "",
@@ -100,8 +106,6 @@ export const DashboardContainer = ({
       if (!res.ok) throw new Error("Error server");
 
       toast.success("Perfil actualizado correctamente");
-
-      // C. ACTUALIZACIÓN GLOBAL
       await fetchProfessional();
     } catch (error) {
       console.error("❌ Error al actualizar:", error);
@@ -110,7 +114,36 @@ export const DashboardContainer = ({
     }
   };
 
-  // Handlers
+  // --- LÓGICA DE ACTUALIZACIÓN ESPECÍFICA PARA TELÉFONO ---
+  const handleSavePhone = async (newPhone: string) => {
+    if (!displayUser) return;
+
+    // Construimos el payload completo usando el usuario actual + nuevo teléfono
+    const payload = {
+      biography: displayUser.description,
+      whatsappContact: newPhone,
+      fields: (displayUser.fields || []).map((f) => ({
+        id: f.id,
+        isMain: f.isMain,
+      })),
+      serviceAreas: (displayUser.area || []).map((a) => ({
+        id: a.id,
+        isMain: a.isMain,
+      })),
+    };
+
+    const res = await fetch("/api/profile/me", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error("Error al guardar teléfono");
+    toast.success("WhatsApp actualizado correctamente");
+    await fetchProfessional();
+  };
+
+  // Handlers para los otros forms
   const handleSaveDescription = (newDesc: string) =>
     updateProfile({ description: newDesc });
   const handleSaveSkills = (newFields: UIField[]) =>
@@ -118,7 +151,7 @@ export const DashboardContainer = ({
   const handleSaveCities = (newAreas: UIServiceArea[]) =>
     updateProfile({ area: newAreas });
 
-  // Validaciones
+  // Validaciones de carga
   if (authLoading)
     return (
       <LoaderWaiter
@@ -126,7 +159,6 @@ export const DashboardContainer = ({
       />
     );
 
-  // Si no hay perfil profesional cargado (y no está cargando), mostramos error
   if (!displayUser)
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-4">
@@ -139,7 +171,8 @@ export const DashboardContainer = ({
         </p>
       </div>
     );
-  // Adaptadores
+
+  // Adaptadores para UI
   const skillNames = displayUser.fields?.map((f) => f.name) || [];
   const cityNames = displayUser.area?.map((a) => a.city) || [];
   const fullName = `${displayUser.name} ${displayUser.lastName}`;
@@ -147,9 +180,8 @@ export const DashboardContainer = ({
   const rating = getFakeRating(displayUser.professionalId);
   const stats = { jobsCount, rating };
 
-  // HANDLER: Cambio de Avatar
+  // Handler Avatar
   const handleAvatarChange = async (file: File) => {
-    // Client-side validation
     if (file.size > 10 * 1024 * 1024) {
       toast.error("La imagen es muy pesada (max 10MB)");
       return;
@@ -177,7 +209,7 @@ export const DashboardContainer = ({
 
     try {
       await updatePromise;
-      await fetchProfessional(); // Refresh data to show new avatar
+      await fetchProfessional();
     } catch (error) {
       console.error("Avatar upload error:", error);
     }
@@ -193,9 +225,11 @@ export const DashboardContainer = ({
             description={displayUser.description}
             skills={skillNames}
             cities={cityNames}
+            phone={displayUser.whatsappContact || ""} // Pasamos el teléfono
             onEditDescription={() => setActiveModal("description")}
             onEditSkills={() => setActiveModal("skills")}
             onEditCities={() => setActiveModal("cities")}
+            onEditPhone={() => setActiveModal("phone")} // 👇 4. Evento abrir modal
             onAvatarChange={handleAvatarChange}
           />
         </div>
@@ -249,7 +283,7 @@ export const DashboardContainer = ({
         </div>
       </div>
 
-      {/* MODALES */}
+      {/* --- MODALES EXISTENTES --- */}
       <Modal
         isOpen={activeModal === "description"}
         onClose={() => setActiveModal(null)}
@@ -270,9 +304,9 @@ export const DashboardContainer = ({
         <EditSkillsForm
           initialFields={(displayUser.fields || []).map((f) => ({
             ...f,
-            lucide_icon: null, // Valor dummy
-            createdAt: new Date(), // Valor dummy
-            updatedAt: null, // Valor dummy
+            lucide_icon: null,
+            createdAt: new Date(),
+            updatedAt: null,
           }))}
           availableOptions={availableFields}
           onSave={handleSaveSkills}
@@ -288,14 +322,22 @@ export const DashboardContainer = ({
         <EditCitiesForm
           initialAreas={(displayUser.area || []).map((a) => ({
             ...a,
-            createdAt: new Date(), // Valor dummy
-            updatedAt: null, // Valor dummy
+            createdAt: new Date(),
+            updatedAt: null,
           }))}
           availableOptions={availableAreas}
           onSave={handleSaveCities}
           onCancel={() => setActiveModal(null)}
         />
       </Modal>
+
+      {/* 👇 5. Renderizamos el Modal de Teléfono */}
+      <EditPhoneModal
+        isOpen={activeModal === "phone"}
+        onClose={() => setActiveModal(null)}
+        initialPhone={displayUser.whatsappContact || ""}
+        onSave={handleSavePhone}
+      />
     </>
   );
 };

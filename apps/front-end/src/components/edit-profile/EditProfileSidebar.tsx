@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { UserIcon, PencilIcon } from "lucide-react";
+import { UserIcon, PencilIcon, Phone } from "lucide-react";
 
 // --- COMPONENTE AUXILIAR ---
 const EditButton = ({
@@ -27,9 +27,11 @@ interface Props {
   description: string;
   skills: string[];
   cities: string[];
+  phone?: string; // Prop del teléfono
   onEditDescription?: () => void;
   onEditSkills?: () => void;
   onEditCities?: () => void;
+  onEditPhone?: () => void;
   onAvatarChange?: (file: File) => void;
 }
 
@@ -38,9 +40,11 @@ export const EditProfileSidebar = ({
   description,
   skills,
   cities,
+  phone,
   onEditDescription,
   onEditSkills,
   onEditCities,
+  onEditPhone,
   onAvatarChange,
 }: Props) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -52,10 +56,11 @@ export const EditProfileSidebar = ({
   };
 
   return (
-    <div className="bg-white rounded-[2.5rem] px-8 py-8 border border-gray-100 shadow-sm flex flex-col gap-10 text-center w-full">
+    <div className="bg-white rounded-[2.5rem] px-8 py-8 border border-gray-100 shadow-sm flex flex-col gap-8 text-center w-full">
       
-      {/* 1. SECCIÓN AVATAR */}
+      {/* 1. SECCIÓN AVATAR Y CONTACTO */}
       <div className="flex flex-col items-center">
+        {/* Círculo de la foto */}
         <div
           onClick={() => fileInputRef.current?.click()}
           className="w-40 h-40 rounded-full bg-gray-200 border-4 border-white shadow-md flex items-center justify-center relative overflow-hidden group cursor-pointer transition-transform hover:scale-105"
@@ -76,12 +81,15 @@ export const EditProfileSidebar = ({
             <PencilIcon className="text-white" />
           </div>
         </div>
+
+        {/* Link texto editar foto */}
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="mt-4 text-blue-600 text-sm font-semibold hover:underline"
+          className="mt-3 text-blue-600 text-xs font-bold hover:underline mb-4"
         >
-          Editar Foto de Perfil
+          CAMBIAR FOTO
         </button>
+        
         <input
           type="file"
           ref={fileInputRef}
@@ -89,9 +97,26 @@ export const EditProfileSidebar = ({
           accept="image/*"
           onChange={handleFileChange}
         />
+
+        {/* --- NUEVO CAMPO DE TELÉFONO (Estilo Badge) --- */}
+        <div 
+          onClick={onEditPhone}
+          className="group cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-full hover:bg-gray-100 hover:border-gray-300 transition-all shadow-sm w-full max-w-[200px] justify-center"
+          title="Editar número de WhatsApp"
+        >
+          <Phone size={16} className={`transition-colors ${phone ? 'text-green-600' : 'text-gray-400'}`} />
+          
+          <span className={`text-sm font-medium truncate ${phone ? 'text-gray-800' : 'text-gray-400 italic'}`}>
+            {phone || "Agrega tu WhatsApp"}
+          </span>
+          
+          {/* Icono de lápiz que aparece al pasar el mouse */}
+          <PencilIcon size={12} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
+        </div>
+
       </div>
 
-      <hr className="border-gray-100" />
+      <hr className="border-gray-100 w-full" />
 
       {/* 2. SECCIÓN DESCRIPCIÓN */}
       <div>
@@ -106,7 +131,7 @@ export const EditProfileSidebar = ({
       {/* 3. SECCIÓN HABILIDADES */}
       <div>
         <h3 className="text-gray-900 font-bold mb-3 text-lg">
-          Habilidades Principales
+          Habilidades
         </h3>
         <div className="flex flex-wrap justify-center gap-2 mb-3">
           {skills.length > 0 ? (
@@ -120,7 +145,7 @@ export const EditProfileSidebar = ({
             ))
           ) : (
             <span className="text-gray-400 text-sm italic">
-              Sin habilidades cargadas
+              Sin habilidades
             </span>
           )}
         </div>
@@ -142,12 +167,13 @@ export const EditProfileSidebar = ({
             ))
           ) : (
             <span className="text-gray-400 text-sm italic">
-              Sin ciudades cargadas
+              Sin ciudades
             </span>
           )}
         </div>
         <EditButton label="Editar" onClick={onEditCities} />
       </div>
+
     </div>
   );
 };
