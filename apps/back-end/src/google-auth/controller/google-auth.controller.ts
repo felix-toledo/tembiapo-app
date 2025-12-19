@@ -16,25 +16,37 @@ export class GoogleAuthController {
   ///endpoint para el Callback de google
   @Get('callback')
   async googleCallback(@Query('code') code: string, @Res() res: Response) {
-    ///guardamos el return del service
-    const apiResponse = await this.googleAuthService.handleGoogleCallback(code);
-    ///agarramos los atributos del data
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { accessToken, refreshToken } = apiResponse.data as any;
-
-    ///creamos la cookie
-    res.cookie('refresh-token', refreshToken, {
-      // httpOnly: true,
-      secure: false, //falso en desarrollo | true en produccion
-      sameSite: 'strict', //proteccion contra CSRF
-      maxAge: 7 * 24 * 60 * 60 * 1000, //duracion de 7 dias
-    });
-
-    ///redireccionamos al front con el access token
     const frontUrl =
       this.configService.get<string>('FRONT_URL') || 'http://localhost:3000';
-    return res.redirect(
-      `${frontUrl}/google/callback?accessToken=${accessToken}`,
-    );
+
+    try {
+      ///guardamos el return del service
+      const apiResponse =
+        await this.googleAuthService.handleGoogleCallback(code);
+      ///agarramos los atributos del data
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { accessToken, refreshToken } = apiResponse.data as any;
+
+      ///creamos la cookie
+      res.cookie('refresh-token', refreshToken, {
+        // httpOnly: true,
+        secure: false, //falso en desarrollo | true en produccion
+        sameSite: 'strict', //proteccion contra CSRF
+        maxAge: 7 * 24 * 60 * 60 * 1000, //duracion de 7 dias
+      });
+
+      ///redireccionamos al front con el access token
+      return res.redirect(
+        `${frontUrl}/google/callback?accessToken=${accessToken}`,
+      );
+    } catch (error) {
+      ///Si hay un error, redireccionamos al front con el mensaje de error
+      const errorMessage = encodeURIComponent(
+        error instanceof Error
+          ? error.message
+          : 'Error en autenticación con Google',
+      );
+      return res.redirect(`${frontUrl}/google/callback?error=${errorMessage}`);
+    }
   }
 }

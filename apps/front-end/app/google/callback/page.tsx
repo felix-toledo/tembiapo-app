@@ -24,8 +24,16 @@ export default function GoogleCallbackPage() {
 
       if (accessToken) {
         try {
-          // Store token in localStorage
-          localStorage.setItem("token", accessToken);
+          // Set session cookie via API route
+          const sessionRes = await fetch("/api/auth/set-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ accessToken }),
+          });
+
+          if (!sessionRes.ok) {
+            throw new Error("Failed to set session");
+          }
 
           // Update Auth Context state
           await login();
