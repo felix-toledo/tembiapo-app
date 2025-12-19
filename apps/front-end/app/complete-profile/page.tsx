@@ -151,7 +151,6 @@ export default function CompleteProfilePage() {
                 textColor="var(--color-blanco-puro)"
                 shadowColor="var(--color-gris-oscuro)"
                 outlineColor="var(--color-parana-profundo)"
-                disabled={loading}
               >
                 {loading ? "Guardando..." : "COMPLETAR PERFIL"}
               </OurButton>
