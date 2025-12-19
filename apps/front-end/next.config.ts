@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import withPWA from "@ducanh2912/next-pwa";
 
 const nextConfig: NextConfig = {
+  turbopack: {}, // Empty config to silence Turbopack error
   compiler: {
     // ESTO ES VITAL: Le dice a Next que maneje los hashes de styled-components
     styledComponents: true,
