@@ -4,7 +4,6 @@ export async function POST(req: Request) {
   try {
     const cookieHeader = req.headers.get("cookie") || "";
 
-    console.log("[Logout API] Llamando al backend...");
 
     // 1. Call Backend to invalidate Refresh Token with timeout
     const controller = new AbortController();
@@ -21,7 +20,6 @@ export async function POST(req: Request) {
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      console.log("[Logout API] Respuesta del backend:", backendRes.status);
     } catch (fetchError) {
       clearTimeout(timeoutId);
       console.error("[Logout API] Error llamando al backend:", fetchError);
@@ -47,7 +45,6 @@ export async function POST(req: Request) {
     // 4. Clear Frontend Session Token
     response.cookies.delete("session_token");
 
-    console.log("[Logout API] Cookies limpiadas, enviando respuesta");
 
     return response;
   } catch {

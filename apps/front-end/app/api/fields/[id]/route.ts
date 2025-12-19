@@ -8,90 +8,70 @@ const getBaseUrl = () => {
 };
 
 export async function PATCH(
-  request: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const baseUrl = getBaseUrl();
     const { id } = await params;
-    const body = await request.json();
-
+    const baseUrl = getBaseUrl();
     const cookieStore = await cookies();
     const token = cookieStore.get("session_token")?.value;
-    const cookieHeader = request.headers.get("cookie") || "";
+    const body = await req.json();
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      Cookie: cookieHeader,
     };
 
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const backendRes = await fetch(`${baseUrl}/service-areas/${id}`, {
+    const backendRes = await fetch(`${baseUrl}/fields/${id}`, {
       method: "PATCH",
       headers,
       body: JSON.stringify(body),
     });
 
-    if (!backendRes.ok) {
-      if (backendRes.status === 401) {
-        return NextResponse.json({ message: "No autorizado" }, { status: 401 });
-      }
-    }
-
     const data = await backendRes.json();
-
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error) {
-    console.error("Error in service-areas PATCH proxy:", error);
+    console.error("Error in fields proxy PATCH:", error);
     return NextResponse.json(
-      { success: false, message: "Error al actualizar área de servicio" },
+      { success: false, message: "Error updating field" },
       { status: 500 }
     );
   }
 }
 
 export async function DELETE(
-  request: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const baseUrl = getBaseUrl();
     const { id } = await params;
-
+    const baseUrl = getBaseUrl();
     const cookieStore = await cookies();
     const token = cookieStore.get("session_token")?.value;
-    const cookieHeader = request.headers.get("cookie") || "";
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      Cookie: cookieHeader,
     };
 
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const backendRes = await fetch(`${baseUrl}/service-areas/${id}`, {
+    const backendRes = await fetch(`${baseUrl}/fields/${id}`, {
       method: "DELETE",
       headers,
     });
 
-    if (!backendRes.ok) {
-      if (backendRes.status === 401) {
-        return NextResponse.json({ message: "No autorizado" }, { status: 401 });
-      }
-    }
-
     const data = await backendRes.json();
-
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error) {
-    console.error("Error in service-areas DELETE proxy:", error);
+    console.error("Error in fields proxy DELETE:", error);
     return NextResponse.json(
-      { success: false, message: "Error al eliminar área de servicio" },
+      { success: false, message: "Error deleting field" },
       { status: 500 }
     );
   }

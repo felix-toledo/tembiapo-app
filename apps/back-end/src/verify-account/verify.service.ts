@@ -154,4 +154,55 @@ export class VerificationService {
 
     return user.person.verification;
   }
+
+  async findAll() {
+    return this.prisma.verification.findMany({
+      include: {
+        person: {
+          include: {
+            user: {
+              select: {
+                username: true,
+                mail: true,
+                id: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async updateStatus(id: string, status: VerificationStatus) {
+    const verification = await this.prisma.verification.findUnique({
+      where: { id },
+      include: { person: true },
+    });
+
+    if (!verification) {
+      throw new BadRequestException('Verification not found');
+    }
+
+    const updatedVerification = await this.prisma.verification.update({
+      where: { id },
+      data: { status },
+    });
+
+    // Sync person isVerified status
+    const shouldBeVerified =
+      status === VerificationStatus.ok ||
+      status === VerificationStatus.okByAdmin;
+
+    if (verification.person.isVerified !== shouldBeVerified) {
+      await this.prisma.person.update({
+        where: { id: verification.personId },
+        data: { isVerified: shouldBeVerified },
+      });
+    }
+
+    return updatedVerification;
+  }
 }

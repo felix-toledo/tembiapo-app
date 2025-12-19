@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import LoaderWaiterMini from "@/src/components/ui/loaders/LoaderWaiterMini";
+import { toast } from "react-toastify";
 
 interface Field {
   id: string;
@@ -17,6 +18,12 @@ export default function Fields() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingField, setEditingField] = useState<Field | null>(null);
+  const [formData, setFormData] = useState({ name: "" });
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     fetchFields();
   }, []);
@@ -25,8 +32,7 @@ export default function Fields() {
     try {
       const res = await fetch("/api/fields");
       const data = await res.json();
-      
-      // El backend puede devolver el array directamente o envuelto en { success, data }
+
       if (Array.isArray(data)) {
         setFields(data);
       } else if (data.success && data.data) {
@@ -34,10 +40,81 @@ export default function Fields() {
       }
     } catch (error) {
       console.error("Error fetching fields:", error);
+      toast.error("Error al cargar rubros");
     } finally {
       setLoading(false);
     }
   }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name.trim()) return;
+
+    setSubmitting(true);
+    try {
+      const url = editingField
+        ? `/api/fields/${editingField.id}`
+        : "/api/fields";
+
+      const method = editingField ? "PATCH" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error("Error en la operación");
+
+      const data = await res.json();
+
+      toast.success(editingField ? "Rubro actualizado" : "Rubro creado");
+      fetchFields();
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al guardar el rubro");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Estás seguro de eliminar este rubro?")) return;
+
+    try {
+      const res = await fetch(`/api/fields/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Error al eliminar");
+
+      toast.success("Rubro eliminado");
+      fetchFields();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al eliminar el rubro");
+    }
+  };
+
+  const openModal = (field?: Field) => {
+    if (field) {
+      setEditingField(field);
+      setFormData({ name: field.name });
+    } else {
+      setEditingField(null);
+      setFormData({ name: "" });
+    }
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingField(null);
+    setFormData({ name: "" });
+  };
 
   const filteredFields = fields.filter((field) =>
     field.name.toLowerCase().includes(search.toLowerCase())
@@ -58,7 +135,10 @@ export default function Fields() {
           <h1 className="text-3xl font-bold text-gray-900">Rubros</h1>
           <p className="text-gray-700 mt-2">Gestión de rubros profesionales</p>
         </div>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <button
+          onClick={() => openModal()}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
           + Nuevo Rubro
         </button>
       </div>
@@ -86,20 +166,26 @@ export default function Fields() {
                 className="border rounded-lg p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{field.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {field.name}
+                  </h3>
                   <span className="text-2xl">🛠️</span>
                 </div>
-                <div className="text-sm text-gray-500 mb-3">
-                  {field._count?.professionals || 0} profesionales
-                </div>
                 <div className="text-xs text-gray-400">
-                  Creado: {new Date(field.createdAt).toLocaleDateString("es-ES")}
+                  Creado:{" "}
+                  {new Date(field.createdAt).toLocaleDateString("es-ES")}
                 </div>
                 <div className="mt-4 flex gap-2">
-                  <button className="flex-1 px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100">
+                  <button
+                    onClick={() => openModal(field)}
+                    className="flex-1 px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
+                  >
                     Editar
                   </button>
-                  <button className="flex-1 px-3 py-1 text-sm bg-red-50 text-red-600 rounded hover:bg-red-100">
+                  <button
+                    onClick={() => handleDelete(field.id)}
+                    className="flex-1 px-3 py-1 text-sm bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors"
+                  >
                     Eliminar
                   </button>
                 </div>
@@ -112,6 +198,50 @@ export default function Fields() {
           Mostrando {filteredFields.length} de {fields.length} rubros
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">
+              {editingField ? "Editar Rubro" : "Nuevo Rubro"}
+            </h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  placeholder="Ej: Plomería"
+                  autoFocus
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {submitting ? "Guardando..." : "Guardar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

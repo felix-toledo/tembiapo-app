@@ -1,5 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Controller, Post, Get, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Req,
+  Patch,
+  Param,
+} from '@nestjs/common';
+import { VerificationStatus } from '@tembiapo/db';
 import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -37,5 +47,22 @@ export class VerifyController {
   findOne(@Req() req) {
     const userId = req.user.userId as string;
     return this.verificationService.getVerificationStatus(userId);
+  }
+
+  @Get('admin/all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  findAll() {
+    return this.verificationService.findAll();
+  }
+
+  @Patch('admin/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: VerificationStatus,
+  ) {
+    return this.verificationService.updateStatus(id, status);
   }
 }

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import LoaderWaiterMini from "@/src/components/ui/loaders/LoaderWaiterMini";
-
+import { useAuth } from "@/src/context/AuthContext";
+import { redirect } from "next/navigation";
 interface User {
   id: string;
   username: string;
@@ -18,6 +19,11 @@ interface User {
 }
 
 export default function Users() {
+  const { user } = useAuth();
+
+  if (!user) {
+    redirect("/login");
+  }
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -31,7 +37,7 @@ export default function Users() {
     try {
       const res = await fetch("/api/users");
       const data = await res.json();
-      
+
       if (data.success && data.data) {
         setUsers(data.data);
       }
@@ -48,9 +54,9 @@ export default function Users() {
       user.mail?.toLowerCase().includes(search.toLowerCase()) ||
       user.person?.name?.toLowerCase().includes(search.toLowerCase()) ||
       user.person?.lastName?.toLowerCase().includes(search.toLowerCase());
-    
+
     const matchesRole = roleFilter === "ALL" || user.role?.name === roleFilter;
-    
+
     return matchesSearch && matchesRole;
   });
 
@@ -110,7 +116,10 @@ export default function Users() {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                  <td
+                    colSpan={4}
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
                     No se encontraron usuarios
                   </td>
                 </tr>
@@ -124,7 +133,9 @@ export default function Users() {
                             {user.username || "N/A"}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {user.person ? `${user.person.name} ${user.person.lastName}` : "Sin nombre"}
+                            {user.person
+                              ? `${user.person.name} ${user.person.lastName}`
+                              : "Sin nombre"}
                           </div>
                         </div>
                       </div>

@@ -41,8 +41,10 @@ export class GoogleAuthService {
     ///esperamos el codigo que va a llegar por la URL que nos proporciona google
     const clientId = this.configService.get<string>('CLIENT-ID'); ///obtenemos el client-id del .env
     const clientSecret = this.configService.get<string>('SECRET-CLIENT'); ///Obtenemos el secret-client del .env
-    const APIURL = process.env.API_URL; ///Obtenemos el api-url del .env
-    const redirectUri = `${APIURL}/google/callback`; ///seteamos la uri de redireccionamiento (tiene que ser la misma que esta en GCP)
+    // const APIURL = process.env.API_URL; ///Obtenemos el api-url del .env
+    // const APIURL = 'https://tembiapo.app';
+    const APIURL = 'http://localhost:3000';
+    const redirectUri = `${APIURL}`; ///seteamos la uri de redireccionamiento (tiene que ser la misma que esta en GCP)
 
     // 1. Intercambiamos el código por un token
     const tokenResponse = await firstValueFrom(
@@ -56,7 +58,7 @@ export class GoogleAuthService {
           redirect_uri: redirectUri, //la uri de redireccionamiento
           grant_type: 'authorization_code', ///el tipo de acceso
         },
-        { headers: { 'Content-Type': 'application/json' } }, /// y los headers principales para la peticion
+        { headers: { 'Content-Type': 'application/j son' } }, /// y los headers principales para la peticion
       ),
     );
 

@@ -12,19 +12,16 @@ import {
   LogOut,
   Menu,
   MapPinHouse,
+  UserCheck2,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/src/context/AuthContext";
+import { redirect } from "next/navigation";
 
 export function SideBar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Fake user data for now
-  const user = {
-    name: "Admin User",
-    role: "Administrator",
-    avatar: "https://github.com/shadcn.png", // Placeholder
-  };
+  const { user, logout } = useAuth();
 
   const navItems = [
     {
@@ -52,7 +49,13 @@ export function SideBar() {
       href: "/admin/fields",
       icon: Briefcase,
     },
+    { name: "Verificaciones", href: "/admin/verifications", icon: UserCheck2 },
   ];
+
+  function handleLogout() {
+    logout();
+    redirect("/login");
+  }
 
   return (
     <>
@@ -123,14 +126,10 @@ export function SideBar() {
           {/* Hover Menu */}
           <div className="absolute bottom-full left-0 w-full p-2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-              <Link
-                href="/admin/settings"
-                className="flex items-center gap-2 px-4 py-3 text-sm text-gris-oscuro hover:bg-gray-50 transition-colors"
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-100"
               >
-                <Settings size={16} />
-                Configuración
-              </Link>
-              <button className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-100">
                 <LogOut size={16} />
                 Cerrar Sesión
               </button>
@@ -141,18 +140,18 @@ export function SideBar() {
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow">
             <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-200">
               <Image
-                src={user.avatar}
-                alt={user.name}
+                src={user?.avatarUrl || "/imagotipo.png"}
+                alt={user?.name || ""}
                 fill
                 className="object-cover"
               />
             </div>
             <div className="flex flex-col overflow-hidden">
               <span className="text-sm font-bold text-parana-profundo truncate">
-                {user.name}
+                {user?.name}
               </span>
               <span className="text-xs text-gris-oscuro/70 truncate">
-                {user.role}
+                {user?.role}
               </span>
             </div>
           </div>

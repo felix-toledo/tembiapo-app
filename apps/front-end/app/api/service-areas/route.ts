@@ -1,14 +1,38 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export async function GET() {
+const getBaseUrl = () => {
+  const rawUrl =
+    process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001/api/v1";
+  return rawUrl.endsWith("/") ? rawUrl.slice(0, -1) : rawUrl;
+};
+
+export async function GET(req: Request) {
   try {
-    const backendRes = await fetch("http://localhost:3001/api/v1/service-areas", {
+    const baseUrl = getBaseUrl();
+    const cookieStore = await cookies();
+    const token = cookieStore.get("session_token")?.value;
+    const cookieHeader = req.headers.get("cookie") || "";
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Cookie: cookieHeader,
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const backendRes = await fetch(`${baseUrl}/service-areas`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     });
+
+    if (!backendRes.ok) {
+      if (backendRes.status === 401) {
+        return NextResponse.json({ message: "No autorizado" }, { status: 401 });
+      }
+    }
 
     const data = await backendRes.json();
 
@@ -24,18 +48,33 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const baseUrl = getBaseUrl();
     const body = await request.json();
-    const cookieStore = await cookies();
-    const refreshToken = cookieStore.get("refresh-token");
 
-    const backendRes = await fetch("http://localhost:3001/api/v1/service-areas", {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("session_token")?.value;
+    const cookieHeader = request.headers.get("cookie") || "";
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Cookie: cookieHeader,
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const backendRes = await fetch(`${baseUrl}/service-areas`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `refresh-token=${refreshToken?.value}`,
-      },
+      headers,
       body: JSON.stringify(body),
     });
+
+    if (!backendRes.ok) {
+      if (backendRes.status === 401) {
+        return NextResponse.json({ message: "No autorizado" }, { status: 401 });
+      }
+    }
 
     const data = await backendRes.json();
 

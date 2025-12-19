@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import LoaderWaiterMini from "@/src/components/ui/loaders/LoaderWaiterMini";
+import { useAuth } from "@/src/context/AuthContext";
+import { redirect } from "next/navigation";
 
 interface ServiceArea {
   id: string;
@@ -16,6 +18,12 @@ interface ServiceArea {
 }
 
 export default function ServiceAreas() {
+  const { user } = useAuth();
+
+  if (!user) {
+    redirect("/login");
+  }
+
   const [areas, setAreas] = useState<ServiceArea[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -32,7 +40,7 @@ export default function ServiceAreas() {
     try {
       const res = await fetch("/api/service-areas");
       const data = await res.json();
-      
+
       // El backend puede devolver el array directamente o envuelto en { success, data }
       if (Array.isArray(data)) {
         setAreas(data);
@@ -137,10 +145,11 @@ export default function ServiceAreas() {
     }
   }
 
-  const filteredAreas = areas.filter((area) =>
-    area.city.toLowerCase().includes(search.toLowerCase()) ||
-    area.province.toLowerCase().includes(search.toLowerCase()) ||
-    area.postalCode.includes(search)
+  const filteredAreas = areas.filter(
+    (area) =>
+      area.city.toLowerCase().includes(search.toLowerCase()) ||
+      area.province.toLowerCase().includes(search.toLowerCase()) ||
+      area.postalCode.includes(search)
   );
 
   if (loading) {
@@ -155,7 +164,9 @@ export default function ServiceAreas() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Áreas de Servicio</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Áreas de Servicio
+          </h1>
           <p className="text-gray-700 mt-2">Gestión de zonas de cobertura</p>
         </div>
         <button
@@ -204,7 +215,10 @@ export default function ServiceAreas() {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredAreas.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                  <td
+                    colSpan={6}
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
                     No se encontraron áreas
                   </td>
                 </tr>
@@ -212,33 +226,43 @@ export default function ServiceAreas() {
                 filteredAreas.map((area) => (
                   <tr key={area.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{area.city}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {area.city}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{area.province}</div>
+                      <div className="text-sm text-gray-900">
+                        {area.province}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{area.country}</div>
+                      <div className="text-sm text-gray-900">
+                        {area.country}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{area.postalCode}</div>
+                      <div className="text-sm text-gray-900">
+                        {area.postalCode}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <span className="text-sm font-semibold text-gray-900">
                           {area._count?.professionals || 0}
                         </span>
-                        <span className="ml-2 text-xs text-gray-500">profesionales</span>
+                        <span className="ml-2 text-xs text-gray-500">
+                          profesionales
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button 
+                      <button
                         onClick={() => handleEdit(area)}
                         className="text-blue-600 hover:text-blue-900 mr-3"
                       >
                         Editar
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(area.id)}
                         className={`${
                           deleteConfirm === area.id
@@ -268,44 +292,63 @@ export default function ServiceAreas() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               {isCreating ? "Nueva Área" : "Editar Área"}
             </h2>
-            
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ciudad</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ciudad
+                </label>
                 <input
                   type="text"
                   value={editingArea.city}
-                  onChange={(e) => setEditingArea({ ...editingArea, city: e.target.value })}
+                  onChange={(e) =>
+                    setEditingArea({ ...editingArea, city: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Provincia</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Provincia
+                </label>
                 <input
                   type="text"
                   value={editingArea.province}
-                  onChange={(e) => setEditingArea({ ...editingArea, province: e.target.value })}
+                  onChange={(e) =>
+                    setEditingArea({ ...editingArea, province: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">País</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  País
+                </label>
                 <input
                   type="text"
                   value={editingArea.country}
-                  onChange={(e) => setEditingArea({ ...editingArea, country: e.target.value })}
+                  onChange={(e) =>
+                    setEditingArea({ ...editingArea, country: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Código Postal</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Código Postal
+                </label>
                 <input
                   type="text"
                   value={editingArea.postalCode}
-                  onChange={(e) => setEditingArea({ ...editingArea, postalCode: e.target.value })}
+                  onChange={(e) =>
+                    setEditingArea({
+                      ...editingArea,
+                      postalCode: e.target.value,
+                    })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
