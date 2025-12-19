@@ -117,6 +117,8 @@ export class GoogleAuthService {
     } else {
       /// si el usuario no existe con el email retornado por google, creamos el usuario y la persona (los datos faltantes los podemos pedir cuando este en el dashboard)
       const role = await this.roleService.findByName('PROFESSIONAL');
+      // Extraemos el username del email (parte antes del @)
+      const username = googleDTO.email.split('@')[0];
       const { user } = await this.prismaService.$transaction(async () => {
         const person = await this.personRepository.createPerson(
           googleDTO.name,
@@ -124,7 +126,7 @@ export class GoogleAuthService {
           '',
         );
         const user = await this.userRepository.createUser(
-          '',
+          username,
           googleDTO.email,
           googleDTO.pictureUrl,
           '',
