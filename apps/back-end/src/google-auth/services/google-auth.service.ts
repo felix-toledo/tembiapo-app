@@ -41,7 +41,7 @@ export class GoogleAuthService {
     ///esperamos el codigo que va a llegar por la URL que nos proporciona google
     const clientId = this.configService.get<string>('CLIENT_ID'); ///obtenemos el client-id del .env
     const clientSecret = this.configService.get<string>('SECRET_CLIENT'); ///Obtenemos el secret-client del .env
-    const APIURL = process.env.API_URL; ///Obtenemos el api-url del .env
+    const APIURL = process.env.BACK_URL || 'http://localhost:3001'; ///Obtenemos el api-url del .env
     const redirectUri = `${APIURL}/api/v1/google/callback`;
 
     // 1. Intercambiamos el código por un token
