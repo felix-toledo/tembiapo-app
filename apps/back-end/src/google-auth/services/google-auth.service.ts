@@ -119,6 +119,20 @@ export class GoogleAuthService {
       const role = await this.roleService.findByName('PROFESSIONAL');
       // Extraemos el username del email (parte antes del @)
       const username = googleDTO.email.split('@')[0];
+
+      // Verificamos si el username ya existe
+      const usernameExists =
+        await this.userRepository.isUsernameExists(username);
+      let finalUsername = username;
+      let requiresUsername = false;
+
+      // Si el username ya existe, creamos uno temporal único
+      if (usernameExists) {
+        const randomSuffix = Math.random().toString(36).substring(2, 8);
+        finalUsername = `${username}_${randomSuffix}`;
+        requiresUsername = true;
+      }
+
       const { user } = await this.prismaService.$transaction(async () => {
         const person = await this.personRepository.createPerson(
           googleDTO.name,
@@ -126,7 +140,7 @@ export class GoogleAuthService {
           '',
         );
         const user = await this.userRepository.createUser(
-          username,
+          finalUsername,
           googleDTO.email,
           googleDTO.pictureUrl,
           '',
@@ -154,9 +168,11 @@ export class GoogleAuthService {
 
       const data: GoogleResponseDTO = {
         ///creamos el data a devolver
-        message: 'inicio de sesion exitoso',
+        message: 'registro exitoso, complete su perfil',
         accessToken: accessToken,
         refreshToken: refreshToken,
+        requiresProfileCompletion: true,
+        requiresUsername: requiresUsername,
       };
 
       return createApiResponse(data, true); ///retornamos la respuesta de la API

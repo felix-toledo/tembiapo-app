@@ -14,6 +14,10 @@ export default function GoogleCallbackPage() {
     const handleCallback = async () => {
       const accessToken = searchParams.get("accessToken");
       const errorParam = searchParams.get("error");
+      const requiresProfileCompletion = searchParams.get(
+        "requiresProfileCompletion"
+      );
+      const requiresUsername = searchParams.get("requiresUsername");
 
       if (errorParam) {
         setError(`Error en autenticación: ${errorParam}`);
@@ -38,8 +42,18 @@ export default function GoogleCallbackPage() {
           // Update Auth Context state
           await login();
 
-          // Redirect to home or dashboard
-          router.push("/");
+          // Check if profile completion is required
+          if (requiresProfileCompletion === "true") {
+            // Store flag for complete-profile page
+            sessionStorage.setItem(
+              "requiresUsername",
+              requiresUsername === "true" ? "true" : "false"
+            );
+            router.push("/complete-profile");
+          } else {
+            // Redirect to home
+            router.push("/");
+          }
         } catch (err) {
           console.error("Error setting session:", err);
           setError("Error al iniciar sesión. Intenta nuevamente.");

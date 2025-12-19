@@ -88,4 +88,14 @@ export class PersonRepository {
       data,
     });
   }
+
+  /// Actualizar DNI
+  async updateDni(id: string, dni: string): Promise<Person> {
+    return await this.prisma.person.update({
+      where: { id },
+      data: {
+        dni,
+      },
+    });
+  }
 }

@@ -276,6 +276,26 @@ export class ProfileController {
     return await this.profileService.getAllProfessionals(queryParams);
   }
 
+  @Put('complete')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Complete profile for Google OAuth users',
+    description:
+      'Allows Google OAuth users to complete their profile by providing DNI and optionally updating their username.',
+  })
+  async completeProfile(
+    @Body() completeProfileRequest: any, // Will be validated by DTO
+    @Req() req,
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userId: string = req.user.userId as string;
+    return await this.profileService.completeProfile(
+      userId,
+      completeProfileRequest,
+    );
+  }
+
   @Get(':username')
   @HttpCode(HttpStatus.OK)
   async getProfessional(@Param('username') username: string) {

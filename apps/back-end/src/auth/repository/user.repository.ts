@@ -170,4 +170,14 @@ export class UserRepository {
       },
     });
   }
+
+  /// Actualizar username
+  async updateUsername(id: string, username: string): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        username,
+      },
+    });
+  }
 }

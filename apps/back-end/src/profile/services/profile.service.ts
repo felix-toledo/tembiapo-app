@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 
 ///================REPOSITORIOS=================
@@ -13,21 +13,24 @@ import {
 } from '../repository/professional.repository';
 import { UserRepository } from '../../auth/repository/user.repository';
 import { PersonRepository } from '../../auth/repository/person.repository';
-///============================DTOs===========================
-import { updateProfileRequestDTO } from '../DTOs/update-profile.request.dto';
-import { updateProfileResponseDTO } from '../DTOs/responses/update-profile.response.dto';
-import { createProfessionalRequestDTO } from '../DTOs/create-professional.request.dto';
-import { createProfessionalResponseDTO } from '../DTOs/responses/create-professional.response.dto';
-
-///==================SERVICIOS========================
+///================SERVICIOS=================
 import { RoleService } from '../../auth/services/role.service';
 
-///=====================ENTIDADES===================
-import { Professional, User } from '@tembiapo/db';
+///================DTOs=================
+import { updateProfileRequestDTO } from '../DTOs/update-profile.request.dto';
+import { createProfessionalRequestDTO } from '../DTOs/create-professional.request.dto';
+import { CompleteProfileRequestDTO } from '../DTOs/complete-profile.request.dto';
+///================TYPES============
 import { createApiResponse } from '../../shared/utils/api-response.factory';
+import { updateProfileResponseDTO } from '../DTOs/responses/update-profile.response.dto';
+import { createProfessionalResponseDTO } from '../DTOs/responses/create-professional.response.dto';
+import { CompleteProfileResponseDTO } from '../DTOs/responses/complete-profile.response.dto';
 import { ApiResponse } from '@tembiapo/types';
 import { getProfessionalResponseDTO } from '../DTOs/responses/get-professional.response.dto';
 import { CloudinaryService } from '../../cloudinary/cloudinary.service';
+
+///=====================ENTIDADES===================
+import { Professional, User } from '@tembiapo/db';
 @Injectable()
 export class ProfileService {
   constructor(
@@ -302,6 +305,74 @@ export class ProfileService {
         limit,
         totalPages,
       },
+    };
+
+    return createApiResponse(data, true);
+  }
+
+  ///=============METODO PARA COMPLETAR EL PERFIL DE USUARIOS GOOGLE OAUTH=================
+  async completeProfile(
+    userId: string,
+    completeProfileRequest: CompleteProfileRequestDTO,
+  ): Promise<ApiResponse<CompleteProfileResponseDTO>> {
+    // Buscar el usuario autenticado
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Verificar que sea un usuario OAuth
+    if (!user.isOauthUser) {
+      throw new BadRequestException(
+        'Esta acción solo está disponible para usuarios registrados con Google',
+      );
+    }
+
+    // Buscar la persona asociada
+    const person = await this.personRepository.findById(user.personId);
+
+    if (!person) {
+      throw new NotFoundException('Persona no encontrada');
+    }
+
+    // Verificar que el DNI no esté ya completado
+    if (person.dni && person.dni !== '') {
+      throw new BadRequestException('El perfil ya ha sido completado');
+    }
+
+    // Validar DNI único
+    const dniExists = await this.personRepository.findByDni(
+      completeProfileRequest.dni,
+    );
+    if (dniExists) {
+      throw new ConflictException('El DNI ya está registrado');
+    }
+
+    // Si se proporciona username, validar que sea único
+    if (completeProfileRequest.username) {
+      const usernameExists = await this.userRepository.isUsernameExists(
+        completeProfileRequest.username,
+      );
+      if (usernameExists) {
+        throw new ConflictException('El username ya está en uso');
+      }
+
+      // Actualizar username
+      await this.userRepository.updateUsername(
+        userId,
+        completeProfileRequest.username,
+      );
+    }
+
+    // Actualizar DNI
+    await this.personRepository.updateDni(
+      user.personId,
+      completeProfileRequest.dni,
+    );
+
+    const data: CompleteProfileResponseDTO = {
+      message: 'Perfil completado exitosamente',
     };
 
     return createApiResponse(data, true);

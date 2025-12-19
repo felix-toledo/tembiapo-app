@@ -25,7 +25,12 @@ export class GoogleAuthController {
         await this.googleAuthService.handleGoogleCallback(code);
       ///agarramos los atributos del data
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { accessToken, refreshToken } = apiResponse.data as any;
+      const {
+        accessToken,
+        refreshToken,
+        requiresProfileCompletion,
+        requiresUsername,
+      } = apiResponse.data as any;
 
       ///creamos la cookie
       res.cookie('refresh-token', refreshToken, {
@@ -35,9 +40,15 @@ export class GoogleAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, //duracion de 7 dias
       });
 
-      ///redireccionamos al front con el access token
+      ///redireccionamos al front con el access token y los flags de perfil
+      const redirectParams = new URLSearchParams({
+        accessToken,
+        ...(requiresProfileCompletion && { requiresProfileCompletion: 'true' }),
+        ...(requiresUsername && { requiresUsername: 'true' }),
+      });
+
       return res.redirect(
-        `${frontUrl}/google/callback?accessToken=${accessToken}`,
+        `${frontUrl}/google/callback?${redirectParams.toString()}`,
       );
     } catch (error) {
       ///Si hay un error, redireccionamos al front con el mensaje de error
