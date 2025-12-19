@@ -17,7 +17,8 @@ export default function LoginWithGoogleButton({
     // client_id=...&redirect_uri=...&response_type=code&scope=...
 
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const apiUrl = process.env.BACK_URL || "http://localhost:3001/api/v1";
+    const apiUrl =
+      process.env.NEXT_PUBLIC_BACK_URL || "http://localhost:3001/api/v1";
     // Important: this redirect_uri must match EXACTLY what backend sends to Google for exchange
     const redirectUri = `${apiUrl}/google/callback`;
     const scope = [
