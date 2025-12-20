@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import OurButton from "../ui/OurButton";
 import { Field, ServiceArea } from "@tembiapo/db";
 import { AreaSelector } from "./AreaSelector";
@@ -21,6 +21,7 @@ export function CreateProfessionalForm({
   fields,
   serviceAreas,
 }: CreateProfessionalFormProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{
     type: "error" | "success";
@@ -144,7 +145,7 @@ export function CreateProfessionalForm({
           text: "Perfil profesional creado exitosamente.",
         });
         setTimeout(() => {
-          window.location.href = "/"; // Force refresh to update context
+          router.push("/"); // Navigate without full page reload
         }, 1500);
       } else {
         setMessage({

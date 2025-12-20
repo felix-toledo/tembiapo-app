@@ -57,16 +57,17 @@ export const ProfileHeader = ({ data }: Props) => {
   const isVerified = data.isVerified;
 
   // Rating: Si es premium o verificado tiene color, si no es gris
-  const rating = (isVerified || isPremium) ? getFakeRating(data.professionalId) : 0.0;
-  
+  const rating = 5.0;
+
   // Color de la estrella
-  const ratingColor = isPremium 
+  const ratingColor = isPremium
     ? "text-amber-400"
-    : isVerified 
+    : isVerified
       ? "text-yellow-400"
       : "text-gray-300";
 
-  const ratingText = (isVerified || isPremium) ? "text-gray-900" : "text-gray-400";
+  const ratingText =
+    isVerified || isPremium ? "text-gray-900" : "text-gray-400";
 
   const { data: portfolioItems } = useFetch<PortfolioFormData[]>(
     data.username ? `/api/auth/portfolio/${data.username}` : ""
@@ -80,7 +81,6 @@ export const ProfileHeader = ({ data }: Props) => {
 
   return (
     <div className="flex flex-col sm:flex-row items-center mb-10 gap-6 sm:gap-0">
-      
       {/* 1. Avatar con Badge Flotante */}
       <div className="sm:mr-8 shrink-0 relative group">
         {/* Contenedor circular de la imagen */}
@@ -99,7 +99,7 @@ export const ProfileHeader = ({ data }: Props) => {
             </span>
           )}
         </div>
-        
+
         {/* Caso PREMIUM */}
         {isPremium && (
           <div
@@ -130,7 +130,7 @@ export const ProfileHeader = ({ data }: Props) => {
 
           {/* BADGE DE TEXTO DINÁMICO */}
           {isPremium ? (
-             // --- BADGE PREMIUM ---
+            // --- BADGE PREMIUM ---
             <div className="flex items-center px-2 py-1 rounded-full bg-amber-50 border border-amber-200 shrink-0 select-none shadow-sm">
               <CheckBadgeIcon className="h-5 w-5 text-amber-500" />
               <span className="text-xs text-amber-700 ml-1 font-bold leading-none pt-px tracking-wide">
@@ -138,7 +138,7 @@ export const ProfileHeader = ({ data }: Props) => {
               </span>
             </div>
           ) : isVerified ? (
-             // --- BADGE VERIFICADO ---
+            // --- BADGE VERIFICADO ---
             <div className="flex items-center px-2 py-1 rounded-full bg-blue-50 border border-blue-100 shrink-0 select-none">
               <CheckBadgeIcon className="h-5 w-5 text-blue-600" />
               <span className="text-xs text-blue-700 ml-1 font-bold leading-none pt-px">
@@ -146,7 +146,7 @@ export const ProfileHeader = ({ data }: Props) => {
               </span>
             </div>
           ) : (
-             // --- BADGE NO VERIFICADO ---
+            // --- BADGE NO VERIFICADO ---
             <div className="flex items-center px-2 py-1 rounded-full bg-gray-100 border border-gray-200 shrink-0 select-none">
               <span className="h-4 w-4 rounded-full bg-gray-300 text-white flex items-center justify-center text-[10px] font-bold">
                 ✕
@@ -163,7 +163,9 @@ export const ProfileHeader = ({ data }: Props) => {
       {/* 3. Stats (Valoración + Trabajos) */}
       <div className="mt-4 sm:mt-0 sm:ml-8 shrink-0 flex gap-4">
         {/* Caja de Rating */}
-        <div className={`flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl border min-w-[100px] transition-colors ${isPremium ? 'border-amber-100 bg-amber-50/30' : 'border-gray-100'}`}>
+        <div
+          className={`flex flex-col items-center justify-center p-4 bg-gray-50 rounded-2xl border min-w-[100px] transition-colors ${isPremium ? "border-amber-100 bg-amber-50/30" : "border-gray-100"}`}
+        >
           <div className="flex items-center space-x-1">
             <span className={`text-3xl ${ratingColor}`}>★</span>
             <span className={`text-3xl font-bold leading-none ${ratingText}`}>

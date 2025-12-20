@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { Lock } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Lock } from "lucide-react";
 
-const AnimatedNumber = ({ value, isFloat = false }: { value: number, isFloat?: boolean }) => {
+const AnimatedNumber = ({
+  value,
+  isFloat = false,
+}: {
+  value: number;
+  isFloat?: boolean;
+}) => {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
@@ -14,7 +20,7 @@ const AnimatedNumber = ({ value, isFloat = false }: { value: number, isFloat?: b
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      const easeProgress = 1 - Math.pow(1 - progress, 4); 
+      const easeProgress = 1 - Math.pow(1 - progress, 4);
       const current = startValue + (value - startValue) * easeProgress;
 
       setDisplayValue(current);
@@ -28,9 +34,7 @@ const AnimatedNumber = ({ value, isFloat = false }: { value: number, isFloat?: b
   }, [value]);
 
   return (
-    <span>
-      {isFloat ? displayValue.toFixed(1) : Math.floor(displayValue)}
-    </span>
+    <span>{isFloat ? displayValue.toFixed(1) : Math.floor(displayValue)}</span>
   );
 };
 
@@ -41,9 +45,8 @@ interface StatsProps {
 }
 
 export const DashboardStats = ({ jobs, rating, isVerified }: StatsProps) => {
-
   const displayJobs = isVerified ? jobs : 0;
-  const displayRating = isVerified ? rating : 0;
+  const displayRating = 5;
 
   const numberClass = isVerified ? "text-gray-900" : "text-gray-300";
   const starClass = isVerified ? "text-yellow-400" : "text-gray-300";
@@ -51,10 +54,10 @@ export const DashboardStats = ({ jobs, rating, isVerified }: StatsProps) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
       {/* Card Trabajos */}
-      <div className={`rounded-3xl p-6 border flex flex-col items-center justify-center min-h-40 transition-colors ${isVerified ? 'bg-gray-50 border-gray-100' : 'bg-gray-50/50 border-gray-100'}`}>
-        
+      <div
+        className={`rounded-3xl p-6 border flex flex-col items-center justify-center min-h-40 transition-colors ${isVerified ? "bg-gray-50 border-gray-100" : "bg-gray-50/50 border-gray-100"}`}
+      >
         <div className="flex items-center gap-2 mb-2">
           <h4 className={`${labelClass} font-medium`}>Trabajos Realizados</h4>
           {!isVerified && <Lock size={14} className="text-gray-300" />}
@@ -63,15 +66,18 @@ export const DashboardStats = ({ jobs, rating, isVerified }: StatsProps) => {
         <span className={`text-6xl font-bold ${numberClass}`}>
           <AnimatedNumber value={displayJobs} />
         </span>
-        
+
         <span className="text-xs text-gray-400 mt-2">
-          {isVerified ? "Proyectos completados en la plataforma" : "Disponible al verificar"}
+          {isVerified
+            ? "Proyectos completados en la plataforma"
+            : "Disponible al verificar"}
         </span>
       </div>
 
       {/* Card Valoración */}
-      <div className={`rounded-3xl p-6 border flex flex-col items-center justify-center min-h-40 transition-colors ${isVerified ? 'bg-gray-50 border-gray-100' : 'bg-gray-50/50 border-gray-100'}`}>
-        
+      <div
+        className={`rounded-3xl p-6 border flex flex-col items-center justify-center min-h-40 transition-colors ${isVerified ? "bg-gray-50 border-gray-100" : "bg-gray-50/50 border-gray-100"}`}
+      >
         <div className="flex items-center gap-2 mb-2">
           <h4 className={`${labelClass} font-medium`}>Tu Valoración Actual</h4>
           {!isVerified && <Lock size={14} className="text-gray-300" />}
@@ -83,9 +89,11 @@ export const DashboardStats = ({ jobs, rating, isVerified }: StatsProps) => {
             <AnimatedNumber value={displayRating} isFloat={true} />
           </span>
         </div>
-        
+
         <span className="text-xs text-gray-400 mt-2">
-           {isVerified ? "Basado en reseñas de clientes" : "Disponible al verificar"}
+          {isVerified
+            ? "Basado en reseñas de clientes"
+            : "Disponible al verificar"}
         </span>
       </div>
     </div>

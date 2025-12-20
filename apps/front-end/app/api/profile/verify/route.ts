@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { optimizeRequestImages } from "@/lib/image-optimization-helper";
 
 export async function POST(req: Request) {
   try {
+    // Optimize images before processing
+    const optimizedReq = await optimizeRequestImages(req);
+
     const cookieStore = await cookies();
     const token = cookieStore.get("session_token")?.value;
 
-    const formData = await req.formData();
+    const formData = await optimizedReq.formData();
 
     const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
     // Ensure we don't duplicate /api/v1 if it's already in the env var

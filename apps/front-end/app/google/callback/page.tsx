@@ -22,7 +22,7 @@ export default function GoogleCallbackPage() {
       if (errorParam) {
         setError(`Error en autenticación: ${errorParam}`);
         console.error("Google Auth Error:", errorParam);
-        setTimeout(() => router.push("/login"), 3000);
+        setTimeout(() => (window.location.href = "/login"), 3000);
         return;
       }
 
@@ -49,19 +49,19 @@ export default function GoogleCallbackPage() {
               "requiresUsername",
               requiresUsername === "true" ? "true" : "false"
             );
-            router.push("/complete-profile");
+            window.location.href = "/complete-profile";
           } else {
-            // Redirect to home
-            router.push("/");
+            // Redirect to home - use window.location to clear URL params and prevent loop
+            window.location.href = "/";
           }
         } catch (err) {
           console.error("Error setting session:", err);
           setError("Error al iniciar sesión. Intenta nuevamente.");
-          setTimeout(() => router.push("/login"), 3000);
+          setTimeout(() => (window.location.href = "/login"), 3000);
         }
       } else {
         setError("No se recibió el token de acceso.");
-        setTimeout(() => router.push("/login"), 3000);
+        setTimeout(() => (window.location.href = "/login"), 3000);
       }
     };
 

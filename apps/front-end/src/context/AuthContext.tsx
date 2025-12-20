@@ -190,9 +190,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async () => {
+    // fetchUser already calls fetchProfessional and fetchVerification internally
     await fetchUser();
-    await fetchProfessional();
-    await fetchVerification();
   };
 
   const logout = async () => {

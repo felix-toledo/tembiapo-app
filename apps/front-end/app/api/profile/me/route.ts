@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers"; // Importamos cookies de Next.js
+import { optimizeRequestImages } from "@/lib/image-optimization-helper";
 
 // Configuración de URL base
 const getBaseUrl = () => {
@@ -21,6 +22,12 @@ export async function PUT(req: Request) {
 // --- FUNCIÓN HELPER (Para no repetir lógica) ---
 async function handleProxy(req: Request, method: string) {
   try {
+    // Optimize images for PUT/POST requests
+    const optimizedReq =
+      method === "PUT" || method === "POST"
+        ? await optimizeRequestImages(req)
+        : req;
+
     const baseUrl = getBaseUrl();
 
     // 1. Obtener la tienda de cookies de Next.js
@@ -28,7 +35,7 @@ async function handleProxy(req: Request, method: string) {
     const token = cookieStore.get("session_token")?.value;
 
     // 2. Obtener el string crudo de cookies (para reenviar todo si hace falta)
-    const cookieHeader = req.headers.get("cookie") || "";
+    const cookieHeader = optimizedReq.headers.get("cookie") || "";
 
     // 3. Preparar opciones del fetch
     const headers: Record<string, string> = {
@@ -40,7 +47,7 @@ async function handleProxy(req: Request, method: string) {
     }
 
     // Checking Content-Type
-    const contentType = req.headers.get("content-type");
+    const contentType = optimizedReq.headers.get("content-type");
 
     let body: any = null;
 
@@ -51,7 +58,7 @@ async function handleProxy(req: Request, method: string) {
           headers["Content-Type"] = contentType;
         }
         // Pass the body as Blob
-        body = await req.blob();
+        body = await optimizedReq.blob();
       } else {
         headers["Content-Type"] = "application/json";
         body = await req.text(); // Read text first

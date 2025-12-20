@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import OurButton from "../ui/OurButton";
 import Link from "next/link";
 import { useAuth } from "@/src/context/AuthContext";
 import LoginWithGoogleButton from "../ui/LoginWithGoogleButton";
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,7 @@ export function LoginForm() {
       if (res.ok) {
         // Sync context
         await login();
-        window.location.href = "/";
+        router.push("/");
         return;
       } else {
         setMessage(

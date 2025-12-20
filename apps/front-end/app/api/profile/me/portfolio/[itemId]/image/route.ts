@@ -1,20 +1,28 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { optimizeRequestImages } from "@/lib/image-optimization-helper";
 
-export async function POST(req: Request, { params }: { params: Promise<{ itemId: string }> }) {
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ itemId: string }> }
+) {
   try {
+    // Optimize images before processing
+    const optimizedReq = await optimizeRequestImages(req);
+
     const { itemId } = await params;
-    const rawUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001/api/v1";
-    const baseUrl = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
-    
+    const rawUrl =
+      process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001/api/v1";
+    const baseUrl = rawUrl.endsWith("/") ? rawUrl.slice(0, -1) : rawUrl;
+
     const cookieStore = await cookies();
     const token = cookieStore.get("session_token")?.value;
-    const cookieHeader = req.headers.get("cookie") || "";
+    const cookieHeader = optimizedReq.headers.get("cookie") || "";
 
-    const formData = await req.formData();
+    const formData = await optimizedReq.formData();
 
     const headers: Record<string, string> = {
-      "Cookie": cookieHeader,
+      Cookie: cookieHeader,
     };
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
@@ -28,7 +36,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ itemId:
 
     const data = await backendRes.json();
     return NextResponse.json(data, { status: 200 });
-
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

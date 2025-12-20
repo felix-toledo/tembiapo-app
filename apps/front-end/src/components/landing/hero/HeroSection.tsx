@@ -1,4 +1,4 @@
-import { CheckCircle, Shield, Star, MapPin } from "lucide-react";
+import { CheckCircle, Shield, HeartHandshakeIcon, MapPin } from "lucide-react";
 import Image from "next/image";
 import { getFields } from "@/src/data/fields/fields.data";
 import { getRandomElement } from "@/src/lib/utils";
@@ -65,8 +65,8 @@ export async function HeroSection() {
             title="Garantía de Servicio"
           />
           <GlassBadge
-            icon={<Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />}
-            title="Reseñas Reales"
+            icon={<HeartHandshakeIcon className="w-5 h-5 text-tierra-activa" />}
+            title="Confianza"
           />
         </div>
       </div>

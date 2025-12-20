@@ -22,9 +22,9 @@ export class MailService {
       to: email,
       subject: 'Bienvenido a Tembiapó - Verifica tu cuenta',
       html: `
-        <h1>Hola ${name}, bienvenido a la comunidad.</h1>
-        <p>Para validar que eres un profesional real, por favor confirma tu correo:</p>
-        <a href="${url}">Verificar mi cuenta</a>
+        <h1>Hola ${name}, bienvenido a la comunidad de tembiapó!.</h1>
+        <p>Para validar que sos un profesional real, por favor logueate, creá tu perfil profesional y verificá tu DNI</p>
+        <a href="${'https://tembiapo.app/create-professional'}">Creá tu perfil profesional</a>
         <p>Si no solicitaste esto, ignora este mensaje.</p>
       `,
     });

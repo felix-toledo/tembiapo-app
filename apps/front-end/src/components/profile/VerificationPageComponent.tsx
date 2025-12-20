@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import QRCode from "react-qr-code";
 import {
   CameraIcon,
@@ -393,6 +394,8 @@ function ProcessingStep() {
 }
 
 function SuccessStep() {
+  const router = useRouter();
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-6 animate-in zoom-in duration-500">
       <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-2">
@@ -408,7 +411,7 @@ function SuccessStep() {
       </div>
       <div className="w-full pt-8">
         <button
-          onClick={() => (window.location.href = "/")} // Or router.push
+          onClick={() => router.push("/")}
           className="w-full py-4 bg-green-600 text-white rounded-xl font-semibold shadow-lg shadow-green-900/20 active:scale-[0.98] transition-all"
         >
           Ir al Inicio
@@ -419,6 +422,8 @@ function SuccessStep() {
 }
 
 function ManualReviewStep() {
+  const router = useRouter();
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-6 animate-in fade-in duration-500">
       <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 mb-2">
@@ -436,7 +441,7 @@ function ManualReviewStep() {
       </div>
       <div className="w-full pt-8">
         <button
-          onClick={() => (window.location.href = "/user")} // Or router.push
+          onClick={() => router.push("/user")}
           className="w-full py-4 bg-yellow-600 text-white rounded-xl font-semibold shadow-lg shadow-yellow-900/20 active:scale-[0.98] transition-all"
         >
           Ir al Inicio

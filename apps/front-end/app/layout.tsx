@@ -50,10 +50,11 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/logo_slogan.png",
-        width: 1200, // Assuming standard OG size, though checking actual size would be better, but this usually works as a hint
+        url: "/imagotipo.png", // Will be resolved to full URL using metadataBase
+        width: 1200,
         height: 630,
         alt: "Tembiapó - Conectando profesionales y clientes",
+        type: "image/png",
       },
     ],
   },
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
     title: "Tembiapó",
     description: "Encontrá profesionales de confianza en el NEA.",
     creator: "@tembiapo", // Placeholder, ideally should be real handle
-    images: ["/logo_slogan.png"],
+    images: ["/imagotipo.png"],
   },
   robots: {
     index: true,
