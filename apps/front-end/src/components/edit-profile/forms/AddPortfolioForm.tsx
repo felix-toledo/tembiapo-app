@@ -124,7 +124,7 @@ export const AddPortfolioForm = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Imágenes
         </label>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           {previews.map((src, index) => (
             <div
               key={index}
