@@ -59,4 +59,13 @@ const nextConfig: NextConfig = {
 export default withPWA({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
+  cacheOnFrontEndNav: true,
+  workboxOptions: {
+    runtimeCaching: [
+      {
+        urlPattern: /^\/google\/callback/,
+        handler: "NetworkOnly",
+      },
+    ],
+  },
 })(nextConfig);

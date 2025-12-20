@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers"; // Importamos cookies de Next.js
-import { optimizeRequestImages } from "@/lib/image-optimization-helper";
 
 // Configuración de URL base
 const getBaseUrl = () => {
@@ -22,12 +21,6 @@ export async function PUT(req: Request) {
 // --- FUNCIÓN HELPER (Para no repetir lógica) ---
 async function handleProxy(req: Request, method: string) {
   try {
-    // Optimize images for PUT/POST requests
-    const optimizedReq =
-      method === "PUT" || method === "POST"
-        ? await optimizeRequestImages(req)
-        : req;
-
     const baseUrl = getBaseUrl();
 
     // 1. Obtener la tienda de cookies de Next.js
@@ -35,7 +28,7 @@ async function handleProxy(req: Request, method: string) {
     const token = cookieStore.get("session_token")?.value;
 
     // 2. Obtener el string crudo de cookies (para reenviar todo si hace falta)
-    const cookieHeader = optimizedReq.headers.get("cookie") || "";
+    const cookieHeader = req.headers.get("cookie") || "";
 
     // 3. Preparar opciones del fetch
     const headers: Record<string, string> = {
@@ -47,18 +40,19 @@ async function handleProxy(req: Request, method: string) {
     }
 
     // Checking Content-Type
-    const contentType = optimizedReq.headers.get("content-type");
+    const contentType = req.headers.get("content-type");
 
-    let body: any = null;
+    let body: string | Blob | null = null;
 
     if (method === "PUT" || method === "POST") {
       if (contentType?.includes("multipart/form-data")) {
+        // Images are already compressed client-side, just forward FormData
         // Must preserve the original Content-Type header because it contains the boundary
         if (contentType) {
           headers["Content-Type"] = contentType;
         }
         // Pass the body as Blob
-        body = await optimizedReq.blob();
+        body = await req.blob();
       } else {
         headers["Content-Type"] = "application/json";
         body = await req.text(); // Read text first

@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { optimizeRequestImages } from "@/lib/image-optimization-helper";
 
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
-    // Optimize images before processing
-    const optimizedReq = await optimizeRequestImages(req);
-
     const { itemId } = await params;
     const rawUrl =
       process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001/api/v1";
@@ -17,9 +13,10 @@ export async function POST(
 
     const cookieStore = await cookies();
     const token = cookieStore.get("session_token")?.value;
-    const cookieHeader = optimizedReq.headers.get("cookie") || "";
+    const cookieHeader = req.headers.get("cookie") || "";
 
-    const formData = await optimizedReq.formData();
+    // Images are already compressed client-side, just extract and forward
+    const formData = await req.formData();
 
     const headers: Record<string, string> = {
       Cookie: cookieHeader,

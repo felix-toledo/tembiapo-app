@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/src/context/AuthContext";
 
@@ -9,9 +9,15 @@ export default function GoogleCallbackPage() {
   const searchParams = useSearchParams();
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    // Prevenir múltiples ejecuciones
+    if (hasProcessed.current) return;
+
     const handleCallback = async () => {
+      hasProcessed.current = true;
+
       const accessToken = searchParams.get("accessToken");
       const errorParam = searchParams.get("error");
       const requiresProfileCompletion = searchParams.get(
@@ -22,7 +28,7 @@ export default function GoogleCallbackPage() {
       if (errorParam) {
         setError(`Error en autenticación: ${errorParam}`);
         console.error("Google Auth Error:", errorParam);
-        setTimeout(() => (window.location.href = "/login"), 3000);
+        setTimeout(() => router.replace("/login"), 3000);
         return;
       }
 
@@ -49,24 +55,25 @@ export default function GoogleCallbackPage() {
               "requiresUsername",
               requiresUsername === "true" ? "true" : "false"
             );
-            window.location.href = "/complete-profile";
+            router.replace("/complete-profile");
           } else {
-            // Redirect to home - use window.location to clear URL params and prevent loop
-            window.location.href = "/";
+            // Redirect to home - use router.replace to avoid adding to history
+            router.replace("/");
           }
         } catch (err) {
           console.error("Error setting session:", err);
           setError("Error al iniciar sesión. Intenta nuevamente.");
-          setTimeout(() => (window.location.href = "/login"), 3000);
+          setTimeout(() => router.replace("/login"), 3000);
         }
       } else {
         setError("No se recibió el token de acceso.");
-        setTimeout(() => (window.location.href = "/login"), 3000);
+        setTimeout(() => router.replace("/login"), 3000);
       }
     };
 
     handleCallback();
-  }, [searchParams, router, login]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">

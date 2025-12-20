@@ -34,8 +34,8 @@ export class GoogleAuthController {
 
       ///creamos la cookie
       res.cookie('refresh-token', refreshToken, {
-        // httpOnly: true,
-        secure: false, //falso en desarrollo | true en produccion
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // true en producción, false en desarrollo
         sameSite: 'strict', //proteccion contra CSRF
         maxAge: 7 * 24 * 60 * 60 * 1000, //duracion de 7 dias
       });

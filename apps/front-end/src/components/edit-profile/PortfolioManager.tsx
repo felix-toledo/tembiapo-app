@@ -7,6 +7,7 @@ import { AddPortfolioForm, PortfolioFormData } from "./forms/AddPortfolioForm";
 import { PortfolioItem } from "@/types";
 import { toast } from "react-toastify";
 import { PortfolioCard } from "./PortfolioCard";
+import { compressImage } from "@/lib/image-optimization-helper";
 
 interface Props {
   username: string;
@@ -16,13 +17,12 @@ interface Props {
   onUpdate: () => Promise<void> | void; // Función que viene del padre
 }
 
-export const PortfolioManager = ({ 
-  userFields, 
+export const PortfolioManager = ({
+  userFields,
   initialItems = [], // Valor por defecto para evitar errores
-  isLoading, 
-  onUpdate 
+  isLoading,
+  onUpdate,
 }: Props) => {
-  
   // Estado local sincronizado con el padre
   const [items, setItems] = useState<PortfolioItem[]>(initialItems);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,31 +52,43 @@ export const PortfolioManager = ({
       const newItem = await createRes.json();
       const itemId = newItem.id;
 
-      // Lógica de subida de imágenes
+      // Lógica de subida de imágenes con compresión
       const errors: string[] = [];
       const uploadPromises = data.files.map(async (file, index) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("description", file.name);
-        formData.append("order", index.toString());
-        
         try {
-          await fetch(`/api/profile/me/portfolio/${itemId}/image`, {
-            method: "POST",
-            body: formData,
-          });
-        } catch(e) { console.error(e); errors.push(file.name) }
+          // Compress image in browser BEFORE upload
+          const compressedFile = await compressImage(file);
+
+          const formData = new FormData();
+          formData.append("file", compressedFile);
+          formData.append("description", file.name);
+          formData.append("order", index.toString());
+
+          const uploadRes = await fetch(
+            `/api/profile/me/portfolio/${itemId}/image`,
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (!uploadRes.ok) {
+            throw new Error(`Failed to upload ${file.name}`);
+          }
+        } catch (e) {
+          console.error(e);
+          errors.push(file.name);
+        }
       });
-      
+
       await Promise.all(uploadPromises);
-      
+
       if (errors.length === 0) toast.success("Proyecto creado correctamente");
       else toast.warning("Proyecto creado, pero algunas imágenes fallaron");
 
       await onUpdate();
-      
-      setIsModalOpen(false);
 
+      setIsModalOpen(false);
     } catch (err) {
       console.error(err);
       toast.error("Hubo un error al crear el proyecto.");
@@ -95,7 +107,7 @@ export const PortfolioManager = ({
     // Optimismo visual
     const prevItems = items;
     setItems(items.filter((i) => i.id !== itemToDelete));
-    
+
     // Guardamos ID temporalmente antes de limpiar el estado
     const idToDelete = itemToDelete;
     setItemToDelete(null);
@@ -105,11 +117,10 @@ export const PortfolioManager = ({
         method: "DELETE",
       });
       if (!res.ok) throw new Error();
-      
+
       toast.success("Proyecto eliminado");
-      
+
       await onUpdate();
-      
     } catch (err) {
       console.error(err);
       toast.error("No se pudo borrar el proyecto");
@@ -125,12 +136,12 @@ export const PortfolioManager = ({
     );
 
   return (
-    <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm mt-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 md:p-8 border border-gray-100 shadow-sm mt-8">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0 mb-6">
         <h3 className="text-xl font-bold text-gray-900">Mi Portafolio</h3>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-800 transition-transform active:scale-95"
+          className="flex items-center justify-center gap-2 bg-black text-white px-4 py-2.5 rounded-full text-sm font-bold hover:bg-gray-800 transition-transform active:scale-95 w-full sm:w-auto"
         >
           <Plus size={16} /> Nuevo
         </button>
@@ -138,24 +149,22 @@ export const PortfolioManager = ({
 
       {/* --- GRID DE PROYECTOS --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        
         {items?.map((item) => (
-          <PortfolioCard 
-            key={item.id} 
-            item={item} 
-            onDelete={promptDelete} 
-          />
+          <PortfolioCard key={item.id} item={item} onDelete={promptDelete} />
         ))}
 
         {items.length === 0 && (
           <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50/50">
-             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
-                <Plus size={20} className="text-gray-400" />
-             </div>
-             <p>No tienes proyectos cargados.</p>
-             <button onClick={() => setIsModalOpen(true)} className="text-sm text-blue-600 font-bold mt-2 hover:underline">
-               Cargar el primero
-             </button>
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+              <Plus size={20} className="text-gray-400" />
+            </div>
+            <p>No tienes proyectos cargados.</p>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="text-sm text-blue-600 font-bold mt-2 hover:underline"
+            >
+              Cargar el primero
+            </button>
           </div>
         )}
       </div>

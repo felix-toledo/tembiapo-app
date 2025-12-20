@@ -76,18 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfessional = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
       const res = await fetch("/api/profile/me", {
         method: "GET",
-        headers,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       if (res.ok) {
@@ -97,6 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setProfessional(null);
         }
+      } else if (res.status === 404) {
+        // Usuario no tiene perfil profesional todavía, esto es normal
+        setProfessional(null);
       } else {
         setProfessional(null);
       }
@@ -108,18 +104,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchVerification = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
       const res = await fetch("/api/verify/me", {
         method: "GET",
-        headers,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       if (res.ok) {
@@ -131,11 +120,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setVerification(null);
         }
+      } else if (res.status === 404 || res.status === 500) {
+        // Usuario no tiene verificación todavía, esto es normal
+        setVerification(null);
       } else {
         setVerification(null);
       }
-    } catch (error) {
-      console.error("Error fetching verification status:", error);
+    } catch {
+      // Error de red o parsing, silenciosamente establecer null
       setVerification(null);
     }
   };
@@ -143,18 +135,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUser = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
       const res = await fetch("/api/auth/me", {
         method: "GET",
-        headers,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       if (res.ok) {
@@ -168,12 +153,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setUser(null);
           setProfessional(undefined);
-          if (token) localStorage.removeItem("token");
         }
       } else {
         setUser(null);
         setProfessional(undefined);
-        if (token) localStorage.removeItem("token");
       }
     } catch (error) {
       console.error("Error checking auth status:", error);
@@ -207,7 +190,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setProfessional(undefined);
       setVerification(null);
-      localStorage.removeItem("token");
       window.location.href = "/login";
     }
   };

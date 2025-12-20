@@ -5,6 +5,7 @@ import { useAuth } from "@/src/context/AuthContext";
 import { UIField, UIServiceArea } from "@/types";
 import { Professional } from "@/src/context/AuthContext";
 import { toast } from "react-toastify";
+import { compressImage } from "@/lib/image-optimization-helper";
 
 // Componentes Visuales
 import { EditProfileSidebar } from "./EditProfileSidebar";
@@ -19,7 +20,7 @@ import { EditDescriptionForm } from "./forms/EditDescriptionForm";
 import { EditSkillsForm } from "./forms/EditSkillsForm";
 import { EditCitiesForm } from "./forms/EditCitiesForm";
 // 👇 1. Importamos el nuevo Modal de Teléfono
-import { EditPhoneModal } from "./forms/EditPhoneModal"; 
+import { EditPhoneModal } from "./forms/EditPhoneModal";
 
 // Gestor de Portafolio
 import { PortfolioManager } from "./PortfolioManager";
@@ -45,7 +46,7 @@ export const DashboardContainer = ({
   const [localUserUpdates, setLocalUserUpdates] = useState<Professional | null>(
     null
   );
-  
+
   // 👇 2. Agregamos "phone" al tipo de modal activo
   const [activeModal, setActiveModal] = useState<
     "description" | "skills" | "cities" | "phone" | null
@@ -78,7 +79,7 @@ export const DashboardContainer = ({
       ...displayUser,
       ...updatedFields,
     } as Professional;
-    
+
     setLocalUserUpdates(optimisticUpdate);
     setActiveModal(null); // Cierra el modal inmediatamente para optimismo
 
@@ -182,36 +183,35 @@ export const DashboardContainer = ({
 
   // Handler Avatar
   const handleAvatarChange = async (file: File) => {
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("La imagen es muy pesada (max 10MB)");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("avatar", file);
-
-    const updatePromise = fetch("/api/profile/me", {
-      method: "PUT",
-      body: formData,
-    }).then(async (res) => {
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Error al subir imagen");
-      }
-      return res.json();
-    });
-
-    toast.promise(updatePromise, {
-      pending: "Subiendo nueva foto...",
-      success: "Foto de perfil actualizada 👌",
-      error: "Hubo un error al subir la foto 🤯",
-    });
-
     try {
+      // Compress image in browser BEFORE upload
+      const compressedFile = await compressImage(file);
+
+      const formData = new FormData();
+      formData.append("avatar", compressedFile);
+
+      const updatePromise = fetch("/api/profile/me", {
+        method: "PUT",
+        body: formData,
+      }).then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text || "Error al subir imagen");
+        }
+        return res.json();
+      });
+
+      toast.promise(updatePromise, {
+        pending: "Subiendo nueva foto...",
+        success: "Foto de perfil actualizada 👌",
+        error: "Hubo un error al subir la foto 🤯",
+      });
+
       await updatePromise;
       await fetchProfessional();
     } catch (error) {
       console.error("Avatar upload error:", error);
+      toast.error("Error al procesar la imagen");
     }
   };
 

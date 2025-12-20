@@ -17,8 +17,8 @@ export async function POST(req: Request) {
     cookieStore.set("session_token", accessToken, {
       httpOnly: false, // Allow client to read for logout
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 15, // 15 minutes to match backend
+      sameSite: "lax", // lax permite el callback OAuth desde Google
+      maxAge: 60 * 60 * 24 * 7, // 7 días para coincidir con refresh token
       path: "/",
     });
 
