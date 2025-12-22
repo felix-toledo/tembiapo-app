@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://tembiapo.com"
+    process.env.NEXT_PUBLIC_APP_URL || "https://tembiapo.app"
   ),
   title: {
     default: "Tembiapó",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/imagotipo.png", // Will be resolved to full URL using metadataBase
+        url: "/og_image.png",
         width: 1200,
         height: 630,
         alt: "Tembiapó - Conectando profesionales y clientes",
@@ -62,8 +62,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tembiapó",
     description: "Encontrá profesionales de confianza en el NEA.",
-    creator: "@tembiapo", // Placeholder, ideally should be real handle
-    images: ["/imagotipo.png"],
+    creator: "@tembiapo",
+    images: ["/og_image.png"],
   },
   robots: {
     index: true,
@@ -77,11 +77,14 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/icons/icon-192x192.png", // Assuming these exist in icons folder based on list_dir
+    icon: "/icons/icon-192x192.png",
     shortcut: "/icons/icon-192x192.png",
     apple: "/icons/icon-192x192.png",
   },
   manifest: "/manifest.json",
+  alternates: {
+    canonical: "https://tembiapo.app",
+  },
 };
 
 import { AuthProvider } from "../src/context/AuthContext";

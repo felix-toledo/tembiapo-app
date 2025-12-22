@@ -23,8 +23,40 @@ export default async function Home(props: {
   const cookieStore = await cookies();
   // const refreshToken = cookieStore.get("refresh-token");
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "Tembiapó",
+    url: "https://tembiapo.app",
+    logo: "https://tembiapo.app/imagotipo.png",
+    image: "https://tembiapo.app/og_image.png",
+    description:
+      "Encontrá profesionales de confianza en el NEA. La plataforma líder para encontrar y contratar profesionales calificados.",
+    areaServed: {
+      "@type": "GeoCircle",
+      geoMidpoint: {
+        "@type": "GeoCoordinates",
+        latitude: "-27.4692",
+        longitude: "-58.8306",
+      },
+      geoRadius: "500000",
+      description: "NEA, Argentina",
+    },
+    priceRange: "$$",
+    telephone: "+54-9-3794-000000",
+    address: {
+      "@type": "PostalAddress",
+      addressRegion: "Corrientes",
+      addressCountry: "AR",
+    },
+  };
+
   return (
     <main className="min-h-screen bg-white flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
 
       <div className="grow">
