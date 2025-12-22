@@ -342,4 +342,38 @@ export class AuthService {
 
     return message;
   }
+
+  /// Método para refrescar el access token usando el refresh token
+  async refreshAccessToken(
+    refreshToken: string,
+  ): Promise<ApiResponse<{ accessToken: string }>> {
+    if (!refreshToken) {
+      throw new UnauthorizedException('No se proporcionó refresh token');
+    }
+
+    // Buscar el refresh token en la DB con los datos del usuario
+    const tokenData =
+      await this.refreshTokenRepository.findValidRefreshTokenWithUser(
+        refreshToken,
+      );
+
+    if (!tokenData) {
+      throw new UnauthorizedException(
+        'El refresh token es inválido o ha expirado',
+      );
+    }
+
+    // Generar nuevo access token
+    const payload = {
+      email: tokenData.user.mail,
+      sub: tokenData.user.id,
+      role: tokenData.user.role.name,
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '15m',
+    });
+
+    return createApiResponse({ accessToken }, true);
+  }
 }

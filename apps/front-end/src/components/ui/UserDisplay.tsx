@@ -7,12 +7,17 @@ import { useAuth } from "@/src/context/AuthContext";
 
 interface UserDisplayProps {
   user: User;
+  isPendingProfessional?: boolean;
 }
 
-export default function UserDisplay({ user }: UserDisplayProps) {
+export default function UserDisplay({
+  user,
+  isPendingProfessional: isPendingProfessionalProp,
+}: UserDisplayProps) {
   const { professional } = useAuth();
   const isPendingProfessional =
-    user.role.toUpperCase() === "PROFESSIONAL" && !professional;
+    isPendingProfessionalProp ??
+    (user.role.toUpperCase() === "PROFESSIONAL" && !professional);
 
   function handleUserClick() {
     if (user.role.toUpperCase() === "ADMIN") {

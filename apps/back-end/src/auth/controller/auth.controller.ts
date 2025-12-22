@@ -115,4 +115,28 @@ export class AuthController {
     const apiResponse = await this.authService.resetPassword(resetPasswordDTO);
     return res.json(apiResponse);
   }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    const refreshToken = req.cookies['refresh-token'];
+
+    if (!refreshToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        success: false,
+        error: { message: 'No se encontró el refresh token' },
+      });
+    }
+
+    try {
+      const apiResponse =
+        await this.authService.refreshAccessToken(refreshToken);
+      return res.json(apiResponse);
+    } catch {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        success: false,
+        error: { message: 'El refresh token es inválido o ha expirado' },
+      });
+    }
+  }
 }

@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
-import { optimizeRequestImages } from "@/lib/image-optimization-helper";
 
 export async function POST(req: Request) {
   try {
-    // Optimize images before processing
-    const optimizedReq = await optimizeRequestImages(req);
-
-    const contentTypeHeader = optimizedReq.headers.get("content-type") || "";
-    const cookie = optimizedReq.headers.get("cookie") || "";
+    // Note: Image compression is already done client-side in RegisterForm
+    // We just proxy the request to the backend
+    const contentTypeHeader = req.headers.get("content-type") || "";
+    const cookie = req.headers.get("cookie") || "";
 
     const headers: HeadersInit = {};
     if (cookie) {
@@ -19,7 +17,7 @@ export async function POST(req: Request) {
     if (contentTypeHeader.includes("multipart/form-data")) {
       // If it's form-data, we get the formData object
       // and let fetch generate the correct boundary
-      const formData = await optimizedReq.formData();
+      const formData = await req.formData();
       body = formData;
       // DO NOT set Content-Type header here, fetch will do it with boundary
     } else {

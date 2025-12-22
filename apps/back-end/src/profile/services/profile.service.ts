@@ -358,11 +358,10 @@ export class ProfileService {
         throw new ConflictException('El username ya está en uso');
       }
 
+      const lowerCaseUsername = completeProfileRequest.username.toLowerCase();
+
       // Actualizar username
-      await this.userRepository.updateUsername(
-        userId,
-        completeProfileRequest.username,
-      );
+      await this.userRepository.updateUsername(userId, lowerCaseUsername);
     }
 
     // Actualizar DNI
