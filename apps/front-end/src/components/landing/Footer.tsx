@@ -91,7 +91,7 @@ export function Footer() {
                   href="mailto:felixtoledoctes@gmail.com"
                   className="hover:text-white transition-colors"
                 >
-                  soporte@tembiapo.app
+                  felixtoledoctes@gmail.com
                 </a>
               </li>
               <li className="flex items-start gap-3">

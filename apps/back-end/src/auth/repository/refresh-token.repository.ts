@@ -53,6 +53,24 @@ export class RefreshTokenRepository {
     });
   }
 
+  // Método para buscar refresh token válido con datos del usuario para generar nuevo access token
+  async findValidRefreshTokenWithUser(token: string) {
+    return this.prisma.refreshToken.findFirst({
+      where: {
+        token: token,
+        revoked: false,
+        expiresAt: { gt: new Date() },
+      },
+      include: {
+        user: {
+          include: {
+            role: true,
+          },
+        },
+      },
+    });
+  }
+
   ///metodo para revocar un refresh token especifico
   async revokeRefreshToken(refreshToken: string): Promise<boolean> {
     const result = await this.prisma.refreshToken.updateMany({

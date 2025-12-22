@@ -9,9 +9,7 @@ import { Navbar } from "@/src/components/ui/Navbar";
 import { Footer } from "@/src/components/landing/Footer";
 import LoaderWaiter from "@/src/components/ui/loaders/LoaderWaiter";
 import { VerifiedProfileLayout } from "@/src/components/profile/VerifiedProfileLayout";
-
-// URL del Backend directo (Para cuando se arregle CORS)
-const DIRECT_API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function ProfilePage({
   params,
@@ -31,6 +29,11 @@ export default function ProfilePage({
   // const fetchUrl = `${DIRECT_API_URL}/profile/${username}`;
 
   const { data, loading, error } = useFetch<UserProfileData>(fetchUrl);
+
+  const user = useAuth();
+
+  const isOwner = user?.user?.username === username;
+  console.log("OWNER", isOwner);
 
   // Manejo de Estados
   if (loading) {
@@ -74,9 +77,9 @@ export default function ProfilePage({
 
       <main className="container mx-auto px-4 py-8 sm:py-12 grow">
         {data.isVerified ? (
-          <VerifiedProfileLayout data={data} />
+          <VerifiedProfileLayout data={data} isOwner={isOwner} />
         ) : (
-          <UnverifiedProfileLayout data={data} />
+          <UnverifiedProfileLayout data={data} isOwner={isOwner} />
         )}
       </main>
 

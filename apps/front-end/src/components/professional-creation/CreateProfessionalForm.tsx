@@ -6,6 +6,7 @@ import OurButton from "../ui/OurButton";
 import { Field, ServiceArea } from "@tembiapo/db";
 import { AreaSelector } from "./AreaSelector";
 import { FieldSelector } from "./FieldSelector";
+import { useAuth } from "@/src/context/AuthContext";
 
 interface CreateProfessionalFormProps {
   fields: Field[];
@@ -22,6 +23,7 @@ export function CreateProfessionalForm({
   serviceAreas,
 }: CreateProfessionalFormProps) {
   const router = useRouter();
+  const { fetchProfessional } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{
     type: "error" | "success";
@@ -144,6 +146,8 @@ export function CreateProfessionalForm({
           type: "success",
           text: "Perfil profesional creado exitosamente.",
         });
+        // Actualizar el estado del AuthContext antes de redirigir
+        await fetchProfessional();
         setTimeout(() => {
           router.push("/"); // Navigate without full page reload
         }, 1500);

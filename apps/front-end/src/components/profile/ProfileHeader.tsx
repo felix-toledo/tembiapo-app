@@ -5,12 +5,15 @@ import { PortfolioFormData } from "../edit-profile/forms/AddPortfolioForm";
 import { useFetch } from "@/src/hooks/useFetch";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { Edit2 } from "lucide-react";
+import { a } from "framer-motion/client";
 
 // Asegúrate de que tu tipo UserProfileData tenga la propiedad isPremium
 // interface UserProfileData { ...; isPremium?: boolean; ... }
 
 interface Props {
   data: UserProfileData;
+  isOwner: boolean;
 }
 
 const AnimatedNumber = ({
@@ -48,7 +51,7 @@ const AnimatedNumber = ({
   );
 };
 
-export const ProfileHeader = ({ data }: Props) => {
+export const ProfileHeader = ({ data, isOwner }: Props) => {
   const fullName = `${data.name} ${data.lastName}`;
   const profession = data.fields[0]?.name || "Profesional";
 
@@ -158,6 +161,15 @@ export const ProfileHeader = ({ data }: Props) => {
           )}
         </div>
         <p className="text-xl text-gray-600 font-medium">{profession}</p>
+        {isOwner && (
+          <a
+            href="/user"
+            className="flex items-center gap-2 border border-gray-200 rounded p-2 w-[150px] shadow hover:scale-105 transition-all"
+          >
+            <Edit2 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+            Editar perfil
+          </a>
+        )}
       </div>
 
       {/* 3. Stats (Valoración + Trabajos) */}
